@@ -255,16 +255,16 @@ textarea { resize: vertical; line-height: 1.7; }
     </div>
   </div>
 
-  <!-- Claude API 키 설정 바 -->
+  <!-- Gemini API 키 설정 바 -->
   <div class="api-key-bar">
-    <span style="font-size:12px;color:#FFD700;white-space:nowrap">🤖 Claude API 키</span>
-    <input type="password" id="claude-api-key" placeholder="sk-ant-..." autocomplete="off"
+    <span style="font-size:12px;color:#FFD700;white-space:nowrap">🤖 Gemini API 키</span>
+    <input type="password" id="claude-api-key" placeholder="AIza..." autocomplete="off"
       oninput="updateApiKeyStatus()">
     <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:rgba(255,255,255,0.5)">
-      <input type="checkbox" id="save-claude-key" style="accentColor:#FFD700">저장
+      <input type="checkbox" id="save-claude-key" checked style="accentColor:#FFD700">저장
     </label>
     <span class="api-key-status no" id="api-key-status">키 없음 — AI 생성 비활성</span>
-    <a href="https://console.anthropic.com" target="_blank"
+    <a href="https://aistudio.google.com" target="_blank"
       style="font-size:10px;color:#5DADE2;text-decoration:none;white-space:nowrap">키 발급 →</a>
   </div>
 
@@ -862,9 +862,9 @@ function loadSample() {
 addScene();
 
 // ══════════════════════════════════════════════════════════════
-// Claude API 키 관리
+// Gemini API 키 관리
 // ══════════════════════════════════════════════════════════════
-let CLAUDE_KEY = localStorage.getItem('eaim_claude_key') || '';
+let CLAUDE_KEY = localStorage.getItem('eaim_gemini_key') || '';
 
 function updateApiKeyStatus() {
   const key = document.getElementById('claude-api-key').value.trim();
@@ -872,10 +872,10 @@ function updateApiKeyStatus() {
   if (key) {
     CLAUDE_KEY = key;
     if (document.getElementById('save-claude-key').checked) {
-      localStorage.setItem('eaim_claude_key', key);
+      localStorage.setItem('eaim_gemini_key', key);
     }
     status.className = 'api-key-status ok';
-    status.textContent = '✓ AI 생성 활성';
+    status.textContent = '✓ Gemini AI 생성 활성';
   } else {
     CLAUDE_KEY = '';
     status.className = 'api-key-status no';
@@ -885,36 +885,38 @@ function updateApiKeyStatus() {
 
 // 저장된 키 불러오기
 window.addEventListener('load', () => {
-  if (CLAUDE_KEY) {
-    document.getElementById('claude-api-key').value = CLAUDE_KEY;
+  // slideshow.html과 같은 키(eaim_gemini_key) 공유
+  const saved = localStorage.getItem('eaim_gemini_key') || '';
+  if (saved) {
+    CLAUDE_KEY = saved;
+    document.getElementById('claude-api-key').value = saved;
     updateApiKeyStatus();
   }
 });
 
 // ══════════════════════════════════════════════════════════════
-// Claude API 공통 호출
+// Gemini API 공통 호출 (텍스트 생성)
 // ══════════════════════════════════════════════════════════════
 async function callClaude(prompt) {
-  if (!CLAUDE_KEY) { alert('Claude API 키를 먼저 입력해주세요!'); return null; }
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  if (!CLAUDE_KEY) { alert('Gemini API 키를 먼저 입력해주세요!\n(상단 키 입력란에 AIza... 키를 붙여넣으세요)'); return null; }
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${CLAUDE_KEY}`;
+  const res = await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': CLAUDE_KEY,
-      'anthropic-version': '2023-06-01',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1200,
-      messages: [{ role: 'user', content: prompt }],
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.85,
+        maxOutputTokens: 1200,
+      },
     }),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `API 오류 ${res.status}`);
+    throw new Error(err?.error?.message || `Gemini API 오류 ${res.status}`);
   }
   const data = await res.json();
-  return data.content?.[0]?.text || '';
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
 // JSON 파싱 (마크다운 코드블록 제거)
