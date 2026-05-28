@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎭 뮤지컬메이커 | EAIM</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  background: linear-gradient(160deg, #0D1B2A 0%, #1A0A2E 100%);
+  color: #fff; min-height: 100vh; padding: 32px 20px;
+}
+.wrap { max-width: 900px; margin: 0 auto; }
+
+.header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+.logo {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: linear-gradient(135deg, #5DADE2, #C778DD);
+  display: flex; align-items: center; justify-content: center; font-size: 26px;
+}
+.header-title { font-size: 22px; font-weight: 800; }
+.header-sub { font-size: 12px; color: #5DADE2; margin-top: 3px; }
+
+/* 탭 */
+.tabs { display: flex; gap: 6px; margin-bottom: 22px; flex-wrap: wrap; }
+.tab {
+  padding: 7px 16px; border-radius: 20px; cursor: pointer; font-size: 12px;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.55); transition: all 0.2s; white-space: nowrap;
+}
+.tab.active { background: rgba(93,173,226,0.2); border-color: #5DADE2; color: #5DADE2; font-weight: 700; }
+.tab.required-tab { border-color: rgba(255,215,0,0.35); }
+.tab.required-tab.done { border-color: rgba(105,240,174,0.5); color: #69f0ae; }
+
+/* 섹션 */
+.section {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; padding: 20px; margin-bottom: 14px;
+}
+.section-title {
+  font-size: 11px; color: #FFD700; letter-spacing: 2px; font-weight: 700;
+  text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.required-badge {
+  font-size: 9px; background: rgba(255,80,80,0.2); border: 1px solid rgba(255,80,80,0.4);
+  color: #ff8080; border-radius: 10px; padding: 2px 8px; letter-spacing: 1px;
+}
+.optional-badge {
+  font-size: 9px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.4); border-radius: 10px; padding: 2px 8px; letter-spacing: 1px;
+}
+
+/* 인풋 */
+label { font-size: 12px; color: #AED6F1; display: block; margin-bottom: 6px; }
+label .req { color: #ff6b6b; margin-left: 3px; }
+input[type=text], textarea, select {
+  width: 100%; padding: 10px 14px; border-radius: 8px;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+  color: #fff; font-size: 13px; outline: none; font-family: inherit;
+  transition: border-color 0.2s;
+}
+input[type=text]:focus, textarea:focus { border-color: #5DADE2; }
+input.required-field:focus { border-color: #FFD700; }
+textarea { resize: vertical; line-height: 1.7; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media(max-width:600px) { .row2 { grid-template-columns: 1fr; } }
+.field { margin-bottom: 14px; }
+
+/* 오프닝/커튼콜 특별 카드 */
+.special-card {
+  border-radius: 12px; padding: 20px; margin-bottom: 14px;
+  position: relative; overflow: hidden;
+}
+.special-card.opening {
+  background: rgba(255,215,0,0.04);
+  border: 1px solid rgba(255,215,0,0.25);
+}
+.special-card.curtain {
+  background: rgba(199,120,221,0.05);
+  border: 1px solid rgba(199,120,221,0.25);
+}
+.special-card::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; border-radius: 3px 0 0 3px;
+}
+.special-card.opening::before { background: linear-gradient(to bottom, #FFD700, #FF9500); }
+.special-card.curtain::before { background: linear-gradient(to bottom, #C778DD, #5DADE2); }
+.special-title {
+  font-size: 13px; font-weight: 800; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* 장면 카드 */
+.scene-card {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px; padding: 16px; margin-bottom: 10px; position: relative;
+}
+.scene-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+  cursor: pointer;
+}
+.scene-num {
+  min-width: 28px; height: 28px; border-radius: 50%;
+  background: #5DADE2; color: #000; font-weight: 800; font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+}
+.scene-preview-title { flex: 1; font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); }
+.scene-toggle { font-size: 12px; color: rgba(255,255,255,0.3); }
+.scene-body { display: block; }
+.scene-body.collapsed { display: none; }
+
+.del-btn {
+  background: rgba(255,80,80,0.12); border: 1px solid rgba(255,80,80,0.25);
+  color: #ff8080; border-radius: 6px; padding: 4px 10px;
+  cursor: pointer; font-size: 11px; margin-left: auto;
+}
+
+/* 버튼 */
+.btn-primary {
+  padding: 12px 28px; border-radius: 8px; cursor: pointer; border: none;
+  background: linear-gradient(135deg, #5DADE2, #1B4F72);
+  color: #fff; font-weight: 700; font-size: 14px; font-family: inherit;
+}
+.btn-secondary {
+  padding: 10px 18px; border-radius: 8px; cursor: pointer;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+  color: #AED6F1; font-size: 13px; font-family: inherit;
+}
+.btn-add {
+  width: 100%; padding: 11px; border-radius: 8px; cursor: pointer;
+  background: rgba(93,173,226,0.06); border: 1px dashed rgba(93,173,226,0.35);
+  color: #5DADE2; font-size: 13px; font-family: inherit; margin-bottom: 14px;
+}
+.btn-launch {
+  padding: 14px 40px; border-radius: 10px; cursor: pointer; border: none;
+  background: linear-gradient(135deg, #C778DD, #6A0DAD);
+  color: #fff; font-weight: 800; font-size: 16px; font-family: inherit;
+  box-shadow: 0 4px 24px rgba(199,120,221,0.35);
+}
+.btns { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+/* 구성 흐름 표시 */
+.flow-bar {
+  display: flex; align-items: center; gap: 0;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; overflow-x: auto;
+}
+.flow-item { display: flex; align-items: center; gap: 0; white-space: nowrap; }
+.flow-chip {
+  padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.flow-arrow { color: rgba(255,255,255,0.2); font-size: 14px; padding: 0 8px; }
+
+/* 미리보기 */
+.preview-box {
+  background: rgba(0,0,0,0.3); border: 1px solid rgba(255,215,0,0.15);
+  border-radius: 8px; padding: 14px; font-size: 12px; color: rgba(255,255,255,0.5);
+  font-family: monospace; white-space: pre-wrap; max-height: 200px; overflow-y: auto;
+}
+.notice {
+  background: rgba(93,173,226,0.07); border: 1px solid rgba(93,173,226,0.18);
+  border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #AED6F1;
+  line-height: 1.8; margin-top: 16px;
+}
+.notice b { color: #5DADE2; }
+
+/* 검증 알림 */
+.validation-msg {
+  background: rgba(255,100,100,0.1); border: 1px solid rgba(255,100,100,0.3);
+  border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #ff9090;
+  margin-bottom: 12px; display: none;
+}
+
+/* AI 생성 버튼 */
+.btn-ai {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none;
+  background: linear-gradient(135deg, #C778DD, #5DADE2);
+  color: #fff; font-weight: 700; font-size: 13px; font-family: inherit;
+  box-shadow: 0 2px 16px rgba(199,120,221,0.3);
+  transition: all 0.2s; white-space: nowrap;
+}
+.btn-ai:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(199,120,221,0.45); }
+.btn-ai:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.btn-ai-small {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 6px; cursor: pointer; border: none;
+  background: linear-gradient(135deg, rgba(199,120,221,0.25), rgba(93,173,226,0.25));
+  border: 1px solid rgba(199,120,221,0.4);
+  color: #C778DD; font-size: 11px; font-family: inherit; font-weight: 600;
+  transition: all 0.2s;
+}
+.btn-ai-small:hover { background: linear-gradient(135deg, rgba(199,120,221,0.4), rgba(93,173,226,0.4)); }
+.btn-ai-small:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* AI 생성 결과 박스 */
+.ai-result-box {
+  background: rgba(199,120,221,0.06); border: 1px solid rgba(199,120,221,0.2);
+  border-radius: 8px; padding: 12px 14px; margin-top: 8px;
+  font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.7;
+  display: none;
+}
+.ai-result-box.visible { display: block; }
+.ai-result-label {
+  font-size: 10px; color: #C778DD; letter-spacing: 2px; font-weight: 700;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+
+/* API 키 설정 바 */
+.api-key-bar {
+  background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.api-key-bar input {
+  flex: 1; min-width: 200px; padding: 8px 12px; border-radius: 6px;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,215,0,0.25);
+  color: #fff; font-size: 12px; font-family: monospace; outline: none;
+}
+.api-key-bar input:focus { border-color: #FFD700; }
+.api-key-status {
+  font-size: 11px; padding: 4px 10px; border-radius: 10px; white-space: nowrap;
+}
+.api-key-status.ok  { background: rgba(105,240,174,0.15); color: #69f0ae; border: 1px solid rgba(105,240,174,0.3); }
+.api-key-status.no  { background: rgba(255,180,0,0.12); color: #FFD700; border: 1px solid rgba(255,180,0,0.3); }
+
+/* 로딩 스피너 */
+.spinner {
+  width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3);
+  border-top: 2px solid #fff; border-radius: 50%;
+  animation: spin 0.8s linear infinite; display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 대본 미리보기 */
+.script-box {
+  background: rgba(0,0,0,0.4); border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 10px; padding: 16px; font-size: 12px; color: rgba(255,255,255,0.65);
+  font-family: 'Courier New', monospace; white-space: pre-wrap;
+  line-height: 1.8; max-height: 400px; overflow-y: auto;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 헤더 -->
+  <div class="header">
+    <div class="logo">🎭</div>
+    <div>
+      <div class="header-title">뮤지컬메이커</div>
+      <div class="header-sub">EAIM 뮤지컬 제작 플랫폼 · Musical Maker</div>
+    </div>
+  </div>
+
+  <!-- Claude API 키 설정 바 -->
+  <div class="api-key-bar">
+    <span style="font-size:12px;color:#FFD700;white-space:nowrap">🤖 Claude API 키</span>
+    <input type="password" id="claude-api-key" placeholder="sk-ant-..." autocomplete="off"
+      oninput="updateApiKeyStatus()">
+    <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:rgba(255,255,255,0.5)">
+      <input type="checkbox" id="save-claude-key" style="accentColor:#FFD700">저장
+    </label>
+    <span class="api-key-status no" id="api-key-status">키 없음 — AI 생성 비활성</span>
+    <a href="https://console.anthropic.com" target="_blank"
+      style="font-size:10px;color:#5DADE2;text-decoration:none;white-space:nowrap">키 발급 →</a>
+  </div>
+
+  <!-- 탭 -->
+  <div class="tabs">
+    <div class="tab active"          onclick="showTab('basic')">① 기본 정보</div>
+    <div class="tab required-tab"    onclick="showTab('opening')" id="tab-btn-opening">② 오프닝 코러스 ✦</div>
+    <div class="tab"                 onclick="showTab('scenes')">③ 장면 구성</div>
+    <div class="tab required-tab"    onclick="showTab('curtain')" id="tab-btn-curtain">④ 커튼콜 ✦</div>
+    <div class="tab"                 onclick="showTab('credits')">⑤ 크레딧</div>
+    <div class="tab"                 onclick="showTab('launch')">⑥ 시작</div>
+  </div>
+
+  <!-- ① 기본 정보 -->
+  <div id="tab-basic">
+    <div class="section">
+      <div class="section-title">🎭 작품 기본 정보</div>
+      <div class="row2">
+        <div class="field">
+          <label>뮤지컬 제목<span class="req">*</span></label>
+          <input type="text" id="musical-title" class="required-field" placeholder="예: 봄날의 이야기">
+        </div>
+        <div class="field">
+          <label>학교 / 단체명</label>
+          <input type="text" id="school-name" placeholder="예: 자인중학교 3학년 1반">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>공연 일시</label>
+          <input type="text" id="perf-date" placeholder="예: 2025년 12월 15일">
+        </div>
+        <div class="field">
+          <label>공연 장소</label>
+          <input type="text" id="perf-place" placeholder="예: 학교 강당">
+        </div>
+      </div>
+    </div>
+    <div class="btns">
+      <button class="btn-primary" onclick="showTab('opening')">다음 → 오프닝 코러스</button>
+      <button class="btn-secondary" onclick="loadSample()">📋 샘플 불러오기</button>
+    </div>
+  </div>
+
+  <!-- ② 오프닝 코러스 (필수) -->
+  <div id="tab-opening" style="display:none">
+    <div class="special-card opening">
+      <div class="special-title">
+        🌅 오프닝 코러스
+        <span class="required-badge">필수</span>
+        <button class="btn-ai" id="btn-ai-opening" onclick="aiGenOpening()" style="margin-left:auto">
+          ✨ AI 생성
+        </button>
+      </div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:16px;line-height:1.7">
+        뮤지컬의 첫 번째 넘버입니다. 전체 출연진이 등장해 작품의 주제와 분위기를 선언하는 장면으로,
+        관객에게 세계관을 소개합니다.
+      </p>
+
+      <!-- AI 상황 설명 입력 -->
+      <div class="field">
+        <label>📝 오프닝 상황 설명 <span style="color:rgba(255,255,255,0.3);font-size:10px">(AI 생성 시 참고)</span></label>
+        <textarea id="opening-situation" rows="2"
+          placeholder="예: 봄날 학교 교정에서 전교생이 새 학기를 맞이하는 장면. 설렘과 희망이 넘치는 분위기."></textarea>
+      </div>
+
+      <!-- AI 생성 결과 -->
+      <div class="ai-result-box" id="ai-result-opening">
+        <div class="ai-result-label">✨ AI 생성 결과</div>
+        <div id="ai-result-opening-text"></div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>오프닝 넘버 제목<span class="req">*</span></label>
+          <input type="text" id="opening-song" class="required-field" placeholder="예: 우리들의 무대">
+        </div>
+        <div class="field">
+          <label>오프닝 감정</label>
+          <select id="opening-emotion">
+            <option>설렘</option><option>희망</option><option>기쁨</option>
+            <option>긴장</option><option>신비</option><option>웅장함</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>🖼 배경 이미지 프롬프트</label>
+        <textarea id="opening-prompt" rows="2" placeholder="A grand theatrical stage with spotlights..."></textarea>
+      </div>
+      <div class="field">
+        <label>🎵 수노(Suno) 프롬프트</label>
+        <textarea id="opening-suno" rows="2" placeholder="upbeat Korean musical theater, ensemble chorus..."></textarea>
+      </div>
+      <div class="field">
+        <label>👥 등장인물</label>
+        <input type="text" id="opening-chars" placeholder="전체 출연진 (앙상블)">
+      </div>
+      <div class="field">
+        <label>🎵 오프닝 가사<span class="req">*</span></label>
+        <textarea id="opening-lyrics" class="required-field" rows="5"
+          placeholder="막이 오르면 빛이 쏟아져&#10;우리가 만든 이 이야기 속으로&#10;꿈과 노래로 가득한 세상&#10;지금 이 순간을 함께해요"></textarea>
+      </div>
+      <div class="field">
+        <label>🎺 음악 분위기</label>
+        <input type="text" id="opening-mood" placeholder="힘차고 웅장한 앙상블, 전체 합창">
+      </div>
+    </div>
+    <div id="val-opening" class="validation-msg"></div>
+    <div class="btns">
+      <button class="btn-secondary" onclick="showTab('basic')">← 이전</button>
+      <button class="btn-primary"   onclick="validateAndNext('opening','scenes')">다음 → 장면 구성</button>
+    </div>
+  </div>
+
+  <!-- ③ 장면 구성 -->
+  <div id="tab-scenes" style="display:none">
+    <!-- 구성 흐름 미리보기 -->
+    <div class="flow-bar" id="flow-bar">
+      <div class="flow-item">
+        <span class="flow-chip" style="background:rgba(255,215,0,0.15);color:#FFD700;border:1px solid rgba(255,215,0,0.3)">🌅 오프닝</span>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-item" id="flow-scenes-preview">
+        <span class="flow-chip" style="background:rgba(93,173,226,0.1);color:#5DADE2;border:1px solid rgba(93,173,226,0.2)">장면 추가 →</span>
+      </div>
+      <span class="flow-arrow">→</span>
+      <div class="flow-item">
+        <span class="flow-chip" style="background:rgba(199,120,221,0.15);color:#C778DD;border:1px solid rgba(199,120,221,0.3)">🎭 커튼콜</span>
+      </div>
+    </div>
+
+    <div id="scenes-list"></div>
+    <button class="btn-add" onclick="addScene()">+ 장면 추가</button>
+    <div class="btns">
+      <button class="btn-secondary" onclick="showTab('opening')">← 이전</button>
+      <button class="btn-primary"   onclick="showTab('curtain')">다음 → 커튼콜</button>
+    </div>
+  </div>
+
+  <!-- ④ 커튼콜 (필수) -->
+  <div id="tab-curtain" style="display:none">
+    <div class="special-card curtain">
+      <div class="special-title">
+        🎭 커튼콜
+        <span class="required-badge">필수</span>
+        <button class="btn-ai" id="btn-ai-curtain" onclick="aiGenCurtain()" style="margin-left:auto">
+          ✨ AI 생성
+        </button>
+      </div>
+      <p style="font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:16px;line-height:1.7">
+        공연의 마지막 장면입니다. 전체 출연진이 인사하며 작품을 마무리하는 감동의 순간으로,
+        오프닝 넘버의 Reprise를 부르거나 새 곡으로 마무리합니다.
+      </p>
+
+      <!-- AI 상황 설명 -->
+      <div class="field">
+        <label>📝 커튼콜 상황 설명 <span style="color:rgba(255,255,255,0.3);font-size:10px">(AI 생성 시 참고)</span></label>
+        <textarea id="curtain-situation" rows="2"
+          placeholder="예: 졸업식 날 전체 출연진이 무대에 서서 지난 시간을 돌아보며 감동의 마무리를 장식하는 장면."></textarea>
+      </div>
+
+      <!-- AI 생성 결과 -->
+      <div class="ai-result-box" id="ai-result-curtain">
+        <div class="ai-result-label">✨ AI 생성 결과</div>
+        <div id="ai-result-curtain-text"></div>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label>커튼콜 넘버 제목<span class="req">*</span></label>
+          <input type="text" id="curtain-song" class="required-field"
+            placeholder="예: 우리가 써온 이야기 (Reprise)">
+        </div>
+        <div class="field">
+          <label>커튼콜 감정</label>
+          <select id="curtain-emotion">
+            <option>감동</option><option>성취</option><option>기쁨</option>
+            <option>희망</option><option>설렘</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>🖼 배경 이미지 프롬프트</label>
+        <textarea id="curtain-prompt" rows="2" placeholder="A grand finale on stage, all cast members in spotlight..."></textarea>
+      </div>
+      <div class="field">
+        <label>🎵 수노(Suno) 프롬프트</label>
+        <textarea id="curtain-suno" rows="2" placeholder="grand finale Korean musical theater, emotional reprise..."></textarea>
+      </div>
+      <div class="field">
+        <label>🎵 커튼콜 가사<span class="req">*</span></label>
+        <textarea id="curtain-lyrics" class="required-field" rows="5"
+          placeholder="끝나지 않는 이야기가 있어&#10;우리가 함께 써 내려간 그 페이지&#10;웃고 울며 걸어온 이 길 위에서&#10;우린 서로에게 빛이 되었어"></textarea>
+      </div>
+      <div class="field">
+        <label>🎺 음악 분위기</label>
+        <input type="text" id="curtain-mood" placeholder="장엄하고 웅장한 피날레, 전체 합창">
+      </div>
+    </div>
+    <div id="val-curtain" class="validation-msg"></div>
+    <div class="btns">
+      <button class="btn-secondary" onclick="showTab('scenes')">← 이전</button>
+      <button class="btn-primary"   onclick="validateAndNext('curtain','credits')">다음 → 크레딧</button>
+    </div>
+  </div>
+
+  <!-- ⑤ 크레딧 -->
+  <div id="tab-credits" style="display:none">
+    <div class="section">
+      <div class="section-title">
+        🎬 제작진 크레딧
+        <span class="optional-badge">선택</span>
+      </div>
+      <div id="credits-list"></div>
+      <button class="btn-add" onclick="addCredit()">+ 크레딧 항목 추가</button>
+    </div>
+    <div class="btns">
+      <button class="btn-secondary" onclick="showTab('curtain')">← 이전</button>
+      <button class="btn-primary"   onclick="showTab('launch')">다음 → 시작</button>
+    </div>
+  </div>
+
+  <!-- ⑥ 시작 -->
+  <div id="tab-launch" style="display:none">
+    <div class="section">
+      <div class="section-title">📋 대본 + Suno 프롬프트 미리보기</div>
+      <div id="preview-output" class="script-box">...</div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn-secondary" onclick="downloadScript()" style="font-size:12px">
+          📥 대본 텍스트 다운로드
+        </button>
+        <button class="btn-secondary" onclick="downloadSunoPrompts()" style="font-size:12px">
+          🎵 Suno 프롬프트만 다운로드
+        </button>
+      </div>
+    </div>
+    <div class="btns">
+      <button class="btn-secondary" onclick="showTab('credits')">← 이전</button>
+      <button class="btn-launch"    onclick="launchSlideshow()">🎬 슬라이드쇼 열기</button>
+    </div>
+    <div class="notice">
+      <b>📌 구성 순서:</b> 오프닝 코러스 → 장면1 → 장면2 … → 커튼콜 → 크레딧 롤<br>
+      이 파일과 slideshow.html을 <b>같은 폴더</b>에 두면 자동 연결됩니다.
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+<script>
+// ══════════════════════════════════════════════════════════════
+// 탭 전환
+// ══════════════════════════════════════════════════════════════
+const TAB_NAMES = ['basic','opening','scenes','curtain','credits','launch'];
+
+function showTab(name) {
+  TAB_NAMES.forEach(t => {
+    document.getElementById('tab-' + t).style.display = t === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', TAB_NAMES[i] === name);
+  });
+  if (name === 'launch') buildPreview();
+  if (name === 'scenes') updateFlowBar();
+}
+
+// ══════════════════════════════════════════════════════════════
+// 필수 입력 검증
+// ══════════════════════════════════════════════════════════════
+function validateAndNext(section, next) {
+  const rules = {
+    opening: [
+      { id: 'opening-song',   label: '오프닝 넘버 제목' },
+      { id: 'opening-lyrics', label: '오프닝 가사' },
+    ],
+    curtain: [
+      { id: 'curtain-song',   label: '커튼콜 넘버 제목' },
+      { id: 'curtain-lyrics', label: '커튼콜 가사' },
+    ],
+  };
+  const missing = (rules[section] || []).filter(r =>
+    !document.getElementById(r.id).value.trim()
+  );
+  const msgEl = document.getElementById('val-' + section);
+  if (missing.length) {
+    msgEl.style.display = 'block';
+    msgEl.textContent = '⚠ 필수 항목을 입력해주세요: ' + missing.map(r => r.label).join(', ');
+    missing.forEach(r => {
+      const el = document.getElementById(r.id);
+      el.style.borderColor = '#ff6b6b';
+      el.focus();
+    });
+    return;
+  }
+  msgEl.style.display = 'none';
+  // 탭 완료 표시
+  const btnId = 'tab-btn-' + section;
+  const btn = document.getElementById(btnId);
+  if (btn) btn.classList.add('done');
+  showTab(next);
+}
+
+// ══════════════════════════════════════════════════════════════
+// 크레딧
+// ══════════════════════════════════════════════════════════════
+let creditCount = 0;
+const CREDIT_ROLES = ['감독','연출','작곡','작사','안무','무대감독','조명','음향','출연','제작','기획','주최','후원'];
+
+function addCredit(role='', name='') {
+  const id = ++creditCount;
+  const div = document.createElement('div');
+  div.id = 'credit-' + id;
+  div.style.cssText = 'display:flex;gap:10px;margin-bottom:10px;align-items:center';
+  div.innerHTML = `
+    <select style="width:110px;flex-shrink:0;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;padding:8px;border-radius:6px;font-family:inherit">
+      ${CREDIT_ROLES.map(r => `<option ${r===role?'selected':''}>${r}</option>`).join('')}
+    </select>
+    <input type="text" placeholder="이름 / 내용" value="${name}" style="flex:1">
+    <button style="background:rgba(255,80,80,0.12);border:1px solid rgba(255,80,80,0.25);color:#ff8080;border-radius:6px;padding:6px 10px;cursor:pointer;font-size:11px" onclick="this.parentElement.remove()">✕</button>
+  `;
+  document.getElementById('credits-list').appendChild(div);
+}
+['감독','작곡','작사','안무','출연'].forEach(r => addCredit(r, ''));
+
+// ══════════════════════════════════════════════════════════════
+// 장면 관리
+// ══════════════════════════════════════════════════════════════
+let sceneCount = 0;
+const EMOTIONS = ['설렘','희망','고요함','집중','긴장','용기','성취','감동','슬픔','분노','기쁨','신비','웅장함'];
+
+function addScene(data={}) {
+  const id = ++sceneCount;
+  const div = document.createElement('div');
+  div.id = 'scene-' + id;
+  div.className = 'scene-card';
+  div.innerHTML = `
+    <div class="scene-header" onclick="toggleScene(${id})">
+      <div class="scene-num">${id}</div>
+      <span class="scene-preview-title">${data.title || '장면 제목을 입력하세요'}</span>
+      <span class="scene-toggle" id="toggle-icon-${id}">▼</span>
+      <button class="btn-ai-small" onclick="event.stopPropagation();aiGenScene(${id})" id="btn-ai-scene-${id}">✨ AI</button>
+      <button class="del-btn" onclick="event.stopPropagation();removeScene(${id})">✕ 삭제</button>
+    </div>
+    <div class="scene-body" id="scene-body-${id}">
+      <!-- AI 상황 입력 -->
+      <div class="field">
+        <label>📝 장면 상황 설명 <span style="color:rgba(255,255,255,0.3);font-size:10px">(AI 생성 참고용)</span></label>
+        <textarea class="s-situation" rows="2" placeholder="예: 방과 후 도서관에서 혼자 공부하던 민준이 서아를 만나 처음으로 대화를 나누는 장면."></textarea>
+      </div>
+      <!-- AI 결과 -->
+      <div class="ai-result-box" id="ai-result-scene-${id}">
+        <div class="ai-result-label">✨ AI 생성 결과</div>
+        <div id="ai-result-scene-text-${id}"></div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>장면 제목</label>
+          <input type="text" class="s-title" placeholder="예: 봄날의 학교 교정" value="${data.title||''}"
+            oninput="updateScenePreview(${id},this.value)">
+        </div>
+        <div class="field">
+          <label>감정</label>
+          <select class="s-emotion">
+            ${EMOTIONS.map(e=>`<option ${e===(data.emotion||'설렘')?'selected':''}>${e}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>🖼 배경 이미지 프롬프트 (영어)</label>
+        <textarea class="s-prompt" rows="2" placeholder="A bright spring schoolyard with cherry blossoms, watercolor style">${data.imagePrompt||''}</textarea>
+      </div>
+      <div class="field">
+        <label>🎵 수노(Suno) 프롬프트</label>
+        <textarea class="s-suno" rows="2" placeholder="upbeat Korean musical theater, piano melody...">${data.sunoPrompt||''}</textarea>
+      </div>
+      <div class="field">
+        <label>📎 배경 이미지 URL (직접 입력 시 AI 생성 대신 사용)</label>
+        <input type="text" class="s-url" placeholder="https://..." value="${data.imageUrl||''}">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>👤 등장인물</label>
+          <input type="text" class="s-chars" placeholder="민준(주인공), 서아(친구)" value="${data.characters||''}">
+        </div>
+        <div class="field">
+          <label>🎼 넘버 제목</label>
+          <input type="text" class="s-song" placeholder="오늘이 시작이야" value="${data.songTitle||''}">
+        </div>
+      </div>
+      <div class="field">
+        <label>🎵 가사</label>
+        <textarea class="s-lyrics" rows="4" placeholder="바람이 불어오는 이 교정 위에&#10;우리의 꿈이 피어나고 있어">${data.lyrics||''}</textarea>
+      </div>
+      <div class="field">
+        <label>🎺 음악 분위기</label>
+        <input type="text" class="s-mood" placeholder="밝고 경쾌한 피아노 멜로디" value="${data.musicMood||''}">
+      </div>
+    </div>
+  `;
+  document.getElementById('scenes-list').appendChild(div);
+  updateFlowBar();
+}
+
+function toggleScene(id) {
+  const body = document.getElementById('scene-body-' + id);
+  const icon = document.getElementById('toggle-icon-' + id);
+  const collapsed = body.classList.toggle('collapsed');
+  icon.textContent = collapsed ? '▶' : '▼';
+}
+
+function updateScenePreview(id, val) {
+  const el = document.querySelector(`#scene-${id} .scene-preview-title`);
+  if (el) el.textContent = val || '장면 제목을 입력하세요';
+  updateFlowBar();
+}
+
+function removeScene(id) {
+  const el = document.getElementById('scene-' + id);
+  if (el) { el.remove(); updateFlowBar(); }
+}
+
+function updateFlowBar() {
+  const cards = document.querySelectorAll('.scene-card');
+  const preview = document.getElementById('flow-scenes-preview');
+  if (!preview) return;
+  if (!cards.length) {
+    preview.innerHTML = `<span class="flow-chip" style="background:rgba(93,173,226,0.08);color:rgba(93,173,226,0.5);border:1px dashed rgba(93,173,226,0.2)">장면 없음</span>`;
+    return;
+  }
+  preview.innerHTML = Array.from(cards).map((c, i) => {
+    const title = c.querySelector('.s-title')?.value || `장면${i+1}`;
+    return `<span class="flow-chip" style="background:rgba(93,173,226,0.1);color:#5DADE2;border:1px solid rgba(93,173,226,0.2);margin-right:4px">${i+1}. ${title.slice(0,8)}</span>`;
+  }).join('<span class="flow-arrow" style="font-size:12px">→</span>');
+}
+
+// ══════════════════════════════════════════════════════════════
+// 데이터 수집
+// ══════════════════════════════════════════════════════════════
+function collectData() {
+  const title  = document.getElementById('musical-title').value.trim() || '뮤지컬 스토리보드';
+  const school = document.getElementById('school-name').value.trim();
+  const date   = document.getElementById('perf-date').value.trim();
+  const place  = document.getElementById('perf-place').value.trim();
+
+  // 오프닝 코러스 → scenes[0]으로 삽입
+  const opening = {
+    type:        'opening',
+    title:       '오프닝 코러스',
+    songTitle:   document.getElementById('opening-song').value.trim(),
+    imagePrompt: document.getElementById('opening-prompt').value.trim(),
+    characters:  document.getElementById('opening-chars').value.trim(),
+    lyrics:      document.getElementById('opening-lyrics').value.trim(),
+    emotion:     document.getElementById('opening-emotion').value,
+    musicMood:   document.getElementById('opening-mood').value.trim(),
+  };
+
+  // 일반 장면
+  const midScenes = [];
+  document.querySelectorAll('.scene-card').forEach(card => {
+    midScenes.push({
+      title:       card.querySelector('.s-title').value.trim(),
+      imagePrompt: card.querySelector('.s-prompt').value.trim(),
+      sunoPrompt:  card.querySelector('.s-suno').value.trim(),
+      imageUrl:    card.querySelector('.s-url').value.trim(),
+      characters:  card.querySelector('.s-chars').value.trim(),
+      songTitle:   card.querySelector('.s-song').value.trim(),
+      lyrics:      card.querySelector('.s-lyrics').value.trim(),
+      emotion:     card.querySelector('.s-emotion').value,
+      musicMood:   card.querySelector('.s-mood').value.trim(),
+    });
+  });
+
+  // 커튼콜
+  const curtainSongTitle = document.getElementById('curtain-song').value.trim();
+  const curtainLyrics    = document.getElementById('curtain-lyrics').value.trim();
+  const curtainEmotion   = document.getElementById('curtain-emotion').value;
+  const curtainPrompt    = document.getElementById('curtain-prompt').value.trim();
+  const curtainMood      = document.getElementById('curtain-mood').value.trim();
+  const curtainSuno      = document.getElementById('curtain-suno').value.trim();
+
+  // 크레딧
+  const credits = [];
+  document.querySelectorAll('#credits-list > div').forEach(row => {
+    const role = row.querySelector('select').value.trim();
+    const name = row.querySelector('input').value.trim();
+    if (name) credits.push({ role, name });
+  });
+
+  // 전체 scenes = 오프닝 + 중간장면들 (커튼콜은 별도 필드)
+  const scenes = [opening, ...midScenes];
+
+  return {
+    title, school, date, place,
+    curtainSongTitle, curtainLyrics, curtainEmotion, curtainPrompt, curtainMood, curtainSuno,
+    credits, scenes,
+  };
+}
+
+// ══════════════════════════════════════════════════════════════
+// 미리보기 (대본 + Suno 프롬프트 포함)
+// ══════════════════════════════════════════════════════════════
+function buildPreview() {
+  const d = collectData();
+
+  // ── 대본 텍스트 생성 ──
+  let script = `${'═'.repeat(50)}\n`;
+  script += `  ${d.title.toUpperCase()}\n`;
+  if (d.school) script += `  ${d.school}\n`;
+  script += `${'═'.repeat(50)}\n\n`;
+
+  // 오프닝
+  const op = d.scenes[0];
+  script += `【 오프닝 코러스 】\n`;
+  script += `${'─'.repeat(40)}\n`;
+  if (op?.songTitle) script += `♪ ${op.songTitle}\n\n`;
+  if (op?.lyrics)    script += op.lyrics + '\n\n';
+  if (op?.sunoPrompt) script += `[Suno] ${op.sunoPrompt}\n`;
+  script += '\n';
+
+  // 중간 장면들
+  d.scenes.slice(1).forEach((s, i) => {
+    script += `【 장면 ${i+1}: ${s.title || '(제목없음)'} 】\n`;
+    script += `${'─'.repeat(40)}\n`;
+    if (s.characters) script += `등장인물: ${s.characters}\n`;
+    if (s.songTitle)  script += `♪ ${s.songTitle}\n\n`;
+    if (s.lyrics)     script += s.lyrics + '\n\n';
+    if (s.sunoPrompt) script += `[Suno] ${s.sunoPrompt}\n`;
+    script += '\n';
+  });
+
+  // 커튼콜
+  script += `【 커튼콜 】\n`;
+  script += `${'─'.repeat(40)}\n`;
+  if (d.curtainSongTitle) script += `♪ ${d.curtainSongTitle}\n\n`;
+  if (d.curtainLyrics)    script += d.curtainLyrics + '\n\n';
+  if (d.curtainSuno)      script += `[Suno] ${d.curtainSuno}\n`;
+  script += `\n${'═'.repeat(50)}\n`;
+  if (d.credits.length) {
+    script += '\n【 제작진 】\n';
+    d.credits.forEach(c => { script += `  ${c.role}: ${c.name}\n`; });
+  }
+
+  document.getElementById('preview-output').textContent = script;
+}
+
+// ══════════════════════════════════════════════════════════════
+// 슬라이드쇼 시작
+// ══════════════════════════════════════════════════════════════
+function launchSlideshow() {
+  const data = collectData();
+  if (!data.scenes[0]?.songTitle) {
+    alert('⚠ 오프닝 코러스 넘버 제목을 입력해주세요!');
+    showTab('opening'); return;
+  }
+  if (!data.curtainSongTitle) {
+    alert('⚠ 커튼콜 넘버 제목을 입력해주세요!');
+    showTab('curtain'); return;
+  }
+  localStorage.setItem('eaim_musical_data', JSON.stringify(data));
+  window.open('slideshow.html', '_blank');
+}
+
+// ══════════════════════════════════════════════════════════════
+// 샘플 데이터
+// ══════════════════════════════════════════════════════════════
+function loadSample() {
+  document.getElementById('musical-title').value = '봄날의 이야기';
+  document.getElementById('school-name').value   = '자인중학교 3학년 1반';
+  // 오프닝
+  document.getElementById('opening-song').value    = '우리들의 무대';
+  document.getElementById('opening-lyrics').value  = '막이 오르면 빛이 쏟아져\n우리가 만든 이 이야기 속으로\n꿈과 노래로 가득한 세상\n지금 이 순간을 함께해요';
+  document.getElementById('opening-prompt').value  = 'Grand theatrical opening, all students on stage in colorful costumes, dramatic spotlights, cinematic';
+  document.getElementById('opening-chars').value   = '전체 출연진 (앙상블)';
+  document.getElementById('opening-mood').value    = '힘차고 웅장한 전체 합창';
+  // 커튼콜
+  document.getElementById('curtain-song').value    = '우리가 써온 이야기 (Reprise)';
+  document.getElementById('curtain-lyrics').value  = '끝나지 않는 이야기가 있어\n우리가 함께 써 내려간 그 페이지\n웃고 울며 걸어온 이 길 위에서\n우린 서로에게 빛이 되었어';
+  document.getElementById('curtain-prompt').value  = 'Grand finale, cast bowing on stage, confetti, standing ovation, golden light';
+  document.getElementById('curtain-mood').value    = '장엄하고 감동적인 피날레';
+  // 크레딧
+  document.getElementById('credits-list').innerHTML = '';
+  creditCount = 0;
+  [['감독','박성애'],['작곡','김하늘'],['작사','이서준'],['출연','민준 역 — 김도현 / 서아 역 — 이나연']].forEach(([r,n]) => addCredit(r, n));
+  // 장면
+  document.getElementById('scenes-list').innerHTML = '';
+  sceneCount = 0;
+  [
+    { title:'봄날의 학교 교정', imagePrompt:'A bright spring schoolyard with cherry blossoms, watercolor style', characters:'민준(주인공), 서아(친구)', songTitle:'오늘이 시작이야', lyrics:'바람이 불어오는 이 교정 위에\n우리의 꿈이 피어나고 있어', emotion:'설렘', musicMood:'밝고 경쾌한 피아노' },
+    { title:'방과 후 도서관',   imagePrompt:'Cozy school library, warm lamplight, Ghibli art style', characters:'민준(혼자)', songTitle:'혼자만의 시간', lyrics:'아무도 없는 이 공간에서\n나는 나를 찾아가고 있어', emotion:'고요함', musicMood:'잔잔한 현악 앙상블' },
+    { title:'졸업식 운동장',    imagePrompt:'Outdoor graduation ceremony, caps thrown in the air, confetti, vibrant', characters:'민준, 서아, 전교생', songTitle:'우리가 써온 이야기', lyrics:'이제 우리 날아오를 시간\n함께 써온 이야기 끝나지 않아', emotion:'성취', musicMood:'장엄한 피날레' },
+  ].forEach(s => addScene(s));
+  showTab('opening');
+  alert('샘플 데이터 완료! 탭을 순서대로 확인해보세요 🎭');
+}
+
+// 기본 1개 장면
+addScene();
+
+// ══════════════════════════════════════════════════════════════
+// Claude API 키 관리
+// ══════════════════════════════════════════════════════════════
+let CLAUDE_KEY = localStorage.getItem('eaim_claude_key') || '';
+
+function updateApiKeyStatus() {
+  const key = document.getElementById('claude-api-key').value.trim();
+  const status = document.getElementById('api-key-status');
+  if (key) {
+    CLAUDE_KEY = key;
+    if (document.getElementById('save-claude-key').checked) {
+      localStorage.setItem('eaim_claude_key', key);
+    }
+    status.className = 'api-key-status ok';
+    status.textContent = '✓ AI 생성 활성';
+  } else {
+    CLAUDE_KEY = '';
+    status.className = 'api-key-status no';
+    status.textContent = '키 없음 — AI 생성 비활성';
+  }
+}
+
+// 저장된 키 불러오기
+window.addEventListener('load', () => {
+  if (CLAUDE_KEY) {
+    document.getElementById('claude-api-key').value = CLAUDE_KEY;
+    updateApiKeyStatus();
+  }
+});
+
+// ══════════════════════════════════════════════════════════════
+// Claude API 공통 호출
+// ══════════════════════════════════════════════════════════════
+async function callClaude(prompt) {
+  if (!CLAUDE_KEY) { alert('Claude API 키를 먼저 입력해주세요!'); return null; }
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': CLAUDE_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1200,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err?.error?.message || `API 오류 ${res.status}`);
+  }
+  const data = await res.json();
+  return data.content?.[0]?.text || '';
+}
+
+// JSON 파싱 (마크다운 코드블록 제거)
+function parseJSON(text) {
+  const clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+  return JSON.parse(clean);
+}
+
+// 버튼 로딩 상태
+function setBtnLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? `<span class="spinner"></span> 생성 중...`
+    : '✨ AI 생성';
+}
+
+// ══════════════════════════════════════════════════════════════
+// 오프닝 코러스 AI 생성
+// ══════════════════════════════════════════════════════════════
+async function aiGenOpening() {
+  const title    = document.getElementById('musical-title').value || '뮤지컬';
+  const situation = document.getElementById('opening-situation').value;
+  const emotion  = document.getElementById('opening-emotion').value;
+
+  setBtnLoading('btn-ai-opening', true);
+  try {
+    const prompt = `당신은 뮤지컬 작가입니다. 아래 정보를 바탕으로 오프닝 코러스 내용을 JSON으로 생성하세요.
+
+뮤지컬 제목: ${title}
+오프닝 상황: ${situation || '뮤지컬의 시작, 전체 출연진 등장'}
+감정: ${emotion}
+
+다음 JSON 형식으로만 응답하세요 (다른 텍스트 없이):
+{
+  "songTitle": "넘버 제목 (한국어, 4~8글자)",
+  "lyrics": "가사 4~6줄 (줄바꿈으로 구분, 뮤지컬 스타일, 운율 있게)",
+  "imagePrompt": "배경 이미지 영어 프롬프트 (theatrical opening scene, cinematic style, 구체적 묘사)",
+  "sunoPrompt": "Suno 음악 생성 영어 프롬프트 (장르, 악기, 분위기, BPM 포함, 50단어 이내)",
+  "musicMood": "음악 분위기 설명 (한국어, 20자 이내)"
+}`;
+
+    const result = parseJSON(await callClaude(prompt));
+
+    // 필드 자동 입력
+    document.getElementById('opening-song').value    = result.songTitle   || '';
+    document.getElementById('opening-lyrics').value  = result.lyrics      || '';
+    document.getElementById('opening-prompt').value  = result.imagePrompt || '';
+    document.getElementById('opening-suno').value    = result.sunoPrompt  || '';
+    document.getElementById('opening-mood').value    = result.musicMood   || '';
+
+    // 결과 박스 표시
+    const box = document.getElementById('ai-result-opening');
+    const txt = document.getElementById('ai-result-opening-text');
+    box.classList.add('visible');
+    txt.innerHTML = `
+      <div style="margin-bottom:6px"><b style="color:#FFD700">♪ ${result.songTitle}</b></div>
+      <div style="margin-bottom:8px;color:rgba(255,255,255,0.6);font-size:11px">${result.lyrics?.replace(/\n/g,'<br>')}</div>
+      <div style="font-size:10px;color:#C778DD">Suno: ${result.sunoPrompt}</div>
+    `;
+    toast('✅ 오프닝 코러스 생성 완료!');
+  } catch(e) {
+    toast('⚠ ' + e.message);
+  } finally {
+    setBtnLoading('btn-ai-opening', false);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// 장면 AI 생성
+// ══════════════════════════════════════════════════════════════
+async function aiGenScene(id) {
+  const card = document.getElementById('scene-' + id);
+  if (!card) return;
+
+  const title     = document.getElementById('musical-title').value || '뮤지컬';
+  const situation = card.querySelector('.s-situation').value;
+  const emotion   = card.querySelector('.s-emotion').value;
+  const chars     = card.querySelector('.s-chars').value;
+
+  setBtnLoading('btn-ai-scene-' + id, false);
+  const btn = document.getElementById('btn-ai-scene-' + id);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; }
+
+  try {
+    const prompt = `당신은 뮤지컬 작가입니다. 아래 정보를 바탕으로 장면 내용을 JSON으로 생성하세요.
+
+뮤지컬 제목: ${title}
+장면 상황: ${situation || '뮤지컬의 한 장면'}
+감정: ${emotion}
+등장인물: ${chars || '미정'}
+
+다음 JSON 형식으로만 응답하세요:
+{
+  "sceneTitle": "장면 제목 (한국어, 10자 이내)",
+  "songTitle": "넘버 제목 (한국어, 4~8글자)",
+  "lyrics": "가사 4~6줄 (줄바꿈으로 구분, 뮤지컬 스타일, 운율 있게, 이 장면의 감정을 담아)",
+  "imagePrompt": "배경 이미지 영어 프롬프트 (장면 묘사, cinematic theatrical style, 구체적)",
+  "sunoPrompt": "Suno 음악 영어 프롬프트 (장르, 악기, 분위기, BPM, 50단어 이내)",
+  "musicMood": "음악 분위기 (한국어, 20자 이내)"
+}`;
+
+    const result = parseJSON(await callClaude(prompt));
+
+    // 필드 자동 입력
+    if (result.sceneTitle) {
+      card.querySelector('.s-title').value = result.sceneTitle;
+      updateScenePreview(id, result.sceneTitle);
+    }
+    if (result.songTitle)   card.querySelector('.s-song').value    = result.songTitle;
+    if (result.lyrics)      card.querySelector('.s-lyrics').value  = result.lyrics;
+    if (result.imagePrompt) card.querySelector('.s-prompt').value  = result.imagePrompt;
+    if (result.sunoPrompt)  card.querySelector('.s-suno').value    = result.sunoPrompt;
+    if (result.musicMood)   card.querySelector('.s-mood').value    = result.musicMood;
+
+    // 결과 박스
+    const box = document.getElementById('ai-result-scene-' + id);
+    const txt = document.getElementById('ai-result-scene-text-' + id);
+    if (box && txt) {
+      box.classList.add('visible');
+      txt.innerHTML = `
+        <div style="margin-bottom:6px"><b style="color:#5DADE2">♪ ${result.songTitle}</b>
+          <span style="font-size:10px;color:rgba(255,255,255,0.4);margin-left:8px">${result.sceneTitle}</span>
+        </div>
+        <div style="margin-bottom:8px;color:rgba(255,255,255,0.6);font-size:11px">${result.lyrics?.replace(/\n/g,'<br>')}</div>
+        <div style="font-size:10px;color:#C778DD">Suno: ${result.sunoPrompt}</div>
+      `;
+    }
+    toast(`✅ 장면 ${id} 생성 완료!`);
+  } catch(e) {
+    toast('⚠ ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '✨ AI'; }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// 커튼콜 AI 생성
+// ══════════════════════════════════════════════════════════════
+async function aiGenCurtain() {
+  const title      = document.getElementById('musical-title').value || '뮤지컬';
+  const situation  = document.getElementById('curtain-situation').value;
+  const emotion    = document.getElementById('curtain-emotion').value;
+  // 오프닝 가사 참고용
+  const openingLyrics = document.getElementById('opening-lyrics').value;
+
+  setBtnLoading('btn-ai-curtain', true);
+  try {
+    const prompt = `당신은 뮤지컬 작가입니다. 아래 정보를 바탕으로 커튼콜 내용을 JSON으로 생성하세요.
+
+뮤지컬 제목: ${title}
+커튼콜 상황: ${situation || '공연의 마무리, 전체 출연진 인사'}
+감정: ${emotion}
+오프닝 가사 (Reprise 참고용): ${openingLyrics ? openingLyrics.slice(0,100) : '없음'}
+
+커튼콜은 오프닝의 감성을 이어받아 감동적으로 마무리하세요. Reprise 형식이면 오프닝 가사를 변형해도 좋습니다.
+
+다음 JSON 형식으로만 응답하세요:
+{
+  "songTitle": "커튼콜 넘버 제목 (한국어, 'Reprise' 포함 가능)",
+  "lyrics": "가사 4~6줄 (줄바꿈으로 구분, 감동적이고 마무리하는 느낌)",
+  "imagePrompt": "배경 이미지 영어 프롬프트 (grand finale, all cast bowing, warm spotlight, confetti)",
+  "sunoPrompt": "Suno 음악 영어 프롬프트 (emotional finale, reprise style, 50단어 이내)",
+  "musicMood": "음악 분위기 (한국어, 20자 이내)"
+}`;
+
+    const result = parseJSON(await callClaude(prompt));
+
+    document.getElementById('curtain-song').value    = result.songTitle   || '';
+    document.getElementById('curtain-lyrics').value  = result.lyrics      || '';
+    document.getElementById('curtain-prompt').value  = result.imagePrompt || '';
+    document.getElementById('curtain-suno').value    = result.sunoPrompt  || '';
+    document.getElementById('curtain-mood').value    = result.musicMood   || '';
+
+    const box = document.getElementById('ai-result-curtain');
+    const txt = document.getElementById('ai-result-curtain-text');
+    box.classList.add('visible');
+    txt.innerHTML = `
+      <div style="margin-bottom:6px"><b style="color:#C778DD">♪ ${result.songTitle}</b></div>
+      <div style="margin-bottom:8px;color:rgba(255,255,255,0.6);font-size:11px">${result.lyrics?.replace(/\n/g,'<br>')}</div>
+      <div style="font-size:10px;color:#5DADE2">Suno: ${result.sunoPrompt}</div>
+    `;
+    toast('✅ 커튼콜 생성 완료!');
+  } catch(e) {
+    toast('⚠ ' + e.message);
+  } finally {
+    setBtnLoading('btn-ai-curtain', false);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// 토스트
+// ══════════════════════════════════════════════════════════════
+let toastTimer;
+function toast(msg) {
+  let el = document.getElementById('toast-msg');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'toast-msg';
+    el.style.cssText = `position:fixed;bottom:24px;right:24px;z-index:9999;
+      padding:10px 18px;border-radius:8px;font-size:13px;font-family:inherit;
+      background:rgba(105,240,174,0.9);color:#000;
+      animation:fadeUp 0.3s ease;pointer-events:none`;
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2500);
+}
+
+// ══════════════════════════════════════════════════════════════
+// 다운로드 함수
+// ══════════════════════════════════════════════════════════════
+function downloadScript() {
+  const text = document.getElementById('preview-output').textContent;
+  const d    = collectData();
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = `${d.title}_대본.txt`;
+  a.click();
+}
+
+function downloadSunoPrompts() {
+  const d = collectData();
+  let out = `=== ${d.title} — Suno 프롬프트 모음 ===\n\n`;
+
+  const op = d.scenes[0];
+  if (op?.sunoPrompt) {
+    out += `[ 오프닝: ${op.songTitle} ]\n${op.sunoPrompt}\n\n`;
+  }
+  d.scenes.slice(1).forEach((s, i) => {
+    if (s.sunoPrompt) {
+      out += `[ 장면${i+1} 넘버: ${s.songTitle} ]\n${s.sunoPrompt}\n\n`;
+    }
+  });
+  if (d.curtainSuno) {
+    out += `[ 커튼콜: ${d.curtainSongTitle} ]\n${d.curtainSuno}\n\n`;
+  }
+  out += `\n※ Suno(suno.ai) 에서 위 프롬프트를 Custom Mode에 붙여넣으세요.`;
+
+  const blob = new Blob([out], { type: 'text/plain;charset=utf-8' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = `${d.title}_Suno프롬프트.txt`;
+  a.click();
+}
+
+const style = document.createElement('style');
+style.textContent = `@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}`;
+document.head.appendChild(style);
+</script>
+</body>
+</html>

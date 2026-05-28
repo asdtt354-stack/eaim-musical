@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 슬라이드쇼 | EAIM 뮤지컬</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+  background: #0D1B2A; color: #fff;
+  width: 100vw; height: 100vh; overflow: hidden;
+}
+
+/* ── 슬라이드 공통 ── */
+#stage {
+  width: 100%; height: 100%; position: relative;
+}
+.slide {
+  position: absolute; inset: 0;
+  transition: opacity 0.8s ease;
+}
+.slide.hidden { opacity: 0; pointer-events: none; }
+.slide.visible { opacity: 1; }
+
+.bg-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; transition: opacity 1.4s ease;
+}
+.bg-overlay {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.1) 100%),
+    linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 45%);
+}
+.bg-gradient { position: absolute; inset: 0; }
+
+/* ── 상단 바 ── */
+.top-bar {
+  position: absolute; top: 0; left: 0; right: 0;
+  padding: 18px 28px;
+  display: flex; justify-content: space-between; align-items: center;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+  z-index: 10;
+}
+.scene-badge {
+  border-radius: 20px; padding: 4px 16px;
+  font-size: 11px; font-weight: 700; letter-spacing: 2px;
+}
+.eaim-label { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 3px; }
+
+/* ── 좌측 콘텐츠 ── */
+.main-content {
+  position: absolute;
+  top: 50%; left: 0;
+  transform: translateY(-50%);
+  padding: 0 36px;
+  max-width: 54%;
+  z-index: 10;
+  transition: opacity 0.7s ease 0.3s, transform 0.7s ease 0.3s;
+}
+.main-content.hidden { opacity: 0; transform: translateY(calc(-50% + 18px)); }
+.main-content.visible { opacity: 1; transform: translateY(-50%); }
+
+.scene-title {
+  font-size: clamp(20px, 3vw, 36px);
+  font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 10px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.9);
+}
+.song-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 14px; border-radius: 6px; margin-bottom: 14px;
+}
+.song-title-text {
+  font-size: clamp(13px, 1.8vw, 17px); font-weight: 700; letter-spacing: 0.5px;
+}
+.chars-label {
+  font-size: 10px; color: rgba(255,255,255,0.4);
+  letter-spacing: 2px; margin-bottom: 6px; text-transform: uppercase;
+}
+.chars-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.char-chip {
+  padding: 3px 10px; border-radius: 12px;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
+  font-size: clamp(10px, 1.2vw, 13px); color: rgba(255,255,255,0.85);
+}
+.tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag-emotion {
+  padding: 4px 12px; border-radius: 16px;
+  font-size: 12px; font-weight: 600;
+}
+.tag-mood {
+  padding: 4px 12px; border-radius: 16px;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+  font-size: 12px; color: rgba(255,255,255,0.7);
+}
+
+/* ── 우측 가사 ── */
+.lyrics-panel {
+  position: absolute; top: 50%; right: 28px;
+  transform: translateY(-50%);
+  width: 38%; max-height: 65%; overflow: hidden;
+  z-index: 10;
+  transition: opacity 1s ease 0.6s;
+}
+.lyrics-panel.hidden { opacity: 0; }
+.lyrics-panel.visible { opacity: 1; }
+.lyrics-label {
+  font-size: 10px; letter-spacing: 3px; margin-bottom: 10px;
+  text-transform: uppercase; opacity: 0.7;
+}
+.lyrics-body { position: relative; padding-left: 14px; }
+.lyrics-bar {
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px;
+}
+.lyric-line {
+  font-size: clamp(13px, 1.8vw, 18px); line-height: 1.85;
+  font-weight: 500; font-style: italic;
+  text-shadow: 0 1px 12px rgba(0,0,0,0.8);
+}
+.cursor {
+  display: inline-block; width: 2px; height: 1em;
+  vertical-align: middle; margin-left: 3px;
+  animation: blink 0.8s step-end infinite;
+}
+
+/* ── 진행 바 ── */
+.progress-bar {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: rgba(255,255,255,0.08); z-index: 20;
+}
+.progress-fill {
+  height: 100%; transition: width 0.5s ease;
+}
+
+/* ── 컨트롤 바 ── */
+#controls {
+  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(0,0,0,0.65); backdrop-filter: blur(14px);
+  border-radius: 40px; padding: 7px 16px;
+  border: 1px solid rgba(255,255,255,0.12); z-index: 100;
+}
+.ctrl-btn {
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.8); font-size: 17px; padding: 4px 8px; line-height: 1;
+}
+.ctrl-btn:disabled { opacity: 0.25; cursor: default; }
+.dot-nav { display: flex; gap: 5px; align-items: center; padding: 0 4px; }
+.dot {
+  width: 7px; height: 7px; border-radius: 4px; cursor: pointer;
+  background: rgba(255,255,255,0.28); transition: all 0.25s;
+}
+.dot.active { width: 20px; }
+#key-hint {
+  position: fixed; top: 20px; right: 20px;
+  font-size: 10px; color: rgba(255,255,255,0.2); pointer-events: none;
+}
+
+/* ── 커버 ── */
+#cover-slide {
+  background: linear-gradient(135deg, #0D1B2A 0%, #1A0A2E 55%, #0A1F0A 100%);
+  display: flex; align-items: center; justify-content: center;
+}
+.cover-orb {
+  position: absolute; border-radius: 50%; pointer-events: none;
+}
+.cover-inner { text-align: center; z-index: 1; padding: 0 48px; }
+.cover-emoji { font-size: 56px; margin-bottom: 12px; }
+.cover-eyebrow { font-size: 13px; color: #5DADE2; letter-spacing: 5px; font-weight: 700; margin-bottom: 14px; text-transform: uppercase; }
+.cover-title { font-size: clamp(26px, 5vw, 52px); font-weight: 900; color: #fff; line-height: 1.15; margin-bottom: 8px; text-shadow: 0 4px 30px rgba(93,173,226,0.3); }
+.cover-sub { font-size: 14px; color: #AED6F1; margin-bottom: 24px; opacity: 0.7; }
+.cover-count { display: inline-block; padding: 8px 22px; border-radius: 24px; background: rgba(93,173,226,0.12); border: 1px solid rgba(93,173,226,0.4); font-size: 14px; color: #AED6F1; margin-bottom: 28px; }
+.cover-hint { color: rgba(255,255,255,0.25); font-size: 12px; letter-spacing: 1px; }
+
+/* ── 엔딩 ── */
+#end-slide {
+  background: radial-gradient(ellipse at 50% 30%, #1a0a2e 0%, #0D1B2A 60%, #000 100%);
+  overflow: hidden;
+}
+.star {
+  position: absolute; border-radius: 50%;
+  animation: twinkle 2s ease-in-out infinite alternate;
+}
+/* 커튼콜 */
+#curtain-phase {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; padding: 0 60px;
+  transition: opacity 1s ease;
+}
+.curtain-label { font-size: 11px; color: #FFD700; letter-spacing: 4px; margin-bottom: 8px; text-transform: uppercase; }
+.curtain-song { font-size: clamp(16px, 2.5vw, 22px); color: #C778DD; font-weight: 700; letter-spacing: 1px; margin-bottom: 28px; font-style: italic; }
+.curtain-lyrics-wrap { text-align: center; max-width: 600px; }
+.curtain-lyric-line { font-size: clamp(16px, 2.5vw, 24px); line-height: 1.9; font-style: italic; font-weight: 500; text-shadow: 0 0 20px rgba(255,215,0,0.3); }
+/* 크레딧 */
+#credits-phase {
+  position: absolute; inset: 0; overflow: hidden;
+  transition: opacity 1.2s ease;
+}
+.credits-mask-top { position: absolute; top: 0; left: 0; right: 0; height: 120px; z-index: 2; background: linear-gradient(to bottom, #0D1B2A, transparent); }
+.credits-mask-bot { position: absolute; bottom: 0; left: 0; right: 0; height: 160px; z-index: 2; background: linear-gradient(to top, #000, transparent); }
+#credits-scroll {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  width: min(600px, 90%); top: 100%;
+}
+.credits-title { text-align: center; margin-bottom: 48px; padding-top: 20px; }
+.credits-divider { width: 60px; height: 2px; background: linear-gradient(to right, transparent, #5DADE2, transparent); margin: 14px auto; }
+.credit-row { display: flex; justify-content: center; align-items: baseline; gap: 16px; margin-bottom: 20px; padding: 0 20px; }
+.credit-role { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; min-width: 80px; text-align: right; flex-shrink: 0; }
+.credit-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.2); flex-shrink: 0; }
+.credit-name { font-size: clamp(14px, 2vw, 17px); color: #fff; font-weight: 600; line-height: 1.5; }
+.credits-footer { text-align: center; margin-top: 56px; padding-bottom: 40px; }
+#back-btn {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  z-index: 200; padding: 10px 28px; border-radius: 8px;
+  background: rgba(93,173,226,0.15); border: 1px solid rgba(93,173,226,0.5);
+  color: #5DADE2; cursor: pointer; font-size: 13px; font-weight: 600;
+  font-family: inherit; backdrop-filter: blur(8px); display: none;
+}
+
+/* ── API 키 모달 ── */
+#api-modal {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+}
+#api-modal.hidden { display: none; }
+.api-box {
+  background: linear-gradient(135deg, #13131a, #1a0a2e);
+  border: 1px solid rgba(93,173,226,0.3);
+  border-radius: 16px; padding: 32px; width: 100%; max-width: 440px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+.api-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
+.api-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 22px; line-height: 1.6; }
+.api-input {
+  width: 100%; padding: 12px 14px; border-radius: 8px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(93,173,226,0.3);
+  color: #fff; font-size: 13px; font-family: monospace; outline: none;
+  margin-bottom: 10px; letter-spacing: 1px;
+}
+.api-input:focus { border-color: #5DADE2; }
+.api-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.api-btn-ok {
+  flex: 1; padding: 11px; border-radius: 8px; cursor: pointer; border: none;
+  background: linear-gradient(135deg, #5DADE2, #1B4F72);
+  color: #fff; font-weight: 700; font-size: 14px; font-family: inherit;
+}
+.api-btn-skip {
+  padding: 11px 16px; border-radius: 8px; cursor: pointer;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.5); font-size: 13px; font-family: inherit;
+}
+.api-notice {
+  font-size: 11px; color: rgba(255,255,255,0.3); line-height: 1.7;
+}
+.api-notice a { color: #5DADE2; }
+.api-status {
+  position: fixed; top: 16px; right: 16px; z-index: 1000;
+  padding: 6px 14px; border-radius: 20px; font-size: 11px;
+  background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.4); letter-spacing: 1px;
+  display: flex; align-items: center; gap: 6px;
+  cursor: pointer;
+}
+.api-status.gemini { border-color: rgba(93,173,226,0.4); color: #5DADE2; }
+.api-status.pollinations { border-color: rgba(105,240,174,0.3); color: #69f0ae; }
+
+/* ── 애니메이션 ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes twinkle { from{opacity:0.2} to{opacity:0.8} }
+</style>
+</head>
+<body>
+
+<!-- API 키 모달 -->
+<div id="api-modal">
+  <div class="api-box">
+    <div style="font-size:32px;margin-bottom:12px">🔑</div>
+    <div class="api-title">Gemini API 키 입력</div>
+    <div class="api-sub">
+      배경 이미지를 Gemini AI로 생성합니다.<br>
+      키가 없으면 건너뛰기 → Pollinations AI로 대체됩니다.
+    </div>
+    <input class="api-input" id="api-key-input" type="password"
+      placeholder="AIza..." autocomplete="off" spellcheck="false">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+      <input type="checkbox" id="save-key" checked style="accentColor:#5DADE2">
+      <label for="save-key" style="font-size:12px;color:rgba(255,255,255,0.5);cursor:pointer">
+        이 브라우저에 저장 (다음에 자동 입력)
+      </label>
+    </div>
+    <div class="api-row">
+      <button class="api-btn-ok" onclick="confirmApiKey()">✓ 확인 후 시작</button>
+      <button class="api-btn-skip" onclick="skipApiKey()">건너뛰기</button>
+    </div>
+    <div class="api-notice">
+      키 발급: <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a>
+      → Get API key → Create API key<br>
+      키는 이 브라우저에만 저장되며 외부로 전송되지 않습니다.
+    </div>
+  </div>
+</div>
+
+<!-- API 상태 뱃지 -->
+<div class="api-status" id="api-status" onclick="resetApiKey()" title="클릭하여 키 변경"></div>
+
+<div id="stage"></div>
+<div id="controls" style="display:none">
+  <button class="ctrl-btn" id="btn-exit" title="나가기">✕</button>
+  <button class="ctrl-btn" id="btn-prev">◀</button>
+  <div class="dot-nav" id="dot-nav"></div>
+  <button class="ctrl-btn" id="btn-next">▶</button>
+  <button class="ctrl-btn" id="btn-auto" title="자동재생">⏵</button>
+</div>
+<div id="key-hint">← → 키보드 | ESC 종료</div>
+<button id="back-btn" onclick="goBack()">↩ 처음으로</button>
+
+<script>
+// ──────────────────────────────────────────────────────────────────────────────
+// 데이터 로드
+// ──────────────────────────────────────────────────────────────────────────────
+const raw = localStorage.getItem('eaim_musical_data');
+let DATA = null;
+
+if (raw) {
+  try { DATA = JSON.parse(raw); } catch(e) {}
+}
+
+// 데이터 없으면 데모 데이터
+if (!DATA) {
+  DATA = {
+    title: '봄날의 이야기 (데모)',
+    school: '자인중학교',
+    curtainSongTitle: '우리가 써온 이야기 (Reprise)',
+    curtainLyrics: '끝나지 않는 이야기가 있어\n우리가 함께 써 내려간 그 페이지\n웃고 울며 걸어온 이 길 위에서\n우린 서로에게 빛이 되었어',
+    credits: [
+      {role:'감독', name:'박성애'},
+      {role:'작곡', name:'김하늘'},
+      {role:'출연', name:'민준 역 — 김도현 / 서아 역 — 이나연'},
+      {role:'제작', name:'EAIM 뮤지컬 제작단'},
+    ],
+    scenes: [
+      { title:'봄날의 학교 교정', imagePrompt:'A bright spring schoolyard with cherry blossoms, watercolor style, soft pastel colors', characters:'민준(주인공), 서아(친구)', songTitle:'오늘이 시작이야', lyrics:'바람이 불어오는 이 교정 위에\n우리의 꿈이 피어나고 있어', emotion:'설렘', musicMood:'밝고 경쾌한 피아노' },
+      { title:'방과 후 도서관', imagePrompt:'A cozy after-school library, warm lamplight, Studio Ghibli art style', characters:'민준(혼자)', songTitle:'혼자만의 시간', lyrics:'아무도 없는 이 공간에서\n나는 나를 찾아가고 있어', emotion:'고요함', musicMood:'잔잔한 현악 앙상블' },
+      { title:'졸업식 운동장', imagePrompt:'An outdoor graduation ceremony, students tossing caps, confetti, vibrant colors', characters:'민준, 서아, 전교생', songTitle:'우리가 써온 이야기', lyrics:'이제 우리 날아오를 시간\n함께 써온 이야기 끝나지 않아', emotion:'성취', musicMood:'장엄하고 웅장한 피날레' },
+    ]
+  };
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// 감정 색상
+// ──────────────────────────────────────────────────────────────────────────────
+const EMOTION_COLORS = {
+  default: { from:'#0D1B2A', to:'#16213e', accent:'#5DADE2', lyric:'#AED6F1' },
+  설렘:   { from:'#0f2a4a', to:'#16213e', accent:'#FFD700',  lyric:'#FFF0A0' },
+  희망:   { from:'#0a2a1a', to:'#0d1f14', accent:'#52C27A',  lyric:'#B2F0C8' },
+  고요함: { from:'#0a1628', to:'#0d2137', accent:'#AED6F1',  lyric:'#D0E8FF' },
+  집중:   { from:'#1a0a2e', to:'#0d1b2a', accent:'#C778DD',  lyric:'#EAB8FF' },
+  긴장:   { from:'#2e0a0a', to:'#1a0d0d', accent:'#FF6B47',  lyric:'#FFB8A8' },
+  용기:   { from:'#2e1a0a', to:'#1a0f0a', accent:'#FF9500',  lyric:'#FFD09E' },
+  성취:   { from:'#1a2a0a', to:'#0f1f08', accent:'#FFD700',  lyric:'#FFF0A0' },
+  감동:   { from:'#2a0a2a', to:'#1a0a1a', accent:'#FF69B4',  lyric:'#FFB8DC' },
+  슬픔:   { from:'#0a1a2e', to:'#0d1b2a', accent:'#7EC8E3',  lyric:'#BEE3F0' },
+  분노:   { from:'#2e0000', to:'#1a0000', accent:'#FF3333',  lyric:'#FFAAAA' },
+  기쁨:   { from:'#2a2a0a', to:'#1a1a00', accent:'#FFE500',  lyric:'#FFF5A0' },
+};
+function getColor(emotion) {
+  if (!emotion) return EMOTION_COLORS.default;
+  for (const [k, v] of Object.entries(EMOTION_COLORS)) {
+    if (k !== 'default' && emotion.includes(k)) return v;
+  }
+  return EMOTION_COLORS.default;
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// 슬라이드 빌드
+// ──────────────────────────────────────────────────────────────────────────────
+const stage = document.getElementById('stage');
+const SCENES = DATA.scenes || [];
+const TOTAL  = SCENES.length;
+
+// 0 = cover, 1..N = scenes, N+1 = ending
+let current = 0;
+let autoPlay = false;
+let autoTimer = null;
+
+// ──────────────────────────────────────────────────────────────────────────────
+// API 키 관리
+// ──────────────────────────────────────────────────────────────────────────────
+let GEMINI_KEY = localStorage.getItem('eaim_gemini_key') || '';
+const imgCache = {}; // prompt → base64 DataURL 캐시
+
+function showApiModal() {
+  const modal = document.getElementById('api-modal');
+  modal.classList.remove('hidden');
+  if (GEMINI_KEY) document.getElementById('api-key-input').value = GEMINI_KEY;
+}
+
+function confirmApiKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  if (!key) { alert('API 키를 입력하거나 건너뛰기를 눌러주세요.'); return; }
+  GEMINI_KEY = key;
+  if (document.getElementById('save-key').checked) {
+    localStorage.setItem('eaim_gemini_key', key);
+  }
+  document.getElementById('api-modal').classList.add('hidden');
+  updateStatusBadge('gemini');
+  initSlideshow();
+}
+
+function skipApiKey() {
+  GEMINI_KEY = '';
+  document.getElementById('api-modal').classList.add('hidden');
+  updateStatusBadge('pollinations');
+  initSlideshow();
+}
+
+function resetApiKey() {
+  GEMINI_KEY = '';
+  localStorage.removeItem('eaim_gemini_key');
+  location.reload();
+}
+
+function updateStatusBadge(mode) {
+  const el = document.getElementById('api-status');
+  if (mode === 'gemini') {
+    el.className = 'api-status gemini';
+    el.innerHTML = '🔵 Gemini AI 배경 · 클릭하여 변경';
+  } else {
+    el.className = 'api-status pollinations';
+    el.innerHTML = '🟢 Pollinations 배경 · 클릭하여 키 입력';
+  }
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// 이미지 생성 — Gemini 우선, 폴백 Pollinations
+// ──────────────────────────────────────────────────────────────────────────────
+async function fetchGeminiImage(prompt) {
+  if (imgCache[prompt]) return imgCache[prompt]; // 캐시 히트
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${GEMINI_KEY}`;
+  const body = {
+    contents: [{ parts: [{ text: prompt + ', cinematic, theatrical, dramatic lighting, high quality, 16:9 aspect ratio' }] }],
+    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
+  };
+  const res  = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!res.ok) throw new Error(`Gemini API ${res.status}`);
+  const data = await res.json();
+  const parts = data?.candidates?.[0]?.content?.parts || [];
+  const imgPart = parts.find(p => p.inlineData);
+  if (!imgPart) throw new Error('이미지 없음');
+  const dataUrl = `data:${imgPart.inlineData.mimeType};base64,${imgPart.inlineData.data}`;
+  imgCache[prompt] = dataUrl; // 캐시 저장
+  return dataUrl;
+}
+
+function getPollinationsUrl(prompt) {
+  const enc = encodeURIComponent(prompt + ', cinematic, theatrical, dramatic lighting, high quality');
+  return `https://image.pollinations.ai/prompt/${enc}?width=1280&height=720&nologo=true`;
+}
+
+// 슬라이드 el에 배경 이미지 세팅 (Gemini base64 또는 Pollinations URL)
+async function loadBgImage(scene, idx) {
+  const el = document.getElementById(`scene-slide-${idx}`);
+  if (!el) return;
+
+  // 직접 URL 우선
+  if (scene.imageUrl && scene.imageUrl.startsWith('http')) {
+    setImgSrc(idx, scene.imageUrl, '📎 직접 URL'); return;
+  }
+  if (!scene.imagePrompt) return;
+
+  if (GEMINI_KEY) {
+    // Gemini로 생성
+    const spinner = document.getElementById(`bg-spinner-${idx}`);
+    if (spinner) spinner.style.display = 'flex';
+    try {
+      const dataUrl = await fetchGeminiImage(scene.imagePrompt);
+      if (spinner) spinner.style.display = 'none';
+      setImgSrc(idx, dataUrl, '🔵 Gemini AI');
+    } catch (e) {
+      console.warn('Gemini 실패, Pollinations 폴백:', e.message);
+      if (spinner) spinner.style.display = 'none';
+      setImgSrc(idx, getPollinationsUrl(scene.imagePrompt), '🟢 Pollinations');
+    }
+  } else {
+    // Pollinations URL 방식
+    setImgSrc(idx, getPollinationsUrl(scene.imagePrompt), '🟢 Pollinations');
+  }
+}
+
+function setImgSrc(idx, src, label) {
+  const img = document.getElementById(`bgimg-${idx}`);
+  if (!img) return;
+  img.onload = () => {
+    img.style.opacity = '0.45';
+    const badge = document.getElementById(`src-badge-${idx}`);
+    if (badge) { badge.style.display = 'block'; badge.textContent = label; }
+  };
+  img.onerror = () => { img.style.display = 'none'; };
+  img.src = src;
+}
+
+// ── 커버 슬라이드 ──
+function buildCover() {
+  const div = document.createElement('div');
+  div.id = 'cover-slide';
+  div.className = 'slide hidden';
+  div.innerHTML = `
+    <div class="cover-orb" style="width:380px;height:380px;left:-100px;top:-100px;background:radial-gradient(circle,#5DADE220,transparent 70%)"></div>
+    <div class="cover-orb" style="width:260px;height:260px;right:-70px;top:80px;background:radial-gradient(circle,#C778DD20,transparent 70%)"></div>
+    <div class="cover-orb" style="width:200px;height:200px;left:160px;bottom:-50px;background:radial-gradient(circle,#52C27A20,transparent 70%)"></div>
+    <div class="cover-inner">
+      <div class="cover-emoji">🎭</div>
+      <div class="cover-eyebrow">Musical Maker · EAIM</div>
+      <div class="cover-title">${DATA.title || '뮤지컬 스토리보드'}</div>
+      <div class="cover-sub">${DATA.school || ''}</div>
+      <div class="cover-count">총 ${TOTAL}개 장면</div>
+      <div class="cover-hint">▶ → 키 또는 버튼으로 시작</div>
+    </div>
+  `;
+  stage.appendChild(div);
+}
+
+// ── 장면 슬라이드 ──
+function buildScene(scene, idx) {
+  const C = getColor(scene.emotion);
+  const lyricLines = (scene.lyrics || '').split('\n').filter(Boolean);
+  const chars = (scene.characters || '').split(/[,，、]/).filter(Boolean);
+
+  const div = document.createElement('div');
+  div.id = `scene-slide-${idx}`;
+  div.className = 'slide hidden';
+  div.style.background = `linear-gradient(135deg, ${C.from}, ${C.to})`;
+
+  div.innerHTML = `
+    <!-- 배경 이미지 (나중에 src 설정) -->
+    <img class="bg-img" id="bgimg-${idx}" alt="${scene.title}" style="opacity:0">
+
+    <!-- 로딩 스피너 -->
+    <div id="bg-spinner-${idx}" style="
+      position:absolute;inset:0;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:10px;
+    ">
+      <div style="width:32px;height:32px;border:3px solid ${C.accent}33;border-top:3px solid ${C.accent};border-radius:50%;animation:spin 1s linear infinite"></div>
+      <div style="font-size:11px;color:${C.accent};opacity:0.6">${GEMINI_KEY ? 'Gemini AI 생성 중...' : 'AI 배경 생성 중...'}</div>
+    </div>
+
+    <div class="bg-overlay"></div>
+
+    <!-- 상단 -->
+    <div class="top-bar">
+      <div class="scene-badge" style="background:${C.accent}25;border:1.5px solid ${C.accent}90;color:${C.accent}">
+        SCENE ${String(idx+1).padStart(2,'0')} / ${String(TOTAL).padStart(2,'0')}
+      </div>
+      <div class="eaim-label">EAIM 🎵</div>
+    </div>
+
+    <!-- 이미지 소스 뱃지 -->
+    <div id="src-badge-${idx}" style="display:none;position:absolute;top:56px;right:24px;font-size:9px;color:rgba(255,255,255,0.3);background:rgba(0,0,0,0.35);border-radius:8px;padding:2px 8px;letter-spacing:1px;z-index:11"></div>
+
+    <!-- 좌측 콘텐츠 -->
+    <div class="main-content hidden" id="mc-${idx}">
+      <div class="scene-title">${scene.title}</div>
+      ${scene.songTitle ? `
+        <div class="song-badge" style="background:${C.accent}20;border:1px solid ${C.accent}60;margin-bottom:14px">
+          <span style="font-size:14px">🎼</span>
+          <span class="song-title-text" style="color:${C.accent}">♪ ${scene.songTitle}</span>
+        </div>` : ''}
+      ${chars.length ? `
+        <div class="chars-label">등장인물</div>
+        <div class="chars-list">${chars.map(c=>`<span class="char-chip">👤 ${c.trim()}</span>`).join('')}</div>` : ''}
+      <div class="tags">
+        ${scene.emotion ? `<div class="tag-emotion" style="background:${C.accent}18;border:1px solid ${C.accent}70;color:${C.accent}">💭 ${scene.emotion}</div>` : ''}
+        ${scene.musicMood ? `<div class="tag-mood">🎵 ${scene.musicMood}</div>` : ''}
+      </div>
+    </div>
+
+    <!-- 우측 가사 -->
+    ${lyricLines.length ? `
+      <div class="lyrics-panel hidden" id="lp-${idx}">
+        <div class="lyrics-label" style="color:${C.lyric}">✦ LYRICS ✦</div>
+        <div class="lyrics-body">
+          <div class="lyrics-bar" style="background:linear-gradient(to bottom, ${C.accent}, transparent)"></div>
+          ${lyricLines.map((l,i)=>`<div class="lyric-line" id="ll-${idx}-${i}" style="color:${C.lyric};opacity:0;transition:opacity 0.5s ease ${0.5+i*0.25}s">${l}</div>`).join('')}
+        </div>
+      </div>` : ''}
+
+    <!-- 진행 바 -->
+    <div class="progress-bar">
+      <div class="progress-fill" style="width:${((idx+1)/TOTAL)*100}%;background:linear-gradient(to right,${C.accent},${C.lyric})"></div>
+    </div>
+  `;
+
+  stage.appendChild(div);
+
+// ── 엔딩 슬라이드 ──
+function buildEnding() {
+  const div = document.createElement('div');
+  div.id = 'end-slide';
+  div.className = 'slide hidden';
+
+  // 별빛
+  const stars = Array.from({length:28},(_,i)=>`
+    <div class="star" style="
+      left:${(i*37+5)%100}%;top:${(i*23+10)%100}%;
+      width:${i%5===0?3:2}px;height:${i%5===0?3:2}px;
+      background:${i%3===0?'#FFD700':i%3===1?'#C778DD':'#5DADE2'};
+      opacity:${0.3+(i%4)*0.15};
+      animation-duration:${2+(i%3)}s;animation-delay:${(i*0.3)%2}s;
+    "></div>`).join('');
+
+  const lyricLines = (DATA.curtainLyrics || '').split('\n').filter(Boolean);
+
+  div.innerHTML = `
+    ${stars}
+    <!-- 커튼콜 -->
+    <div id="curtain-phase">
+      <div style="font-size:36px;margin-bottom:18px">🎭</div>
+      <div class="curtain-label">✦ 커튼콜 ✦</div>
+      ${DATA.curtainSongTitle ? `<div class="curtain-song">♪ ${DATA.curtainSongTitle}</div>` : ''}
+      <div class="curtain-lyrics-wrap" id="curtain-lyrics-wrap">
+        ${lyricLines.map((l,i)=>`<div class="curtain-lyric-line" id="cl-${i}" style="color:rgba(255,255,255,0.9);opacity:0;transition:opacity 0.6s ease ${i*0.5}s">${l}</div>`).join('')}
+      </div>
+    </div>
+    <!-- 크레딧 -->
+    <div id="credits-phase" style="opacity:0;pointer-events:none">
+      <div class="credits-mask-top"></div>
+      <div class="credits-mask-bot"></div>
+      <div id="credits-scroll">
+        ${DATA.curtainSongTitle ? `<div style="text-align:center;margin-bottom:40px;padding-top:20px">
+          <div style="font-size:12px;color:#FFD700;letter-spacing:4px;margin-bottom:8px">✦ CURTAIN CALL ✦</div>
+          <div style="font-size:18px;color:#C778DD;font-style:italic;font-weight:600">♪ ${DATA.curtainSongTitle}</div>
+        </div>` : ''}
+        <div class="credits-title">
+          <div style="font-size:clamp(24px,4vw,38px);font-weight:900;color:#fff;letter-spacing:3px;text-shadow:0 0 30px rgba(93,173,226,0.5)">— 막 내림 —</div>
+          <div class="credits-divider"></div>
+        </div>
+        ${(DATA.credits||[]).map(c=>`
+          <div class="credit-row">
+            <div class="credit-role">${c.role}</div>
+            <div class="credit-sep"></div>
+            <div class="credit-name">${c.name}</div>
+          </div>`).join('')}
+        <div class="credits-footer">
+          <div style="font-size:40px;margin-bottom:10px">🎵</div>
+          <div style="font-size:13px;color:#5DADE2;letter-spacing:5px;margin-bottom:6px">EAIM</div>
+          <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:2px">Emotion · Artscape · Interactive · Musicalization</div>
+          ${DATA.school ? `<div style="font-size:12px;color:rgba(255,255,255,0.25);margin-top:8px">${DATA.school}</div>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+  stage.appendChild(div);
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// 슬라이드 전환
+// ──────────────────────────────────────────────────────────────────────────────
+function getSlideEl(idx) {
+  if (idx === 0) return document.getElementById('cover-slide');
+  if (idx === TOTAL + 1) return document.getElementById('end-slide');
+  return document.getElementById(`scene-slide-${idx-1}`);
+}
+
+function showSlide(idx) {
+  // 현재 숨기기
+  const old = getSlideEl(current);
+  if (old) old.className = old.className.replace('visible','hidden');
+
+  current = idx;
+  const el = getSlideEl(idx);
+  if (!el) return;
+  el.className = el.className.replace('hidden','visible');
+
+  // 장면 콘텐츠 애니메이션
+  if (idx >= 1 && idx <= TOTAL) {
+    const sceneIdx = idx - 1;
+    setTimeout(() => {
+      const mc = document.getElementById(`mc-${sceneIdx}`);
+      const lp = document.getElementById(`lp-${sceneIdx}`);
+      if (mc) { mc.classList.remove('hidden'); mc.classList.add('visible'); }
+      if (lp) { lp.classList.remove('hidden'); lp.classList.add('visible'); }
+      // 가사 줄 페이드인
+      const scene = SCENES[sceneIdx];
+      const lines = (scene.lyrics || '').split('\n').filter(Boolean);
+      lines.forEach((_,i) => {
+        const ll = document.getElementById(`ll-${sceneIdx}-${i}`);
+        if (ll) ll.style.opacity = '1';
+      });
+    }, 350);
+  }
+
+  // 엔딩 애니메이션
+  if (idx === TOTAL + 1) {
+    document.getElementById('controls').style.display = 'none';
+    document.getElementById('back-btn').style.display = 'block';
+    document.getElementById('key-hint').style.display = 'none';
+    startEnding();
+  } else {
+    document.getElementById('controls').style.display = 'flex';
+    document.getElementById('back-btn').style.display = 'none';
+    document.getElementById('key-hint').style.display = 'block';
+  }
+
+  updateControls();
+}
+
+// ── 엔딩 시퀀스 ──
+function startEnding() {
+  const lyricLines = (DATA.curtainLyrics || '').split('\n').filter(Boolean);
+
+  // 커튼콜 가사 페이드인
+  setTimeout(() => {
+    lyricLines.forEach((_,i) => {
+      setTimeout(() => {
+        const el = document.getElementById(`cl-${i}`);
+        if (el) el.style.opacity = i === lyricLines.length-1 ? '1' : '0.9';
+      }, i * 600);
+    });
+  }, 300);
+
+  // 크레딧로 전환
+  const delay = Math.max(3000, lyricLines.length * 700 + 1800);
+  setTimeout(() => {
+    const cp = document.getElementById('curtain-phase');
+    const cr = document.getElementById('credits-phase');
+    if (cp) cp.style.opacity = '0';
+    setTimeout(() => {
+      if (cp) cp.style.pointerEvents = 'none';
+      if (cr) { cr.style.opacity = '1'; cr.style.pointerEvents = 'auto'; }
+      startCreditsScroll();
+    }, 1000);
+  }, delay);
+}
+
+function startCreditsScroll() {
+  const scroll = document.getElementById('credits-scroll');
+  if (!scroll) return;
+  const duration = Math.max(12, (DATA.credits||[]).length * 2.2 + 10);
+  scroll.style.transition = `top ${duration}s linear`;
+  scroll.style.top = '-220%';
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// 컨트롤
+// ──────────────────────────────────────────────────────────────────────────────
+function updateControls() {
+  const dotNav = document.getElementById('dot-nav');
+  dotNav.innerHTML = '';
+  const totalSlides = TOTAL + 1; // cover + scenes (엔딩 제외)
+  for (let i = 0; i <= totalSlides - 1; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === current ? ' active' : '');
+    const C = i === 0 ? {accent:'#5DADE2'} : getColor(SCENES[i-1]?.emotion || '');
+    if (i === current) dot.style.background = C.accent;
+    dot.title = i === 0 ? '커버' : (SCENES[i-1]?.title || '');
+    dot.onclick = () => showSlide(i);
+    dotNav.appendChild(dot);
+  }
+  document.getElementById('btn-prev').disabled = current === 0;
+  document.getElementById('btn-next').disabled = current === TOTAL + 1;
+}
+
+function goBack() {
+  if (document.referrer && document.referrer.includes('musical-maker')) {
+    history.back();
+  } else {
+    window.location.href = 'musical-maker.html';
+  }
+}
+
+// 자동재생 (7초)
+function toggleAuto() {
+  autoPlay = !autoPlay;
+  document.getElementById('btn-auto').textContent = autoPlay ? '⏸' : '⏵';
+  document.getElementById('btn-auto').style.color = autoPlay ? '#5DADE2' : 'rgba(255,255,255,0.8)';
+  clearInterval(autoTimer);
+  if (autoPlay) {
+    autoTimer = setInterval(() => {
+      if (current >= TOTAL) { autoPlay = false; clearInterval(autoTimer); return; }
+      showSlide(current + 1);
+    }, 7000);
+  }
+}
+
+// 키보드
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') {
+    if (current < TOTAL + 1) showSlide(current + 1);
+  } else if (e.key === 'ArrowLeft') {
+    if (current > 0) showSlide(current - 1);
+  } else if (e.key === 'Escape') {
+    goBack();
+  }
+});
+
+document.getElementById('btn-prev').onclick = () => { if (current > 0) showSlide(current - 1); };
+document.getElementById('btn-next').onclick = () => { if (current < TOTAL + 1) showSlide(current + 1); };
+document.getElementById('btn-auto').onclick  = toggleAuto;
+document.getElementById('btn-exit').onclick  = goBack;
+
+// ──────────────────────────────────────────────────────────────────────────────
+// 초기화 — API 키 확인 후 호출
+// ──────────────────────────────────────────────────────────────────────────────
+function initSlideshow() {
+  buildCover();
+  SCENES.forEach((s, i) => buildScene(s, i));
+  buildEnding();
+  document.getElementById('controls').style.display = 'flex';
+  showSlide(0);
+  // 모든 장면 이미지 백그라운드 프리로드 (순차적으로)
+  (async () => {
+    for (let i = 0; i < SCENES.length; i++) {
+      await loadBgImage(SCENES[i], i).catch(() => {});
+    }
+  })();
+}
+
+// ── 페이지 로드 — 저장된 키 확인 ──
+window.addEventListener('load', () => {
+  if (GEMINI_KEY) {
+    document.getElementById('api-modal').classList.add('hidden');
+    updateStatusBadge('gemini');
+    initSlideshow();
+  } else {
+    showApiModal();
+  }
+});
+</script>
+</body>
+</html>

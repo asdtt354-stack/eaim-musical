@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎚 EAIM 오디오 믹서</title>
+<style>
+:root {
+  --bg:       #0a0a0f;
+  --panel:    #13131a;
+  --panel2:   #1a1a24;
+  --border:   #2a2a3a;
+  --led-off:  #1a1a1a;
+  --gold:     #f5c842;
+  --blue:     #4fc3f7;
+  --green:    #69f0ae;
+  --red:      #ff5252;
+  --purple:   #ce93d8;
+  --orange:   #ffb74d;
+  --text:     #e0e0e0;
+  --subtext:  #888;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Courier New', 'D2Coding', monospace;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; padding: 0;
+  background-image:
+    radial-gradient(ellipse at 20% 0%, #1a0a2a44 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, #0a1a2a44 0%, transparent 50%);
+}
+
+/* ── 헤더 ── */
+header {
+  background: linear-gradient(90deg, #0d0d14, #1a0a2a, #0d0d14);
+  border-bottom: 1px solid #2a1a4a;
+  padding: 14px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.logo-area { display: flex; align-items: center; gap: 12px; }
+.logo-icon { font-size: 24px; }
+.logo-text { font-size: 16px; font-weight: 700; color: var(--gold); letter-spacing: 2px; }
+.logo-sub  { font-size: 10px; color: var(--subtext); letter-spacing: 3px; margin-top: 2px; }
+.master-vol-area { display: flex; align-items: center; gap: 16px; }
+.master-label { font-size: 10px; color: var(--gold); letter-spacing: 2px; }
+.vu-master { display: flex; gap: 2px; align-items: flex-end; }
+.vu-bar {
+  width: 5px; border-radius: 2px;
+  transition: height 0.08s ease, background 0.08s;
+  background: var(--green);
+}
+
+/* ── 레이아웃 ── */
+.console {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 200px;
+  gap: 2px;
+  padding: 2px;
+  background: #050508;
+}
+@media(max-width:900px) {
+  .console { grid-template-columns: 1fr 1fr; }
+  .sfx-board { grid-column: 1 / -1; }
+}
+@media(max-width:560px) {
+  .console { grid-template-columns: 1fr; }
+}
+
+/* ── 채널 스트립 ── */
+.channel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.ch-header {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.ch-num {
+  width: 24px; height: 24px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+}
+.ch-name-input {
+  flex: 1; background: none; border: none;
+  color: var(--text); font-family: inherit; font-size: 13px; font-weight: 700;
+  outline: none; letter-spacing: 1px;
+}
+.ch-name-input::placeholder { color: var(--subtext); }
+
+/* LED 인디케이터 */
+.led {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--led-off); border: 1px solid #333;
+  transition: all 0.15s;
+}
+.led.on-green  { background: var(--green);  box-shadow: 0 0 6px var(--green); }
+.led.on-orange { background: var(--orange); box-shadow: 0 0 6px var(--orange); }
+.led.on-red    { background: var(--red);    box-shadow: 0 0 8px var(--red); }
+
+/* ── 파일 업로드 존 ── */
+.upload-zone {
+  margin: 12px; border-radius: 8px;
+  border: 2px dashed var(--border);
+  padding: 16px 10px; text-align: center;
+  cursor: pointer; transition: all 0.2s;
+  position: relative;
+}
+.upload-zone:hover { border-color: var(--gold); background: rgba(245,200,66,0.04); }
+.upload-zone.loaded { border-style: solid; background: rgba(105,240,174,0.05); }
+.upload-zone input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer;
+}
+.upload-icon { font-size: 22px; margin-bottom: 6px; }
+.upload-label { font-size: 11px; color: var(--subtext); }
+.upload-filename { font-size: 11px; color: var(--green); margin-top: 4px; word-break: break-all; }
+
+/* URL 입력 */
+.url-row {
+  margin: 0 12px 10px;
+  display: flex; gap: 6px;
+}
+.url-input {
+  flex: 1; padding: 6px 10px; border-radius: 6px;
+  background: var(--panel2); border: 1px solid var(--border);
+  color: var(--text); font-size: 11px; font-family: inherit; outline: none;
+}
+.url-load-btn {
+  padding: 6px 10px; border-radius: 6px; cursor: pointer;
+  background: rgba(79,195,247,0.15); border: 1px solid rgba(79,195,247,0.4);
+  color: var(--blue); font-size: 11px; font-family: inherit;
+  white-space: nowrap;
+}
+
+/* ── 이퀄라이저 / 컨트롤 ── */
+.ch-controls { padding: 10px 14px; flex: 1; }
+.ctrl-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px;
+}
+.ctrl-label { font-size: 9px; color: var(--subtext); letter-spacing: 1px; width: 28px; text-transform: uppercase; }
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  height: 4px; border-radius: 2px; cursor: pointer; flex: 1;
+  background: var(--border); outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 14px; height: 14px; border-radius: 50%;
+  cursor: pointer;
+}
+.range-vol::-webkit-slider-thumb  { background: var(--green); box-shadow: 0 0 4px var(--green); }
+.range-pan::-webkit-slider-thumb  { background: var(--blue);  box-shadow: 0 0 4px var(--blue); }
+.range-fade::-webkit-slider-thumb { background: var(--gold);  box-shadow: 0 0 4px var(--gold); }
+.ctrl-val { font-size: 10px; color: var(--gold); width: 34px; text-align: right; font-family: monospace; }
+
+/* ── VU 미터 ── */
+.vu-meter {
+  margin: 0 14px 10px;
+  height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;
+}
+.vu-fill {
+  height: 100%; width: 0%; border-radius: 4px;
+  background: linear-gradient(to right, var(--green), var(--orange), var(--red));
+  transition: width 0.08s ease;
+}
+
+/* ── 페이더 (수직 볼륨) ── */
+.fader-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 10px 14px; gap: 6px;
+}
+.fader-label { font-size: 9px; color: var(--subtext); letter-spacing: 2px; }
+input[type=range].fader {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 4px; height: 80px;
+  background: var(--border);
+  -webkit-appearance: slider-vertical;
+}
+input[type=range].fader::-webkit-slider-thumb {
+  width: 22px; height: 10px; border-radius: 3px;
+  background: linear-gradient(135deg, #ccc, #888);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+.fader-db { font-size: 10px; color: var(--gold); }
+
+/* ── 트랜스포트 버튼 ── */
+.transport {
+  display: flex; gap: 6px; padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.t-btn {
+  flex: 1; padding: 8px 6px; border-radius: 6px; cursor: pointer;
+  font-size: 16px; border: 1px solid var(--border);
+  background: var(--panel2); transition: all 0.15s;
+  min-width: 36px;
+}
+.t-btn:hover { transform: scale(1.05); }
+.t-btn.play  { background: rgba(105,240,174,0.15); border-color: var(--green); }
+.t-btn.pause { background: rgba(255,183,77,0.15);  border-color: var(--orange); }
+.t-btn.stop  { background: rgba(255,82,82,0.15);   border-color: var(--red); }
+.t-btn.loop  { background: rgba(79,195,247,0.15);  border-color: var(--blue); }
+.t-btn.loop.on { background: rgba(79,195,247,0.35); box-shadow: 0 0 8px var(--blue); }
+
+/* 타임 디스플레이 */
+.time-display {
+  background: #000; border: 1px solid #333; border-radius: 4px;
+  padding: 4px 8px; font-size: 11px; color: var(--green);
+  letter-spacing: 2px; text-align: center; margin: 0 14px 8px;
+  font-family: 'Courier New', monospace;
+}
+
+/* ── 효과음 보드 ── */
+.sfx-board {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px; overflow: hidden;
+}
+.sfx-header {
+  padding: 12px 14px; border-bottom: 1px solid var(--border);
+  font-size: 11px; color: var(--gold); letter-spacing: 2px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.sfx-grid { padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.sfx-pad {
+  border-radius: 8px; padding: 10px 8px; cursor: pointer;
+  border: 1px solid; text-align: center;
+  transition: all 0.1s; user-select: none; position: relative; overflow: hidden;
+}
+.sfx-pad:active, .sfx-pad.firing {
+  transform: scale(0.95);
+  filter: brightness(1.4);
+}
+.sfx-pad-name { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+.sfx-pad-key  { font-size: 9px; opacity: 0.5; }
+.sfx-pad-upload {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer;
+}
+.sfx-add { grid-column: 1/-1; }
+.sfx-add-btn {
+  width: 100%; padding: 8px; border-radius: 6px; cursor: pointer;
+  background: none; border: 1px dashed var(--border);
+  color: var(--subtext); font-family: inherit; font-size: 12px;
+}
+
+/* ── 마스터 섹션 ── */
+.master-strip {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 14px;
+  grid-column: 4;
+}
+.master-title { font-size: 10px; color: var(--gold); letter-spacing: 3px; margin-bottom: 12px; }
+.scene-select {
+  width: 100%; background: var(--panel2); border: 1px solid var(--border);
+  color: var(--text); padding: 7px 10px; border-radius: 6px;
+  font-family: inherit; font-size: 12px; margin-bottom: 10px; outline: none;
+}
+.scene-cue-list { max-height: 200px; overflow-y: auto; }
+.cue-item {
+  padding: 6px 8px; border-radius: 4px; margin-bottom: 4px;
+  background: var(--panel2); border: 1px solid var(--border);
+  font-size: 11px; cursor: pointer; display: flex; gap: 6px; align-items: center;
+  transition: background 0.15s;
+}
+.cue-item:hover  { background: rgba(245,200,66,0.08); border-color: var(--gold); }
+.cue-item.active { background: rgba(105,240,174,0.08); border-color: var(--green); }
+.cue-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.cue-num { color: var(--subtext); font-size: 10px; width: 18px; }
+
+/* ── 저장/로드 ── */
+.save-row { display: flex; gap: 6px; margin-top: 12px; }
+.save-btn {
+  flex: 1; padding: 7px; border-radius: 6px; cursor: pointer; font-family: inherit;
+  font-size: 11px; border: 1px solid;
+}
+.save-btn.save { background: rgba(245,200,66,0.1); border-color: var(--gold); color: var(--gold); }
+.save-btn.load { background: rgba(79,195,247,0.1); border-color: var(--blue); color: var(--blue); }
+
+/* ── 스크롤바 ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--panel); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── 토스트 ── */
+#toast {
+  position: fixed; bottom: 20px; right: 20px;
+  background: rgba(105,240,174,0.9); color: #000;
+  padding: 10px 18px; border-radius: 8px; font-size: 13px;
+  display: none; z-index: 999; animation: fadeUp 0.3s ease;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<header>
+  <div class="logo-area">
+    <div class="logo-icon">🎚</div>
+    <div>
+      <div class="logo-text">EAIM AUDIO MIXER</div>
+      <div class="logo-sub">뮤지컬 공연 오디오 콘솔</div>
+    </div>
+  </div>
+  <div class="master-vol-area">
+    <div class="master-label">MASTER</div>
+    <div class="vu-master" id="vu-master"></div>
+    <input type="range" id="master-vol" min="0" max="100" value="85"
+      style="width:80px" class="range-vol"
+      oninput="setMasterVol(this.value)">
+    <span style="font-size:11px;color:var(--gold);width:30px" id="master-vol-val">85</span>
+  </div>
+</header>
+
+<!-- 콘솔 -->
+<div class="console">
+
+  <!-- ── CH1: BGM ── -->
+  <div class="channel" id="ch-bgm">
+    <div class="ch-header">
+      <div class="ch-num" style="background:rgba(105,240,174,0.2);color:var(--green)">1</div>
+      <input class="ch-name-input" value="BGM 배경음악" id="name-bgm">
+      <div class="led" id="led-bgm"></div>
+    </div>
+    <div class="upload-zone" id="zone-bgm" onclick="triggerUpload('bgm')">
+      <input type="file" id="file-bgm" accept="audio/*" onchange="loadFile('bgm',this)">
+      <div class="upload-icon">🎵</div>
+      <div class="upload-label">MP3 / WAV 업로드</div>
+      <div class="upload-filename" id="fname-bgm"></div>
+    </div>
+    <div class="url-row">
+      <input class="url-input" id="url-bgm" placeholder="또는 오디오 URL 입력...">
+      <button class="url-load-btn" onclick="loadUrl('bgm')">로드</button>
+    </div>
+    <div class="time-display" id="time-bgm">00:00 / 00:00</div>
+    <div class="ch-controls">
+      <div class="ctrl-row">
+        <span class="ctrl-label">VOL</span>
+        <input type="range" class="range-vol" id="vol-bgm" min="0" max="150" value="80"
+          oninput="setVol('bgm',this.value)">
+        <span class="ctrl-val" id="vval-bgm">80%</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">PAN</span>
+        <input type="range" class="range-pan" id="pan-bgm" min="-100" max="100" value="0"
+          oninput="setPan('bgm',this.value)">
+        <span class="ctrl-val" id="pval-bgm">C</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">FADE</span>
+        <input type="range" class="range-fade" id="fade-bgm" min="0.5" max="8" value="2" step="0.5"
+          oninput="document.getElementById('fval-bgm').textContent=this.value+'s'">
+        <span class="ctrl-val" id="fval-bgm">2s</span>
+      </div>
+    </div>
+    <div class="vu-meter"><div class="vu-fill" id="vu-bgm"></div></div>
+    <div class="fader-wrap">
+      <span class="fader-label">FADER</span>
+      <input type="range" class="fader" id="fader-bgm" min="0" max="100" value="80"
+        oninput="setFader('bgm',this.value)">
+      <span class="fader-db" id="fdb-bgm">–3dB</span>
+    </div>
+    <div class="transport">
+      <button class="t-btn play"  onclick="playTrack('bgm')">▶</button>
+      <button class="t-btn pause" onclick="pauseTrack('bgm')">⏸</button>
+      <button class="t-btn stop"  onclick="stopTrack('bgm')">⏹</button>
+      <button class="t-btn loop" id="loop-bgm" onclick="toggleLoop('bgm')">🔁</button>
+      <button class="t-btn" onclick="fadeOut('bgm')" style="font-size:11px;color:var(--gold)">FADE↓</button>
+      <button class="t-btn" onclick="fadeIn('bgm')"  style="font-size:11px;color:var(--green)">FADE↑</button>
+    </div>
+  </div>
+
+  <!-- ── CH2: 넘버 MR ── -->
+  <div class="channel" id="ch-mr">
+    <div class="ch-header">
+      <div class="ch-num" style="background:rgba(206,147,216,0.2);color:var(--purple)">2</div>
+      <input class="ch-name-input" value="넘버 MR" id="name-mr">
+      <div class="led" id="led-mr"></div>
+    </div>
+    <div class="upload-zone" id="zone-mr" onclick="triggerUpload('mr')">
+      <input type="file" id="file-mr" accept="audio/*" onchange="loadFile('mr',this)">
+      <div class="upload-icon">🎼</div>
+      <div class="upload-label">MR / 반주 업로드</div>
+      <div class="upload-filename" id="fname-mr"></div>
+    </div>
+    <div class="url-row">
+      <input class="url-input" id="url-mr" placeholder="또는 오디오 URL 입력...">
+      <button class="url-load-btn" onclick="loadUrl('mr')">로드</button>
+    </div>
+    <div class="time-display" id="time-mr">00:00 / 00:00</div>
+    <div class="ch-controls">
+      <div class="ctrl-row">
+        <span class="ctrl-label">VOL</span>
+        <input type="range" class="range-vol" id="vol-mr" min="0" max="150" value="100"
+          oninput="setVol('mr',this.value)">
+        <span class="ctrl-val" id="vval-mr">100%</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">PAN</span>
+        <input type="range" class="range-pan" id="pan-mr" min="-100" max="100" value="0"
+          oninput="setPan('mr',this.value)">
+        <span class="ctrl-val" id="pval-mr">C</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">FADE</span>
+        <input type="range" class="range-fade" id="fade-mr" min="0.5" max="8" value="1.5" step="0.5"
+          oninput="document.getElementById('fval-mr').textContent=this.value+'s'">
+        <span class="ctrl-val" id="fval-mr">1.5s</span>
+      </div>
+    </div>
+    <div class="vu-meter"><div class="vu-fill" id="vu-mr"></div></div>
+    <div class="fader-wrap">
+      <span class="fader-label">FADER</span>
+      <input type="range" class="fader" id="fader-mr" min="0" max="100" value="100"
+        oninput="setFader('mr',this.value)">
+      <span class="fader-db" id="fdb-mr">0dB</span>
+    </div>
+    <div class="transport">
+      <button class="t-btn play"  onclick="playTrack('mr')">▶</button>
+      <button class="t-btn pause" onclick="pauseTrack('mr')">⏸</button>
+      <button class="t-btn stop"  onclick="stopTrack('mr')">⏹</button>
+      <button class="t-btn loop" id="loop-mr" onclick="toggleLoop('mr')">🔁</button>
+      <button class="t-btn" onclick="fadeOut('mr')" style="font-size:11px;color:var(--gold)">FADE↓</button>
+      <button class="t-btn" onclick="fadeIn('mr')"  style="font-size:11px;color:var(--green)">FADE↑</button>
+    </div>
+  </div>
+
+  <!-- ── CH3: 효과음 채널 ── -->
+  <div class="channel" id="ch-sfx2">
+    <div class="ch-header">
+      <div class="ch-num" style="background:rgba(255,183,77,0.2);color:var(--orange)">3</div>
+      <input class="ch-name-input" value="앰비언스/나레이션" id="name-sfx2">
+      <div class="led" id="led-sfx2"></div>
+    </div>
+    <div class="upload-zone" id="zone-sfx2" onclick="triggerUpload('sfx2')">
+      <input type="file" id="file-sfx2" accept="audio/*" onchange="loadFile('sfx2',this)">
+      <div class="upload-icon">🌊</div>
+      <div class="upload-label">앰비언스 / 나레이션 업로드</div>
+      <div class="upload-filename" id="fname-sfx2"></div>
+    </div>
+    <div class="url-row">
+      <input class="url-input" id="url-sfx2" placeholder="또는 오디오 URL 입력...">
+      <button class="url-load-btn" onclick="loadUrl('sfx2')">로드</button>
+    </div>
+    <div class="time-display" id="time-sfx2">00:00 / 00:00</div>
+    <div class="ch-controls">
+      <div class="ctrl-row">
+        <span class="ctrl-label">VOL</span>
+        <input type="range" class="range-vol" id="vol-sfx2" min="0" max="150" value="70"
+          oninput="setVol('sfx2',this.value)">
+        <span class="ctrl-val" id="vval-sfx2">70%</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">PAN</span>
+        <input type="range" class="range-pan" id="pan-sfx2" min="-100" max="100" value="0"
+          oninput="setPan('sfx2',this.value)">
+        <span class="ctrl-val" id="pval-sfx2">C</span>
+      </div>
+      <div class="ctrl-row">
+        <span class="ctrl-label">FADE</span>
+        <input type="range" class="range-fade" id="fade-sfx2" min="0.5" max="8" value="1" step="0.5"
+          oninput="document.getElementById('fval-sfx2').textContent=this.value+'s'">
+        <span class="ctrl-val" id="fval-sfx2">1s</span>
+      </div>
+    </div>
+    <div class="vu-meter"><div class="vu-fill" id="vu-sfx2"></div></div>
+    <div class="fader-wrap">
+      <span class="fader-label">FADER</span>
+      <input type="range" class="fader" id="fader-sfx2" min="0" max="100" value="70"
+        oninput="setFader('sfx2',this.value)">
+      <span class="fader-db" id="fdb-sfx2">–3dB</span>
+    </div>
+    <div class="transport">
+      <button class="t-btn play"  onclick="playTrack('sfx2')">▶</button>
+      <button class="t-btn pause" onclick="pauseTrack('sfx2')">⏸</button>
+      <button class="t-btn stop"  onclick="stopTrack('sfx2')">⏹</button>
+      <button class="t-btn loop" id="loop-sfx2" onclick="toggleLoop('sfx2')">🔁</button>
+      <button class="t-btn" onclick="fadeOut('sfx2')" style="font-size:11px;color:var(--gold)">FADE↓</button>
+      <button class="t-btn" onclick="fadeIn('sfx2')"  style="font-size:11px;color:var(--green)">FADE↑</button>
+    </div>
+  </div>
+
+  <!-- ── 마스터 + 큐 리스트 ── -->
+  <div style="display:flex;flex-direction:column;gap:2px">
+    <!-- 효과음 패드 보드 -->
+    <div class="sfx-board">
+      <div class="sfx-header">
+        <span>⚡ 효과음 패드</span>
+        <span style="font-size:9px;color:var(--subtext)">클릭 또는 1~8키</span>
+      </div>
+      <div class="sfx-grid" id="sfx-grid">
+        <!-- 패드는 JS로 생성 -->
+      </div>
+    </div>
+
+    <!-- 마스터 / 큐 -->
+    <div class="master-strip">
+      <div class="master-title">📋 CUE LIST</div>
+      <select class="scene-select" id="scene-select" onchange="loadCue(this.value)">
+        <option value="">-- 큐 선택 --</option>
+      </select>
+      <div class="scene-cue-list" id="cue-list"></div>
+      <div class="save-row">
+        <button class="save-btn save" onclick="saveCue()">💾 큐 저장</button>
+        <button class="save-btn load" onclick="loadCueFromStorage()">📂 불러오기</button>
+      </div>
+      <button onclick="saveAllCues()" style="margin-top:6px;width:100%;padding:7px;border-radius:6px;cursor:pointer;background:rgba(206,147,216,0.1);border:1px solid var(--purple);color:var(--purple);font-family:inherit;font-size:11px">
+        📥 큐 전체 내보내기 (JSON)
+      </button>
+    </div>
+  </div>
+
+</div><!-- /console -->
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+// Web Audio API 초기화
+// ══════════════════════════════════════════════════════════════════════════════
+const AC = new (window.AudioContext || window.webkitAudioContext)();
+const masterGain = AC.createGain();
+masterGain.gain.value = 0.85;
+masterGain.connect(AC.destination);
+
+// 분석기 (VU 미터용)
+const masterAnalyser = AC.createAnalyser();
+masterAnalyser.fftSize = 256;
+masterGain.connect(masterAnalyser);
+
+// ── 채널 상태 ──
+const CHANNELS = ['bgm', 'mr', 'sfx2'];
+const tracks = {};
+
+CHANNELS.forEach(id => {
+  const gainNode  = AC.createGain();
+  const panNode   = AC.createStereoPanner ? AC.createStereoPanner() : null;
+  const analyser  = AC.createAnalyser();
+  analyser.fftSize = 256;
+
+  if (panNode) {
+    gainNode.connect(panNode);
+    panNode.connect(masterGain);
+    panNode.connect(analyser);
+  } else {
+    gainNode.connect(masterGain);
+    gainNode.connect(analyser);
+  }
+
+  tracks[id] = {
+    audio: null,        // HTMLAudioElement
+    source: null,       // MediaElementSourceNode
+    gainNode, panNode, analyser,
+    loop: false,
+    vol: id === 'mr' ? 1.0 : id === 'bgm' ? 0.8 : 0.7,
+    fadeTime: id === 'mr' ? 1.5 : 2.0,
+  };
+  gainNode.gain.value = tracks[id].vol;
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 파일 / URL 로드
+// ══════════════════════════════════════════════════════════════════════════════
+function triggerUpload(id) {
+  // label이 아닌 div를 클릭했을 때 input 트리거 방지 (input 자체 클릭 처리)
+}
+
+function loadFile(id, input) {
+  if (!input.files[0]) return;
+  const file = input.files[0];
+  const url  = URL.createObjectURL(file);
+  setAudioSrc(id, url);
+  document.getElementById(`fname-${id}`).textContent = file.name;
+  document.getElementById(`zone-${id}`).classList.add('loaded');
+  toast(`✅ ${file.name} 로드됨`);
+}
+
+function loadUrl(id) {
+  const url = document.getElementById(`url-${id}`).value.trim();
+  if (!url) return;
+  setAudioSrc(id, url);
+  toast(`🔗 URL 로드 시도 중...`);
+}
+
+function setAudioSrc(id, url) {
+  const t = tracks[id];
+  // 기존 오디오 정리
+  if (t.audio) { t.audio.pause(); t.source && t.source.disconnect(); }
+  const audio = new Audio();
+  audio.crossOrigin = 'anonymous';
+  audio.src = url;
+  audio.loop = t.loop;
+  audio.preload = 'metadata';
+
+  const source = AC.createMediaElementSource(audio);
+  source.connect(t.gainNode);
+
+  t.audio  = audio;
+  t.source = source;
+
+  // 시간 업데이트
+  audio.addEventListener('timeupdate', () => updateTime(id));
+  audio.addEventListener('loadedmetadata', () => updateTime(id));
+  audio.addEventListener('playing', () => updateLed(id, 'on-green'));
+  audio.addEventListener('pause',   () => updateLed(id, ''));
+  audio.addEventListener('ended',   () => { updateLed(id, ''); });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 트랜스포트
+// ══════════════════════════════════════════════════════════════════════════════
+function resumeAC() {
+  if (AC.state === 'suspended') AC.resume();
+}
+
+function playTrack(id) {
+  resumeAC();
+  const t = tracks[id];
+  if (!t.audio) { toast('⚠ 먼저 오디오를 업로드하세요'); return; }
+  t.audio.play().catch(e => toast('재생 오류: ' + e.message));
+}
+
+function pauseTrack(id) {
+  const t = tracks[id];
+  if (t.audio) t.audio.pause();
+}
+
+function stopTrack(id) {
+  const t = tracks[id];
+  if (!t.audio) return;
+  t.audio.pause();
+  t.audio.currentTime = 0;
+  updateLed(id, '');
+}
+
+function toggleLoop(id) {
+  const t = tracks[id];
+  t.loop = !t.loop;
+  if (t.audio) t.audio.loop = t.loop;
+  const btn = document.getElementById(`loop-${id}`);
+  btn.classList.toggle('on', t.loop);
+  toast(t.loop ? `🔁 ${id.toUpperCase()} 반복 ON` : `${id.toUpperCase()} 반복 OFF`);
+}
+
+// ── 페이드 ──
+function fadeOut(id) {
+  resumeAC();
+  const t   = tracks[id];
+  const sec = parseFloat(document.getElementById(`fade-${id}`).value);
+  const g   = t.gainNode.gain;
+  g.cancelScheduledValues(AC.currentTime);
+  g.setValueAtTime(g.value, AC.currentTime);
+  g.linearRampToValueAtTime(0, AC.currentTime + sec);
+  setTimeout(() => { if (t.audio) t.audio.pause(); }, sec * 1000 + 100);
+  toast(`🔽 ${id.toUpperCase()} 페이드아웃 ${sec}s`);
+}
+
+function fadeIn(id) {
+  resumeAC();
+  const t   = tracks[id];
+  if (!t.audio) { toast('⚠ 먼저 오디오를 업로드하세요'); return; }
+  const sec = parseFloat(document.getElementById(`fade-${id}`).value);
+  const target = t.vol;
+  const g   = t.gainNode.gain;
+  g.cancelScheduledValues(AC.currentTime);
+  g.setValueAtTime(0, AC.currentTime);
+  t.audio.play().catch(() => {});
+  g.linearRampToValueAtTime(target, AC.currentTime + sec);
+  toast(`🔼 ${id.toUpperCase()} 페이드인 ${sec}s`);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 볼륨 / 패닝 / 페이더
+// ══════════════════════════════════════════════════════════════════════════════
+function setVol(id, val) {
+  const v = val / 100;
+  tracks[id].vol = v;
+  tracks[id].gainNode.gain.value = v;
+  document.getElementById(`vval-${id}`).textContent = val + '%';
+  // 페이더 동기화
+  document.getElementById(`fader-${id}`).value = val;
+  updateFaderDb(id, val);
+}
+
+function setFader(id, val) {
+  const v = val / 100;
+  tracks[id].vol = v;
+  tracks[id].gainNode.gain.value = v;
+  document.getElementById(`vol-${id}`).value = val;
+  document.getElementById(`vval-${id}`).textContent = val + '%';
+  updateFaderDb(id, val);
+}
+
+function updateFaderDb(id, val) {
+  const db = val == 0 ? '-∞' : (20 * Math.log10(val/100)).toFixed(1) + 'dB';
+  document.getElementById(`fdb-${id}`).textContent = db;
+}
+
+function setPan(id, val) {
+  const t = tracks[id];
+  if (t.panNode) t.panNode.pan.value = val / 100;
+  const label = val == 0 ? 'C' : val > 0 ? `R${val}` : `L${-val}`;
+  document.getElementById(`pval-${id}`).textContent = label;
+}
+
+function setMasterVol(val) {
+  masterGain.gain.value = val / 100;
+  document.getElementById('master-vol-val').textContent = val;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// VU 미터 애니메이션
+// ══════════════════════════════════════════════════════════════════════════════
+const vuData = new Uint8Array(32);
+
+function animateVU() {
+  CHANNELS.forEach(id => {
+    const t = tracks[id];
+    if (!t.audio || t.audio.paused) {
+      document.getElementById(`vu-${id}`).style.width = '0%';
+      updateLed(id, t.audio && !t.audio.paused ? 'on-green' : '');
+      return;
+    }
+    t.analyser.getByteFrequencyData(vuData);
+    const avg = vuData.slice(0, 16).reduce((a, b) => a + b, 0) / 16;
+    const pct = Math.min(100, (avg / 128) * 100);
+    document.getElementById(`vu-${id}`).style.width = pct + '%';
+    updateLed(id, pct > 80 ? 'on-red' : pct > 40 ? 'on-orange' : 'on-green');
+  });
+
+  // 마스터 VU
+  masterAnalyser.getByteFrequencyData(vuData);
+  const masterPct = Math.min(100, (vuData.slice(0,16).reduce((a,b)=>a+b,0)/16/128)*100);
+  const bars = document.querySelectorAll('.vu-bar');
+  bars.forEach((b, i) => {
+    const h = Math.max(3, (i < masterPct / (100/bars.length) ? 8 + i * 1.5 : 3));
+    b.style.height = h + 'px';
+    b.style.background = i > bars.length * 0.8 ? 'var(--red)' :
+                         i > bars.length * 0.6 ? 'var(--orange)' : 'var(--green)';
+  });
+
+  requestAnimationFrame(animateVU);
+}
+
+function updateLed(id, cls) {
+  const led = document.getElementById(`led-${id}`);
+  led.className = 'led ' + cls;
+}
+
+function updateTime(id) {
+  const a = tracks[id].audio;
+  if (!a) return;
+  const cur = formatTime(a.currentTime);
+  const dur = formatTime(isNaN(a.duration) ? 0 : a.duration);
+  document.getElementById(`time-${id}`).textContent = `${cur} / ${dur}`;
+}
+
+function formatTime(s) {
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 효과음 패드
+// ══════════════════════════════════════════════════════════════════════════════
+const SFX_DEFAULTS = [
+  { name:'박수',     emoji:'👏', color:'#4fc3f7', key:'1' },
+  { name:'천둥',     emoji:'⛈',  color:'#ce93d8', key:'2' },
+  { name:'바람',     emoji:'🌬',  color:'#80cbc4', key:'3' },
+  { name:'종소리',   emoji:'🔔', color:'#f5c842', key:'4' },
+  { name:'환호성',   emoji:'📣', color:'#69f0ae', key:'5' },
+  { name:'문소리',   emoji:'🚪', color:'#ff8a65', key:'6' },
+  { name:'비소리',   emoji:'🌧',  color:'#90caf9', key:'7' },
+  { name:'조명',     emoji:'💡', color:'#ffe082', key:'8' },
+];
+
+const sfxPads = SFX_DEFAULTS.map((d, i) => ({ ...d, audio: null, id: 'pad' + i }));
+
+function buildSfxPads() {
+  const grid = document.getElementById('sfx-grid');
+  grid.innerHTML = '';
+  sfxPads.forEach((pad, i) => {
+    const div = document.createElement('div');
+    div.className = 'sfx-pad';
+    div.id = pad.id;
+    div.style.background = pad.color + '18';
+    div.style.borderColor = pad.color + '60';
+    div.style.color = pad.color;
+    div.innerHTML = `
+      <input type="file" class="sfx-pad-upload" accept="audio/*"
+        onchange="loadSfxFile(${i}, this)" title="오디오 파일 업로드">
+      <div style="font-size:20px;margin-bottom:4px">${pad.emoji}</div>
+      <div class="sfx-pad-name">${pad.name}</div>
+      <div class="sfx-pad-key">[ ${pad.key} ]</div>
+      ${pad.audio ? `<div style="font-size:8px;color:var(--green);margin-top:3px">●</div>` : ''}
+    `;
+    div.addEventListener('click', (e) => {
+      if (e.target.classList.contains('sfx-pad-upload')) return;
+      fireSfx(i);
+    });
+    grid.appendChild(div);
+  });
+
+  // 추가 버튼
+  const addDiv = document.createElement('div');
+  addDiv.className = 'sfx-add';
+  addDiv.innerHTML = `<button class="sfx-add-btn" onclick="addSfxPad()">+ 효과음 패드 추가</button>`;
+  grid.appendChild(addDiv);
+}
+
+function loadSfxFile(i, input) {
+  if (!input.files[0]) return;
+  const file = input.files[0];
+  sfxPads[i].audio = new Audio(URL.createObjectURL(file));
+  sfxPads[i].name  = file.name.replace(/\.[^.]+$/, '').slice(0, 8);
+  toast(`✅ 패드${i+1}: ${sfxPads[i].name}`);
+  buildSfxPads();
+}
+
+function fireSfx(i) {
+  resumeAC();
+  const pad = sfxPads[i];
+  if (!pad.audio) { toast(`⚠ 패드 [${pad.key}] 에 파일을 업로드하세요`); return; }
+  pad.audio.currentTime = 0;
+  pad.audio.play();
+  const el = document.getElementById(pad.id);
+  el.classList.add('firing');
+  setTimeout(() => el.classList.remove('firing'), 150);
+}
+
+function addSfxPad() {
+  const emoji = ['🎺','🥁','🎻','🎹','🪗','🎷','🪘','🔊'][sfxPads.length % 8];
+  const colors = ['#f48fb1','#a5d6a7','#fff176','#b39ddb','#80deea','#ffcc80'];
+  sfxPads.push({
+    name: '패드' + (sfxPads.length + 1), emoji,
+    color: colors[sfxPads.length % colors.length],
+    key: '', audio: null, id: 'pad' + sfxPads.length
+  });
+  buildSfxPads();
+}
+
+// 키보드 단축키
+document.addEventListener('keydown', e => {
+  if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+  const i = parseInt(e.key) - 1;
+  if (i >= 0 && i < sfxPads.length) fireSfx(i);
+  // Space = BGM 재생/정지
+  if (e.key === ' ') {
+    e.preventDefault();
+    const t = tracks['bgm'];
+    if (t.audio && !t.audio.paused) pauseTrack('bgm'); else playTrack('bgm');
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 큐 리스트
+// ══════════════════════════════════════════════════════════════════════════════
+let cues = [];
+let activeCue = -1;
+
+const CUE_COLORS = {
+  bgm: 'var(--green)', mr: 'var(--purple)', sfx2: 'var(--orange)'
+};
+
+function saveCue() {
+  const name = prompt('큐 이름:', `CUE ${cues.length + 1}`);
+  if (!name) return;
+  const cue = {
+    name,
+    bgm:  { vol: tracks.bgm.vol,  pan: document.getElementById('pan-bgm').value,  loop: tracks.bgm.loop },
+    mr:   { vol: tracks.mr.vol,   pan: document.getElementById('pan-mr').value,   loop: tracks.mr.loop },
+    sfx2: { vol: tracks.sfx2.vol, pan: document.getElementById('pan-sfx2').value, loop: tracks.sfx2.loop },
+  };
+  cues.push(cue);
+  rebuildCueList();
+  toast(`💾 "${name}" 저장됨`);
+}
+
+function rebuildCueList() {
+  const list = document.getElementById('cue-list');
+  const sel  = document.getElementById('scene-select');
+  list.innerHTML = '';
+  sel.innerHTML  = '<option value="">-- 큐 선택 --</option>';
+  cues.forEach((c, i) => {
+    // 리스트
+    const div = document.createElement('div');
+    div.className = 'cue-item' + (i === activeCue ? ' active' : '');
+    div.innerHTML = `
+      <div class="cue-dot" style="background:var(--gold)"></div>
+      <span class="cue-num">${String(i+1).padStart(2,'0')}</span>
+      <span style="flex:1;font-size:11px">${c.name}</span>
+      <span style="font-size:9px;color:var(--subtext);cursor:pointer" onclick="deleteCue(${i})">✕</span>
+    `;
+    div.onclick = (e) => { if (e.target.tagName !== 'SPAN' || !e.target.onclick) loadCue(i); };
+    list.appendChild(div);
+    // 셀렉트
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = `${String(i+1).padStart(2,'0')}. ${c.name}`;
+    sel.appendChild(opt);
+  });
+}
+
+function loadCue(idx) {
+  idx = parseInt(idx);
+  if (isNaN(idx) || idx < 0 || idx >= cues.length) return;
+  const c = cues[idx];
+  activeCue = idx;
+  // BGM
+  setFader('bgm',  Math.round(c.bgm.vol  * 100));
+  setPan('bgm',    parseInt(c.bgm.pan));
+  if (tracks.bgm.loop !== c.bgm.loop) toggleLoop('bgm');
+  // MR
+  setFader('mr',   Math.round(c.mr.vol   * 100));
+  setPan('mr',     parseInt(c.mr.pan));
+  if (tracks.mr.loop !== c.mr.loop) toggleLoop('mr');
+  // SFX2
+  setFader('sfx2', Math.round(c.sfx2.vol * 100));
+  setPan('sfx2',   parseInt(c.sfx2.pan));
+  rebuildCueList();
+  toast(`▶ CUE ${String(idx+1).padStart(2,'0')}: "${c.name}" 로드됨`);
+}
+
+function deleteCue(i) {
+  cues.splice(i, 1);
+  if (activeCue >= cues.length) activeCue = -1;
+  rebuildCueList();
+}
+
+function loadCueFromStorage() {
+  const raw = localStorage.getItem('eaim_mixer_cues');
+  if (!raw) { toast('저장된 큐가 없습니다'); return; }
+  try {
+    cues = JSON.parse(raw);
+    rebuildCueList();
+    toast(`📂 ${cues.length}개 큐 불러옴`);
+  } catch(e) { toast('불러오기 실패'); }
+}
+
+function saveAllCues() {
+  localStorage.setItem('eaim_mixer_cues', JSON.stringify(cues));
+  // JSON 다운로드
+  const blob = new Blob([JSON.stringify(cues, null, 2)], {type:'application/json'});
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'eaim_mixer_cues.json';
+  a.click();
+  toast('📥 큐 리스트 내보내기 완료');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 마스터 VU 바 초기화
+// ══════════════════════════════════════════════════════════════════════════════
+function buildMasterVU() {
+  const wrap = document.getElementById('vu-master');
+  for (let i = 0; i < 14; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'vu-bar';
+    bar.style.height = '4px';
+    wrap.appendChild(bar);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 토스트
+// ══════════════════════════════════════════════════════════════════════════════
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.style.display = 'block';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.style.display = 'none'; }, 2200);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 초기화
+// ══════════════════════════════════════════════════════════════════════════════
+buildMasterVU();
+buildSfxPads();
+animateVU();
+
+// localStorage에서 뮤지컬메이커 데이터 읽어 큐리스트 자동 생성
+(function autoImportFromMaker() {
+  const raw = localStorage.getItem('eaim_musical_data');
+  if (!raw) return;
+  try {
+    const data = JSON.parse(raw);
+    if (!data.scenes) return;
+    // 장면별 기본 큐 생성 (비어있을 때만)
+    if (cues.length === 0) {
+      data.scenes.forEach((s, i) => {
+        cues.push({
+          name: `장면${i+1}: ${s.title || ''}`,
+          bgm:  { vol: 0.8,  pan: 0,   loop: true },
+          mr:   { vol: 0.0,  pan: 0,   loop: false },
+          sfx2: { vol: 0.5,  pan: 0,   loop: false },
+        });
+      });
+      cues.push({ name: '커튼콜', bgm:{vol:0.6,pan:0,loop:true}, mr:{vol:1.0,pan:0,loop:false}, sfx2:{vol:0.3,pan:0,loop:false} });
+      rebuildCueList();
+      toast(`🎭 "${data.title}" 큐리스트 자동 생성 (${cues.length}개)`);
+    }
+  } catch(e) {}
+})();
+
+toast('🎚 EAIM 오디오 믹서 준비 완료 — 공연 파이팅! 🎭');
+</script>
+</body>
+</html>
