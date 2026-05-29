@@ -541,6 +541,50 @@ select.ts{background:var(--inp);border:1px solid #444;color:var(--txt);padding:3
       <option value="auto">내용 맞춤</option>
     </select>
   </div>
+
+  <!-- 색상 테마 -->
+  <div class="fg">
+    <label>표 색상 테마</label>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px" id="tbl-theme-grid">
+      <!-- JS로 생성 -->
+    </div>
+  </div>
+
+  <!-- 직접 색상 설정 -->
+  <div style="border:1px solid #2a2a4a;border-radius:6px;padding:10px;margin-bottom:10px">
+    <div style="font-size:11px;color:#888;margin-bottom:8px">직접 색상 설정</div>
+    <div class="row3">
+      <div class="fg" style="margin-bottom:0">
+        <label>헤더 배경</label>
+        <input type="color" id="tbl-header-bg" value="#2c3e50" onchange="updateTablePreview()">
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <label>헤더 글자</label>
+        <input type="color" id="tbl-header-color" value="#ffffff" onchange="updateTablePreview()">
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <label>줄무늬 색</label>
+        <input type="color" id="tbl-stripe" value="#f5f5f5" onchange="updateTablePreview()">
+      </div>
+    </div>
+    <div class="row2" style="margin-top:8px">
+      <div class="fg" style="margin-bottom:0">
+        <label>테두리 색</label>
+        <input type="color" id="tbl-border-color" value="#cccccc" onchange="updateTablePreview()">
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <label>본문 글자</label>
+        <input type="color" id="tbl-body-color" value="#1a1a1a" onchange="updateTablePreview()">
+      </div>
+    </div>
+  </div>
+
+  <!-- 미리보기 -->
+  <div style="margin-bottom:12px">
+    <div style="font-size:11px;color:#888;margin-bottom:6px">미리보기</div>
+    <div id="tbl-preview" style="background:#fff;border-radius:4px;padding:8px;overflow:auto"></div>
+  </div>
+
   <div style="font-size:11px;color:#888;margin-bottom:12px">
     ※ Tab키로 셀 이동, 마지막 셀에서 Tab 누르면 행 자동 추가<br>
     ※ 표가 페이지를 넘치면 다음 페이지로 자동 이동
@@ -658,6 +702,17 @@ select.ts{background:var(--inp);border:1px solid #444;color:var(--txt);padding:3
   </div>
   <div id="ai-msgs"></div>
   <div id="ai-bot">
+    <!-- 현재 페이지 전체 교정 버튼 -->
+    <button id="btn-page-correct" onclick="correctCurrentPage()" style="
+      width:100%; padding:8px; border-radius:6px; cursor:pointer;
+      background:linear-gradient(135deg,rgba(233,69,96,0.2),rgba(233,69,96,0.1));
+      border:1px solid rgba(233,69,96,0.4); color:#e94560;
+      font-family:inherit; font-size:12px; font-weight:bold;
+      display:flex; align-items:center; justify-content:center; gap:6px;
+      transition:.2s; margin-bottom:4px;
+    ">
+      📄 현재 페이지 전체 교정
+    </button>
     <div class="ai-qb">
       <button class="aqb" onclick="aiQuick('spell')">맞춤법 교정</button>
       <button class="aqb" onclick="aiQuick('style')">문체 개선</button>
@@ -1316,33 +1371,112 @@ function showSpreadView(){
 // ── Table insertion ────────────────────────────────
 function insertTable(){ openModal('modal-table'); }
 
-function doInsertTable(){
-  const rows=parseInt(document.getElementById('tbl-rows').value)||3;
-  const cols=parseInt(document.getElementById('tbl-cols').value)||3;
-  const hasHeader=document.getElementById('tbl-header').checked;
-  const width=document.getElementById('tbl-width').value;
+// ── Table color themes ─────────────────────────────
+const TBL_THEMES = [
+  { name:'클래식',   hBg:'#2c3e50', hColor:'#ffffff', stripe:'#f5f5f5', border:'#cccccc', bodyColor:'#1a1a1a' },
+  { name:'블루',     hBg:'#1565c0', hColor:'#ffffff', stripe:'#e3f2fd', border:'#90caf9', bodyColor:'#1a1a1a' },
+  { name:'그린',     hBg:'#2e7d32', hColor:'#ffffff', stripe:'#e8f5e9', border:'#a5d6a7', bodyColor:'#1a1a1a' },
+  { name:'퍼플',     hBg:'#6a1b9a', hColor:'#ffffff', stripe:'#f3e5f5', border:'#ce93d8', bodyColor:'#1a1a1a' },
+  { name:'레드',     hBg:'#c62828', hColor:'#ffffff', stripe:'#ffebee', border:'#ef9a9a', bodyColor:'#1a1a1a' },
+  { name:'오렌지',   hBg:'#e65100', hColor:'#ffffff', stripe:'#fff3e0', border:'#ffcc80', bodyColor:'#1a1a1a' },
+  { name:'틸',       hBg:'#00695c', hColor:'#ffffff', stripe:'#e0f2f1', border:'#80cbc4', bodyColor:'#1a1a1a' },
+  { name:'골드',     hBg:'#f57f17', hColor:'#ffffff', stripe:'#fffde7', border:'#fff176', bodyColor:'#1a1a1a' },
+  { name:'네이비',   hBg:'#0d47a1', hColor:'#ffffff', stripe:'#e8eaf6', border:'#9fa8da', bodyColor:'#1a1a1a' },
+  { name:'핑크',     hBg:'#880e4f', hColor:'#ffffff', stripe:'#fce4ec', border:'#f48fb1', bodyColor:'#1a1a1a' },
+  { name:'라임',     hBg:'#558b2f', hColor:'#ffffff', stripe:'#f1f8e9', border:'#aed581', bodyColor:'#1a1a1a' },
+  { name:'모노',     hBg:'#424242', hColor:'#ffffff', stripe:'#f5f5f5', border:'#bdbdbd', bodyColor:'#1a1a1a' },
+];
 
-  let html=`<table style="width:${width}"><tbody>`;
-  for(let r=0;r<rows;r++){
-    html+='<tr>';
-    for(let c=0;c<cols;c++){
-      if(r===0&&hasHeader){
-        html+=`<th contenteditable="true">머리행 ${c+1}</th>`;
+function buildTableThemes() {
+  const grid = document.getElementById('tbl-theme-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  TBL_THEMES.forEach((t, i) => {
+    const btn = document.createElement('button');
+    btn.style.cssText = `
+      padding:6px 4px; border-radius:5px; cursor:pointer;
+      background:${t.hBg}; color:${t.hColor};
+      border:2px solid transparent; font-size:11px;
+      font-family:inherit; transition:.15s;
+    `;
+    btn.textContent = t.name;
+    btn.onclick = () => {
+      document.getElementById('tbl-header-bg').value    = t.hBg;
+      document.getElementById('tbl-header-color').value = t.hColor;
+      document.getElementById('tbl-stripe').value       = t.stripe;
+      document.getElementById('tbl-border-color').value = t.border;
+      document.getElementById('tbl-body-color').value   = t.bodyColor;
+      grid.querySelectorAll('button').forEach(b => b.style.borderColor = 'transparent');
+      btn.style.borderColor = '#e94560';
+      updateTablePreview();
+    };
+    grid.appendChild(btn);
+  });
+}
+
+function updateTablePreview() {
+  const rows      = Math.min(parseInt(document.getElementById('tbl-rows').value)||3, 4);
+  const cols      = Math.min(parseInt(document.getElementById('tbl-cols').value)||3, 5);
+  const hasHeader = document.getElementById('tbl-header').checked;
+  const hBg       = document.getElementById('tbl-header-bg').value;
+  const hColor    = document.getElementById('tbl-header-color').value;
+  const stripe    = document.getElementById('tbl-stripe').value;
+  const border    = document.getElementById('tbl-border-color').value;
+  const bodyColor = document.getElementById('tbl-body-color').value;
+
+  let html = `<table style="width:100%;border-collapse:collapse;font-size:11px">`;
+  for (let r = 0; r < rows; r++) {
+    const isHeader  = r === 0 && hasHeader;
+    const isStripe  = !isHeader && r % 2 === 0;
+    const rowBg     = isHeader ? hBg : isStripe ? stripe : '#fff';
+    const rowColor  = isHeader ? hColor : bodyColor;
+    html += `<tr>`;
+    for (let c = 0; c < cols; c++) {
+      const tag = isHeader ? 'th' : 'td';
+      html += `<${tag} style="border:.4pt solid ${border};padding:3pt 5pt;background:${rowBg};color:${rowColor};font-weight:${isHeader?'bold':'normal'}">${isHeader?`열 ${c+1}`:`내용`}</${tag}>`;
+    }
+    html += `</tr>`;
+  }
+  html += `</table>`;
+  document.getElementById('tbl-preview').innerHTML = html;
+}
+
+function doInsertTable(){
+  const rows      = parseInt(document.getElementById('tbl-rows').value)||3;
+  const cols      = parseInt(document.getElementById('tbl-cols').value)||3;
+  const hasHeader = document.getElementById('tbl-header').checked;
+  const width     = document.getElementById('tbl-width').value;
+  const hBg       = document.getElementById('tbl-header-bg').value;
+  const hColor    = document.getElementById('tbl-header-color').value;
+  const stripe    = document.getElementById('tbl-stripe').value;
+  const border    = document.getElementById('tbl-border-color').value;
+  const bodyColor = document.getElementById('tbl-body-color').value;
+
+  let html = `<table style="width:${width};border-collapse:collapse"><tbody>`;
+  for (let r = 0; r < rows; r++) {
+    const isHeader = r === 0 && hasHeader;
+    const isStripe = !isHeader && r % 2 === 0;
+    const rowBg    = isHeader ? hBg : isStripe ? stripe : '#ffffff';
+    const rowColor = isHeader ? hColor : bodyColor;
+    html += '<tr>';
+    for (let c = 0; c < cols; c++) {
+      if (isHeader) {
+        html += `<th contenteditable="true" style="border:.4pt solid ${border};padding:3pt 5pt;background:${hBg};color:${hColor};font-weight:bold;text-align:center">열 ${c+1}</th>`;
       } else {
-        html+=`<td contenteditable="true"></td>`;
+        html += `<td contenteditable="true" style="border:.4pt solid ${border};padding:3pt 5pt;background:${rowBg};color:${rowColor}"></td>`;
       }
     }
-    html+='</tr>';
+    html += '</tr>';
   }
-  html+='</tbody></table>';
+  html += '</tbody></table>';
 
-  const wrap=pageEl(S.curPage);
-  const cont=wrap?wrap.querySelector('.pg-content'):null;
-  if(!cont){ closeModal('modal-table'); return; }
+  const wrap = pageEl(S.curPage);
+  const cont = wrap ? wrap.querySelector('.pg-content') : null;
+  if (!cont) { closeModal('modal-table'); return; }
   cont.focus();
-  document.execCommand('insertHTML',false,html);
-  S.pages[S.curPage].content=cont.innerHTML;
-  S.dirty=true;
+  document.execCommand('insertHTML', false, html);
+  S.pages[S.curPage].content = cont.innerHTML;
+  S.dirty = true;
   onContentChange(S.curPage);
   closeModal('modal-table');
   notify('표 삽입 완료 — Tab키로 셀 이동');
@@ -2126,7 +2260,10 @@ function openModal(id){
   const m=document.getElementById(id);
   if(m) m.classList.add('on');
   // Populate modal values
-  if(id==='modal-backcover'){
+  if(id==='modal-table'){
+    buildTableThemes();
+    updateTablePreview();
+  } else if(id==='modal-backcover'){
     const bc=S.backCover;
     document.getElementById('bc-synopsis').value=bc.synopsis||'';
     document.getElementById('bc-author-bio').value=bc.authorBio||'';
@@ -2390,6 +2527,135 @@ async function sendAI(){
   }
 }
 document.getElementById('ai-inp').addEventListener('keydown',e=>{ if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); sendAI(); } });
+
+// ── 현재 페이지 전체 교정 ──────────────────────────
+async function correctCurrentPage(){
+  if(!S.aiKey){ addAIMsg('s','API 키를 먼저 입력해주세요.'); return; }
+
+  const pg = S.pages[S.curPage];
+  if(!pg || pg.type !== 'content'){
+    addAIMsg('s','본문 페이지에서만 사용 가능합니다.');
+    return;
+  }
+
+  const wrap = pageEl(S.curPage);
+  const cont = wrap ? wrap.querySelector('.pg-content') : null;
+  if(!cont || !cont.innerText.trim()){
+    addAIMsg('s','현재 페이지에 텍스트가 없습니다.');
+    return;
+  }
+
+  const originalText = cont.innerText.trim();
+  const originalHTML = cont.innerHTML;
+
+  // 버튼 로딩
+  const btn = document.getElementById('btn-page-correct');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 교정 중...';
+
+  addAIMsg('u', `📄 ${S.curPage+1}페이지 전체 교정 요청`);
+
+  const loading = document.createElement('div');
+  loading.className = 'amsg a';
+  loading.innerHTML = '<span class="spinner"></span> 교정하고 있어요...';
+  document.getElementById('ai-msgs').appendChild(loading);
+  document.getElementById('ai-msgs').scrollTop = 9999;
+
+  try {
+    const resp = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${S.aiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text:
+            `다음 한국어 텍스트의 맞춤법, 띄어쓰기, 오타를 교정해주세요.
+제목(H1/H2/H3)과 본문 구조는 그대로 유지하고, 내용은 변경하지 마세요.
+교정된 전체 텍스트만 출력하세요 (설명 없이).
+
+원문:
+${originalText}`
+          }] }],
+          generationConfig: { temperature: 0.1, maxOutputTokens: 3000 }
+        })
+      }
+    );
+
+    const data = await resp.json();
+    loading.remove();
+
+    if(data.error){ addAIMsg('s','오류: '+data.error.message); return; }
+
+    const corrected = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+    if(!corrected){ addAIMsg('s','교정 결과를 받지 못했습니다.'); return; }
+
+    // 변경사항 찾기
+    const origLines = originalText.split('\n').filter(l=>l.trim());
+    const corrLines = corrected.split('\n').filter(l=>l.trim());
+    let diffCount = 0;
+    corrLines.forEach((line, i) => {
+      if(origLines[i] && origLines[i] !== line) diffCount++;
+    });
+
+    // 결과 메시지 + 적용/취소 버튼
+    const resultDiv = document.createElement('div');
+    resultDiv.className = 'amsg a';
+    resultDiv.style.cssText = 'max-width:100%';
+    resultDiv.innerHTML = `
+      <div style="margin-bottom:8px;color:#7acc7a;font-weight:bold">
+        ✓ 교정 완료 — ${diffCount}곳 수정됨
+      </div>
+      <div style="background:#111;border-radius:4px;padding:8px;font-size:11px;max-height:120px;overflow-y:auto;margin-bottom:10px;white-space:pre-wrap;color:#ccc">${corrected.substring(0,400)}${corrected.length>400?'...':''}</div>
+      <div style="display:flex;gap:6px">
+        <button onclick="applyCorrection(this,'${encodeURIComponent(corrected)}')" style="flex:1;padding:6px;border-radius:4px;cursor:pointer;background:rgba(105,240,174,0.2);border:1px solid #69f0ae;color:#69f0ae;font-family:inherit;font-size:11px">
+          ✅ 적용
+        </button>
+        <button onclick="this.parentElement.parentElement.remove()" style="flex:1;padding:6px;border-radius:4px;cursor:pointer;background:rgba(255,82,82,0.1);border:1px solid #ff5252;color:#ff8080;font-family:inherit;font-size:11px">
+          ❌ 취소
+        </button>
+      </div>
+    `;
+    resultDiv.dataset.originalHtml = encodeURIComponent(originalHTML);
+    document.getElementById('ai-msgs').appendChild(resultDiv);
+    document.getElementById('ai-msgs').scrollTop = 9999;
+
+  } catch(err) {
+    loading.remove();
+    addAIMsg('s', '오류: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '📄 현재 페이지 전체 교정';
+  }
+}
+
+function applyCorrection(btn, encodedText) {
+  const corrected = decodeURIComponent(encodedText);
+  const wrap = pageEl(S.curPage);
+  const cont = wrap ? wrap.querySelector('.pg-content') : null;
+  if(!cont) return;
+
+  // HTML 구조 유지하면서 텍스트만 교체
+  const lines = corrected.split('\n').filter(l => l.trim());
+  const children = [...cont.children];
+
+  // 간단하게: 텍스트 노드만 교체
+  let lineIdx = 0;
+  children.forEach(child => {
+    const tag = child.tagName?.toLowerCase();
+    if(['h1','h2','h3','p'].includes(tag) && lineIdx < lines.length) {
+      child.textContent = lines[lineIdx++];
+    }
+  });
+
+  S.pages[S.curPage].content = cont.innerHTML;
+  S.dirty = true;
+  updateStatus();
+
+  // 버튼을 완료 메시지로 교체
+  const parent = btn.parentElement;
+  parent.innerHTML = '<span style="color:#69f0ae;font-size:12px">✓ 교정 내용이 적용되었습니다!</span>';
+  notify('✓ 교정 완료!');
+}
 
 // ── Status bar ─────────────────────────────────────
 function updateStatus(){
