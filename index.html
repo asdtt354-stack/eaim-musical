@@ -184,6 +184,7 @@ header {
 .app-card:nth-child(2) { animation: fadeUp 0.9s ease 3.2s forwards; }
 .app-card:nth-child(3) { animation: fadeUp 0.9s ease 3.4s forwards; }
 .app-card:nth-child(4) { animation: fadeUp 0.9s ease 3.6s forwards; }
+.app-card:nth-child(5) { animation: fadeUp 0.9s ease 3.8s forwards; }
 
 .app-card:hover {
   transform: translateY(-10px) scale(1.02);
@@ -387,7 +388,7 @@ header {
 
 <!-- 앱 카드 -->
 <section class="cards-section">
-  <div class="cards-grid" style="grid-template-columns:repeat(2,1fr);max-width:860px;margin:0 auto">
+  <div class="cards-grid" style="grid-template-columns:repeat(2,1fr);max-width:900px;margin:0 auto">
 
     <!-- 뮤지컬 메이커 -->
     <a class="app-card" href="musical-maker.html" style="--acc:#d4a843">
@@ -507,6 +508,35 @@ header {
         </div>
       </div>
       <div class="card-status" style="background:linear-gradient(90deg,transparent,#f48fb1,transparent)"></div>
+    </a>
+
+    <!-- 사용 가이드 -->
+    <a class="app-card" href="guide.html" style="--acc:#a5d6a7">
+      <div class="card-glow" style="background:linear-gradient(90deg,transparent,#a5d6a788,transparent);opacity:0.5"></div>
+      <div class="card-bg"></div>
+      <div class="card-num">05</div>
+      <div class="card-inner">
+        <div class="card-icon-wrap" style="background:rgba(165,214,167,0.12)">
+          📖
+          <div style="position:absolute;inset:-1px;border-radius:21px;border:1px solid #a5d6a7;opacity:0.4"></div>
+        </div>
+        <div class="card-title">Guide</div>
+        <div class="card-title-ko">사용 가이드</div>
+        <p class="card-desc">
+          뮤지컬 메이커·슬라이드쇼·오디오 믹서 사용법과 공연 당일 체크리스트를 담은 완전 가이드입니다.
+        </p>
+        <div class="card-tags">
+          <span class="card-tag" style="background:rgba(165,214,167,0.12);border:1px solid rgba(165,214,167,0.3);color:#a5d6a7">사용법</span>
+          <span class="card-tag" style="background:rgba(165,214,167,0.12);border:1px solid rgba(165,214,167,0.3);color:#a5d6a7">단축키</span>
+          <span class="card-tag" style="background:rgba(165,214,167,0.12);border:1px solid rgba(165,214,167,0.3);color:#a5d6a7">체크리스트</span>
+          <span class="card-tag" style="background:rgba(165,214,167,0.12);border:1px solid rgba(165,214,167,0.3);color:#a5d6a7">공연 팁</span>
+        </div>
+        <div class="card-cta" style="background:rgba(165,214,167,0.1);border:1px solid rgba(165,214,167,0.25);color:#a5d6a7">
+          <span>가이드 보기</span>
+          <span class="arrow">→</span>
+        </div>
+      </div>
+      <div class="card-status" style="background:linear-gradient(90deg,transparent,#a5d6a7,transparent)"></div>
     </a>
 
   </div>
