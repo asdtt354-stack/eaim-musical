@@ -183,6 +183,7 @@ header {
 .app-card:nth-child(1) { animation: fadeUp 0.9s ease 3.0s forwards; }
 .app-card:nth-child(2) { animation: fadeUp 0.9s ease 3.2s forwards; }
 .app-card:nth-child(3) { animation: fadeUp 0.9s ease 3.4s forwards; }
+.app-card:nth-child(4) { animation: fadeUp 0.9s ease 3.6s forwards; }
 
 .app-card:hover {
   transform: translateY(-10px) scale(1.02);
@@ -585,15 +586,12 @@ for (let i = 0; i < 80; i++) {
 
 // ── 커튼 오프닝 시퀀스 ──
 window.addEventListener('load', () => {
-  // 1.2초 후 커튼 텍스트 페이드
   setTimeout(() => {
     document.getElementById('curtain-text').classList.add('fade');
   }, 1200);
-  // 1.6초 후 커튼 열림
   setTimeout(() => {
     document.getElementById('curtain-wrap').classList.add('open');
   }, 1600);
-  // 3.6초 후 커튼 DOM 제거
   setTimeout(() => {
     document.getElementById('curtain-wrap').classList.add('gone');
     document.getElementById('curtain-text').style.display = 'none';
@@ -620,7 +618,6 @@ document.querySelectorAll('.app-card').forEach(card => {
   });
 });
 
-// 파티클 키프레임 동적 추가
 const style = document.createElement('style');
 style.textContent = `
   @keyframes particleFly {
