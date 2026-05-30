@@ -199,14 +199,14 @@ main{max-width:960px;margin:0 auto;padding:48px 24px 80px;}
   <div class="app-grid">
 
     <!-- Musical Maker -->
-    <div class="app-card card-maker" style="cursor:default;">
+    <div class="app-card card-maker" style="cursor:default;pointer-events:none;">
       <div class="card-icon icon-maker">🎭</div>
       <div class="card-name name-maker">Musical Maker</div>
       <div class="card-name-ko">뮤지컬 메이커</div>
       <div class="card-desc">주제와 장르만 입력하면 AI가 대본·가사·Suno 프롬프트·배경 프롬프트를 자동 생성해요.</div>
-      <div style="display:flex;gap:10px;margin-top:18px;">
-        <a href="maker.html?role=teacher" class="enter-btn btn-teacher" onclick="setRole('teacher')">🎓 선생님 입장</a>
-        <a href="maker.html?role=student" class="enter-btn btn-student" onclick="setRole('student')">🎒 학생 입장</a>
+      <div style="display:flex;gap:10px;margin-top:18px;pointer-events:all;">
+        <a href="maker.html?role=teacher" class="enter-btn btn-teacher" style="pointer-events:all;" onclick="setRole('teacher')">🎓 선생님 입장</a>
+        <a href="maker.html?role=student" class="enter-btn btn-student" style="pointer-events:all;" onclick="setRole('student')">🎒 학생 입장</a>
       </div>
     </div>
 
