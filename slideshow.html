@@ -3,1284 +3,647 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎬 슬라이드쇼 | EAIM 뮤지컬</title>
+<title>EAIM 슬라이드쇼</title>
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
-  background: #0D1B2A; color: #fff;
-  width: 100vw; height: 100vh; overflow: hidden;
-}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Apple SD Gothic Neo',sans-serif;background:#0D1B2A;color:#fff;width:100vw;height:100vh;overflow:hidden}
+#stage{width:100%;height:100%;position:relative}
+.slide{position:absolute;inset:0;transition:opacity .8s ease}
+.slide.hidden{opacity:0;pointer-events:none}
+.slide.visible{opacity:1}
+.bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity 1.4s ease}
+.bg-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.88) 0%,rgba(0,0,0,.35) 55%,rgba(0,0,0,.1) 100%),linear-gradient(to top,rgba(0,0,0,.8) 0%,transparent 45%)}
+.top-bar{position:absolute;top:0;left:0;right:0;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(0,0,0,.5),transparent);z-index:10}
+.scene-badge{border-radius:20px;padding:4px 16px;font-size:11px;font-weight:700;letter-spacing:2px}
+.eaim-label{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:3px}
+.main-content{position:absolute;top:50%;left:0;transform:translateY(-50%);padding:0 36px;max-width:54%;z-index:10;transition:opacity .7s ease .3s,transform .7s ease .3s}
+.main-content.hidden{opacity:0;transform:translateY(calc(-50% + 18px))}
+.main-content.visible{opacity:1;transform:translateY(-50%)}
+.scene-title{font-size:clamp(20px,3vw,36px);font-weight:900;color:#fff;line-height:1.2;margin-bottom:10px;text-shadow:0 2px 20px rgba(0,0,0,.9)}
+.song-badge{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:6px;margin-bottom:14px}
+.song-title-text{font-size:clamp(13px,1.8vw,17px);font-weight:700;letter-spacing:.5px}
+.chars-label{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:2px;margin-bottom:6px;text-transform:uppercase}
+.chars-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.char-chip{padding:3px 10px;border-radius:12px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);font-size:clamp(10px,1.2vw,13px);color:rgba(255,255,255,.85)}
+.tags{display:flex;gap:8px;flex-wrap:wrap}
+.tag-emotion{padding:4px 12px;border-radius:16px;font-size:12px;font-weight:600}
+.tag-mood{padding:4px 12px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);font-size:12px;color:rgba(255,255,255,.7)}
+.lyrics-panel{position:absolute;top:50%;right:28px;transform:translateY(-50%);width:38%;max-height:65%;overflow:hidden;z-index:10;transition:opacity 1s ease .6s}
+.lyrics-panel.hidden{opacity:0}
+.lyrics-panel.visible{opacity:1}
+.lyrics-label{font-size:10px;letter-spacing:3px;margin-bottom:10px;text-transform:uppercase;opacity:.7}
+.lyrics-body{position:relative;padding-left:14px}
+.lyrics-bar{position:absolute;left:0;top:0;bottom:0;width:2px}
+.lyric-line{font-size:clamp(13px,1.8vw,18px);line-height:1.85;font-weight:500;font-style:italic;text-shadow:0 1px 12px rgba(0,0,0,.8)}
+.progress-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,.08);z-index:20}
+.progress-fill{height:100%;transition:width .5s ease}
+#controls{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;background:rgba(0,0,0,.65);backdrop-filter:blur(14px);border-radius:40px;padding:7px 16px;border:1px solid rgba(255,255,255,.12);z-index:100}
+.ctrl-btn{background:none;border:none;cursor:pointer;color:rgba(255,255,255,.8);font-size:17px;padding:4px 8px;line-height:1}
+.ctrl-btn:disabled{opacity:.25;cursor:default}
+.dot-nav{display:flex;gap:5px;align-items:center;padding:0 4px}
+.dot{width:7px;height:7px;border-radius:4px;cursor:pointer;background:rgba(255,255,255,.28);transition:all .25s}
+.dot.active{width:20px}
+#key-hint{position:fixed;top:20px;right:20px;font-size:10px;color:rgba(255,255,255,.2);pointer-events:none}
+#cover-slide{background:linear-gradient(135deg,#0D1B2A 0%,#1A0A2E 55%,#0A1F0A 100%);display:flex;align-items:center;justify-content:center}
+.cover-orb{position:absolute;border-radius:50%;pointer-events:none}
+.cover-inner{text-align:center;z-index:1;padding:0 48px}
+.cover-emoji{font-size:56px;margin-bottom:12px}
+.cover-eyebrow{font-size:13px;color:#5DADE2;letter-spacing:5px;font-weight:700;margin-bottom:14px;text-transform:uppercase}
+.cover-title{font-size:clamp(26px,5vw,52px);font-weight:900;color:#fff;line-height:1.15;margin-bottom:8px;text-shadow:0 4px 30px rgba(93,173,226,.3)}
+.cover-sub{font-size:14px;color:#AED6F1;margin-bottom:24px;opacity:.7}
+.cover-count{display:inline-block;padding:8px 22px;border-radius:24px;background:rgba(93,173,226,.12);border:1px solid rgba(93,173,226,.4);font-size:14px;color:#AED6F1;margin-bottom:28px}
+.cover-hint{color:rgba(255,255,255,.25);font-size:12px;letter-spacing:1px}
+#end-slide{background:radial-gradient(ellipse at 50% 30%,#1a0a2e 0%,#0D1B2A 60%,#000 100%);overflow:hidden}
+.star{position:absolute;border-radius:50%;animation:twinkle 2s ease-in-out infinite alternate}
+#curtain-phase{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 60px;transition:opacity 1s ease}
+.curtain-label{font-size:11px;color:#FFD700;letter-spacing:4px;margin-bottom:8px;text-transform:uppercase}
+.curtain-song{font-size:clamp(16px,2.5vw,22px);color:#C778DD;font-weight:700;letter-spacing:1px;margin-bottom:28px;font-style:italic}
+.curtain-lyrics-wrap{text-align:center;max-width:600px}
+.curtain-lyric-line{font-size:clamp(16px,2.5vw,24px);line-height:1.9;font-style:italic;font-weight:500;text-shadow:0 0 20px rgba(255,215,0,.3)}
+#credits-phase{position:absolute;inset:0;overflow:hidden;transition:opacity 1.2s ease}
+.credits-mask-top{position:absolute;top:0;left:0;right:0;height:120px;z-index:2;background:linear-gradient(to bottom,#0D1B2A,transparent)}
+.credits-mask-bot{position:absolute;bottom:0;left:0;right:0;height:160px;z-index:2;background:linear-gradient(to top,#000,transparent)}
+#credits-scroll{position:absolute;left:50%;transform:translateX(-50%);width:min(600px,90%);top:100%}
+.credits-title{text-align:center;margin-bottom:48px;padding-top:20px}
+.credits-divider{width:60px;height:2px;background:linear-gradient(to right,transparent,#5DADE2,transparent);margin:14px auto}
+.credit-row{display:flex;justify-content:center;align-items:baseline;gap:16px;margin-bottom:20px;padding:0 20px}
+.credit-role{font-size:11px;color:rgba(255,255,255,.4);letter-spacing:2px;text-transform:uppercase;min-width:80px;text-align:right;flex-shrink:0}
+.credit-sep{width:1px;height:14px;background:rgba(255,255,255,.2);flex-shrink:0}
+.credit-name{font-size:clamp(14px,2vw,17px);color:#fff;font-weight:600;line-height:1.5}
+.credits-footer{text-align:center;margin-top:56px;padding-bottom:40px}
+#back-btn{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:200;padding:10px 28px;border-radius:8px;background:rgba(93,173,226,.15);border:1px solid rgba(93,173,226,.5);color:#5DADE2;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;backdrop-filter:blur(8px);display:none}
+#api-modal{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:20px}
+#api-modal.hidden{display:none}
+.api-box{background:linear-gradient(135deg,#13131a,#1a0a2e);border:1px solid rgba(93,173,226,.3);border-radius:16px;padding:32px;width:100%;max-width:440px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.api-title{font-size:18px;font-weight:800;margin-bottom:6px}
+.api-sub{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:22px;line-height:1.6}
+.api-input{width:100%;padding:12px 14px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(93,173,226,.3);color:#fff;font-size:13px;font-family:monospace;outline:none;margin-bottom:10px;letter-spacing:1px}
+.api-input:focus{border-color:#5DADE2}
+.api-row{display:flex;gap:8px;margin-bottom:14px}
+.api-btn-ok{flex:1;padding:11px;border-radius:8px;cursor:pointer;border:none;background:linear-gradient(135deg,#5DADE2,#1B4F72);color:#fff;font-weight:700;font-size:14px;font-family:inherit}
+.api-btn-skip{padding:11px 16px;border-radius:8px;cursor:pointer;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.5);font-size:13px;font-family:inherit}
+.api-notice{font-size:11px;color:rgba(255,255,255,.3);line-height:1.7}
+.api-notice a{color:#5DADE2}
+.api-status{position:fixed;top:16px;right:16px;z-index:1000;padding:6px 14px;border-radius:20px;font-size:11px;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.4);letter-spacing:1px;display:flex;align-items:center;gap:6px;cursor:pointer}
+.api-status.gemini{border-color:rgba(93,173,226,.4);color:#5DADE2}
+.api-status.pollinations{border-color:rgba(105,240,174,.3);color:#69f0ae}
+#blackout{position:fixed;inset:0;z-index:500;background:#000;opacity:0;pointer-events:none;transition:opacity .5s ease}
+#blackout.fade-in{opacity:1;pointer-events:auto}
+#blackout.fade-out{opacity:0;pointer-events:none}
+#blackout-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(255,255,255,.15);font-size:clamp(12px,2vw,18px);letter-spacing:6px;text-transform:uppercase}
+.number-lyrics-bar{position:absolute;bottom:52px;left:50%;transform:translateX(-50%);width:90%;max-width:800px;z-index:25;text-align:center;pointer-events:none}
+.number-lyrics-title{font-size:clamp(10px,1.4vw,13px);color:rgba(255,255,255,.5);letter-spacing:3px;margin-bottom:6px;text-transform:uppercase}
+.number-lyrics-line{background:rgba(0,0,0,.72);backdrop-filter:blur(4px);border-radius:8px;padding:10px 24px;font-size:clamp(15px,2.4vw,22px);font-weight:700;color:#fff;line-height:1.5;letter-spacing:.5px;border:1px solid rgba(255,255,255,.1);text-shadow:0 2px 8px rgba(0,0,0,.8);min-height:48px;transition:opacity .4s ease}
+.number-lyrics-line .current-line{color:#FFD700;text-shadow:0 0 20px rgba(255,215,0,.4),0 2px 8px rgba(0,0,0,.8)}
+.number-lyrics-line .next-line{font-size:.75em;color:rgba(255,255,255,.45);margin-top:4px}
+.lyrics-toggle-btn{position:absolute;bottom:52px;right:16px;z-index:26;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:inherit}
+.speech-bubble{position:absolute;background:rgba(255,255,255,.95);color:#1a1a1a;border-radius:18px;padding:10px 16px;font-size:clamp(12px,1.8vw,16px);font-weight:600;line-height:1.5;max-width:220px;word-break:keep-all;box-shadow:0 4px 20px rgba(0,0,0,.4);z-index:30;cursor:move;user-select:none;animation:bubblePop .3s ease;border:2px solid rgba(0,0,0,.06)}
+.speech-bubble::after{content:'';position:absolute;bottom:-12px;left:24px;border:7px solid transparent;border-top-color:rgba(255,255,255,.95);border-bottom:none}
+.speech-bubble.tail-right::after{left:auto;right:24px}
+.speech-bubble.tail-top::after{bottom:auto;top:-12px;border-top:none;border-bottom:7px solid rgba(255,255,255,.95)}
+.bubble-name{font-size:10px;color:#888;margin-bottom:3px;font-weight:700;letter-spacing:.5px}
+.bubble-del{position:absolute;top:-8px;right:-8px;width:20px;height:20px;border-radius:50%;background:#ff5252;color:#fff;font-size:11px;border:none;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:31;line-height:1}
+.speech-bubble:hover .bubble-del{display:flex}
+#bubble-panel{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.78);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:40px;padding:7px 14px;display:none;align-items:center;gap:7px;z-index:200;flex-wrap:wrap;justify-content:center}
+#bubble-panel.show{display:flex}
+#bubble-text-input{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;padding:6px 12px;border-radius:20px;font-size:13px;outline:none;width:150px;font-family:inherit}
+#bubble-name-input{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;padding:6px 10px;border-radius:20px;font-size:12px;outline:none;width:90px;font-family:inherit}
+.bubble-ctrl-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer;white-space:nowrap;font-family:inherit}
+.bubble-ctrl-btn:hover{background:rgba(255,255,255,.22)}
+.bubble-ctrl-btn.on{background:rgba(93,173,226,.35);border-color:#5DADE2;color:#5DADE2}
+select.bubble-ctrl-btn{padding:5px 8px}
+#subtitle-bar{position:absolute;bottom:56px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;padding:10px 28px;border-radius:8px;font-size:clamp(14px,2.2vw,20px);font-weight:600;text-align:center;max-width:80%;z-index:30;text-shadow:0 2px 8px rgba(0,0,0,.8);display:none;letter-spacing:.5px;border:1px solid rgba(255,255,255,.12);cursor:pointer}
 
-/* ── 슬라이드 공통 ── */
-#stage {
-  width: 100%; height: 100%; position: relative;
-}
-.slide {
-  position: absolute; inset: 0;
-  transition: opacity 0.8s ease;
-}
-.slide.hidden { opacity: 0; pointer-events: none; }
-.slide.visible { opacity: 1; }
-
-.bg-img {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover; transition: opacity 1.4s ease;
-}
-.bg-overlay {
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(to right, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.35) 55%, rgba(0,0,0,0.1) 100%),
-    linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 45%);
-}
-.bg-gradient { position: absolute; inset: 0; }
-
-/* ── 상단 바 ── */
-.top-bar {
-  position: absolute; top: 0; left: 0; right: 0;
-  padding: 18px 28px;
-  display: flex; justify-content: space-between; align-items: center;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
-  z-index: 10;
-}
-.scene-badge {
-  border-radius: 20px; padding: 4px 16px;
-  font-size: 11px; font-weight: 700; letter-spacing: 2px;
-}
-.eaim-label { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 3px; }
-
-/* ── 좌측 콘텐츠 ── */
-.main-content {
-  position: absolute;
-  top: 50%; left: 0;
-  transform: translateY(-50%);
-  padding: 0 36px;
-  max-width: 54%;
-  z-index: 10;
-  transition: opacity 0.7s ease 0.3s, transform 0.7s ease 0.3s;
-}
-.main-content.hidden { opacity: 0; transform: translateY(calc(-50% + 18px)); }
-.main-content.visible { opacity: 1; transform: translateY(-50%); }
-
-.scene-title {
-  font-size: clamp(20px, 3vw, 36px);
-  font-weight: 900; color: #fff; line-height: 1.2; margin-bottom: 10px;
-  text-shadow: 0 2px 20px rgba(0,0,0,0.9);
-}
-.song-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 5px 14px; border-radius: 6px; margin-bottom: 14px;
-}
-.song-title-text {
-  font-size: clamp(13px, 1.8vw, 17px); font-weight: 700; letter-spacing: 0.5px;
-}
-.chars-label {
-  font-size: 10px; color: rgba(255,255,255,0.4);
-  letter-spacing: 2px; margin-bottom: 6px; text-transform: uppercase;
-}
-.chars-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
-.char-chip {
-  padding: 3px 10px; border-radius: 12px;
-  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
-  font-size: clamp(10px, 1.2vw, 13px); color: rgba(255,255,255,0.85);
-}
-.tags { display: flex; gap: 8px; flex-wrap: wrap; }
-.tag-emotion {
-  padding: 4px 12px; border-radius: 16px;
-  font-size: 12px; font-weight: 600;
-}
-.tag-mood {
-  padding: 4px 12px; border-radius: 16px;
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
-  font-size: 12px; color: rgba(255,255,255,0.7);
-}
-
-/* ── 우측 가사 ── */
-.lyrics-panel {
-  position: absolute; top: 50%; right: 28px;
-  transform: translateY(-50%);
-  width: 38%; max-height: 65%; overflow: hidden;
-  z-index: 10;
-  transition: opacity 1s ease 0.6s;
-}
-.lyrics-panel.hidden { opacity: 0; }
-.lyrics-panel.visible { opacity: 1; }
-.lyrics-label {
-  font-size: 10px; letter-spacing: 3px; margin-bottom: 10px;
-  text-transform: uppercase; opacity: 0.7;
-}
-.lyrics-body { position: relative; padding-left: 14px; }
-.lyrics-bar {
-  position: absolute; left: 0; top: 0; bottom: 0;
-  width: 2px;
-}
-.lyric-line {
-  font-size: clamp(13px, 1.8vw, 18px); line-height: 1.85;
-  font-weight: 500; font-style: italic;
-  text-shadow: 0 1px 12px rgba(0,0,0,0.8);
-}
-.cursor {
-  display: inline-block; width: 2px; height: 1em;
-  vertical-align: middle; margin-left: 3px;
-  animation: blink 0.8s step-end infinite;
-}
-
-/* ── 진행 바 ── */
-.progress-bar {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
-  background: rgba(255,255,255,0.08); z-index: 20;
-}
-.progress-fill {
-  height: 100%; transition: width 0.5s ease;
-}
-
-/* ── 컨트롤 바 ── */
-#controls {
-  position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
-  display: flex; align-items: center; gap: 8px;
-  background: rgba(0,0,0,0.65); backdrop-filter: blur(14px);
-  border-radius: 40px; padding: 7px 16px;
-  border: 1px solid rgba(255,255,255,0.12); z-index: 100;
-}
-.ctrl-btn {
-  background: none; border: none; cursor: pointer;
-  color: rgba(255,255,255,0.8); font-size: 17px; padding: 4px 8px; line-height: 1;
-}
-.ctrl-btn:disabled { opacity: 0.25; cursor: default; }
-.dot-nav { display: flex; gap: 5px; align-items: center; padding: 0 4px; }
-.dot {
-  width: 7px; height: 7px; border-radius: 4px; cursor: pointer;
-  background: rgba(255,255,255,0.28); transition: all 0.25s;
-}
-.dot.active { width: 20px; }
-#key-hint {
-  position: fixed; top: 20px; right: 20px;
-  font-size: 10px; color: rgba(255,255,255,0.2); pointer-events: none;
-}
-
-/* ── 커버 ── */
-#cover-slide {
-  background: linear-gradient(135deg, #0D1B2A 0%, #1A0A2E 55%, #0A1F0A 100%);
-  display: flex; align-items: center; justify-content: center;
-}
-.cover-orb {
-  position: absolute; border-radius: 50%; pointer-events: none;
-}
-.cover-inner { text-align: center; z-index: 1; padding: 0 48px; }
-.cover-emoji { font-size: 56px; margin-bottom: 12px; }
-.cover-eyebrow { font-size: 13px; color: #5DADE2; letter-spacing: 5px; font-weight: 700; margin-bottom: 14px; text-transform: uppercase; }
-.cover-title { font-size: clamp(26px, 5vw, 52px); font-weight: 900; color: #fff; line-height: 1.15; margin-bottom: 8px; text-shadow: 0 4px 30px rgba(93,173,226,0.3); }
-.cover-sub { font-size: 14px; color: #AED6F1; margin-bottom: 24px; opacity: 0.7; }
-.cover-count { display: inline-block; padding: 8px 22px; border-radius: 24px; background: rgba(93,173,226,0.12); border: 1px solid rgba(93,173,226,0.4); font-size: 14px; color: #AED6F1; margin-bottom: 28px; }
-.cover-hint { color: rgba(255,255,255,0.25); font-size: 12px; letter-spacing: 1px; }
-
-/* ── 엔딩 ── */
-#end-slide {
-  background: radial-gradient(ellipse at 50% 30%, #1a0a2e 0%, #0D1B2A 60%, #000 100%);
-  overflow: hidden;
-}
-.star {
-  position: absolute; border-radius: 50%;
-  animation: twinkle 2s ease-in-out infinite alternate;
-}
-/* 커튼콜 */
-#curtain-phase {
-  position: absolute; inset: 0; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; padding: 0 60px;
-  transition: opacity 1s ease;
-}
-.curtain-label { font-size: 11px; color: #FFD700; letter-spacing: 4px; margin-bottom: 8px; text-transform: uppercase; }
-.curtain-song { font-size: clamp(16px, 2.5vw, 22px); color: #C778DD; font-weight: 700; letter-spacing: 1px; margin-bottom: 28px; font-style: italic; }
-.curtain-lyrics-wrap { text-align: center; max-width: 600px; }
-.curtain-lyric-line { font-size: clamp(16px, 2.5vw, 24px); line-height: 1.9; font-style: italic; font-weight: 500; text-shadow: 0 0 20px rgba(255,215,0,0.3); }
-/* 크레딧 */
-#credits-phase {
-  position: absolute; inset: 0; overflow: hidden;
-  transition: opacity 1.2s ease;
-}
-.credits-mask-top { position: absolute; top: 0; left: 0; right: 0; height: 120px; z-index: 2; background: linear-gradient(to bottom, #0D1B2A, transparent); }
-.credits-mask-bot { position: absolute; bottom: 0; left: 0; right: 0; height: 160px; z-index: 2; background: linear-gradient(to top, #000, transparent); }
-#credits-scroll {
-  position: absolute; left: 50%; transform: translateX(-50%);
-  width: min(600px, 90%); top: 100%;
-}
-.credits-title { text-align: center; margin-bottom: 48px; padding-top: 20px; }
-.credits-divider { width: 60px; height: 2px; background: linear-gradient(to right, transparent, #5DADE2, transparent); margin: 14px auto; }
-.credit-row { display: flex; justify-content: center; align-items: baseline; gap: 16px; margin-bottom: 20px; padding: 0 20px; }
-.credit-role { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; min-width: 80px; text-align: right; flex-shrink: 0; }
-.credit-sep { width: 1px; height: 14px; background: rgba(255,255,255,0.2); flex-shrink: 0; }
-.credit-name { font-size: clamp(14px, 2vw, 17px); color: #fff; font-weight: 600; line-height: 1.5; }
-.credits-footer { text-align: center; margin-top: 56px; padding-bottom: 40px; }
-#back-btn {
-  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-  z-index: 200; padding: 10px 28px; border-radius: 8px;
-  background: rgba(93,173,226,0.15); border: 1px solid rgba(93,173,226,0.5);
-  color: #5DADE2; cursor: pointer; font-size: 13px; font-weight: 600;
-  font-family: inherit; backdrop-filter: blur(8px); display: none;
-}
-
-/* ── API 키 모달 ── */
-#api-modal {
-  position: fixed; inset: 0; z-index: 9999;
-  background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-  display: flex; align-items: center; justify-content: center; padding: 20px;
-}
-#api-modal.hidden { display: none; }
-.api-box {
-  background: linear-gradient(135deg, #13131a, #1a0a2e);
-  border: 1px solid rgba(93,173,226,0.3);
-  border-radius: 16px; padding: 32px; width: 100%; max-width: 440px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-}
-.api-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
-.api-sub { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 22px; line-height: 1.6; }
-.api-input {
-  width: 100%; padding: 12px 14px; border-radius: 8px;
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(93,173,226,0.3);
-  color: #fff; font-size: 13px; font-family: monospace; outline: none;
-  margin-bottom: 10px; letter-spacing: 1px;
-}
-.api-input:focus { border-color: #5DADE2; }
-.api-row { display: flex; gap: 8px; margin-bottom: 14px; }
-.api-btn-ok {
-  flex: 1; padding: 11px; border-radius: 8px; cursor: pointer; border: none;
-  background: linear-gradient(135deg, #5DADE2, #1B4F72);
-  color: #fff; font-weight: 700; font-size: 14px; font-family: inherit;
-}
-.api-btn-skip {
-  padding: 11px 16px; border-radius: 8px; cursor: pointer;
-  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.5); font-size: 13px; font-family: inherit;
-}
-.api-notice {
-  font-size: 11px; color: rgba(255,255,255,0.3); line-height: 1.7;
-}
-.api-notice a { color: #5DADE2; }
-.api-status {
-  position: fixed; top: 16px; right: 16px; z-index: 1000;
-  padding: 6px 14px; border-radius: 20px; font-size: 11px;
-  background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.4); letter-spacing: 1px;
-  display: flex; align-items: center; gap: 6px;
-  cursor: pointer;
-}
-.api-status.gemini { border-color: rgba(93,173,226,0.4); color: #5DADE2; }
-.api-status.pollinations { border-color: rgba(105,240,174,0.3); color: #69f0ae; }
-
-/* ── 암전 (막 전환) ── */
-#blackout {
-  position: fixed; inset: 0; z-index: 500;
-  background: #000;
-  opacity: 0; pointer-events: none;
-  transition: opacity 0.5s ease;
-}
-#blackout.fade-in  { opacity: 1; pointer-events: auto; }
-#blackout.fade-out { opacity: 0; pointer-events: none; }
-
-/* 막 전환 텍스트 */
-#blackout-text {
-  position: absolute; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  color: rgba(255,255,255,0.15);
-  font-size: clamp(12px, 2vw, 18px);
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  font-family: 'Segoe UI', serif;
-}
-
-/* ── 넘버 가사 자막 (하단) ── */
-.number-lyrics-bar {
-  position: absolute;
-  bottom: 52px; left: 50%;
-  transform: translateX(-50%);
-  width: 90%; max-width: 800px;
-  z-index: 25; text-align: center;
-  pointer-events: none;
-}
-.number-lyrics-title {
-  font-size: clamp(10px, 1.4vw, 13px);
-  color: rgba(255,255,255,0.5);
-  letter-spacing: 3px; margin-bottom: 6px;
-  text-transform: uppercase;
-}
-.number-lyrics-line {
-  background: rgba(0,0,0,0.72);
-  backdrop-filter: blur(4px);
-  border-radius: 8px; padding: 10px 24px;
-  font-size: clamp(15px, 2.4vw, 22px);
-  font-weight: 700; color: #fff;
-  line-height: 1.5; letter-spacing: 0.5px;
-  border: 1px solid rgba(255,255,255,0.1);
-  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-  min-height: 48px;
-  transition: opacity 0.4s ease;
-}
-.number-lyrics-line .current-line {
-  color: #FFD700;
-  text-shadow: 0 0 20px rgba(255,215,0,0.4), 0 2px 8px rgba(0,0,0,0.8);
-}
-.number-lyrics-line .next-line {
-  font-size: 0.75em;
-  color: rgba(255,255,255,0.45);
-  margin-top: 4px;
-}
-/* 가사 토글 버튼 */
-.lyrics-toggle-btn {
-  position: absolute; bottom: 52px; right: 16px;
-  z-index: 26; background: rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: rgba(255,255,255,0.6); border-radius: 6px;
-  padding: 4px 10px; font-size: 11px; cursor: pointer;
-  font-family: inherit;
-}
-.speech-bubble {
-  position: absolute;
-  background: rgba(255,255,255,0.95);
-  color: #1a1a1a; border-radius: 18px;
-  padding: 10px 16px;
-  font-size: clamp(12px, 1.8vw, 16px);
-  font-weight: 600; line-height: 1.5;
-  max-width: 220px; word-break: keep-all;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-  z-index: 30; cursor: move; user-select: none;
-  animation: bubblePop 0.3s ease;
-  border: 2px solid rgba(0,0,0,0.06);
-}
-.speech-bubble::after {
-  content: ''; position: absolute;
-  bottom: -12px; left: 24px;
-  border: 7px solid transparent;
-  border-top-color: rgba(255,255,255,0.95);
-  border-bottom: none;
-}
-.speech-bubble.tail-right::after { left:auto; right:24px; }
-.speech-bubble.tail-top::after {
-  bottom:auto; top:-12px;
-  border-top:none;
-  border-bottom:7px solid rgba(255,255,255,0.95);
-}
-.bubble-name {
-  font-size: 10px; color: #888;
-  margin-bottom: 3px; font-weight: 700; letter-spacing: 0.5px;
-}
-.bubble-del {
-  position: absolute; top: -8px; right: -8px;
-  width: 20px; height: 20px; border-radius: 50%;
-  background: #ff5252; color: #fff;
-  font-size: 11px; border: none; cursor: pointer;
-  display: none; align-items: center; justify-content: center;
-  z-index: 31; line-height: 1;
-}
-.speech-bubble:hover .bubble-del { display: flex; }
-
-/* 말풍선 컨트롤 패널 */
-#bubble-panel {
-  position: fixed; bottom: 80px; left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.78); backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 40px; padding: 7px 14px;
-  display: none; align-items: center; gap: 7px;
-  z-index: 200; flex-wrap: wrap; justify-content: center;
-}
-#bubble-panel.show { display: flex; }
-#bubble-text-input {
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.25);
-  color: #fff; padding: 6px 12px; border-radius: 20px;
-  font-size: 13px; outline: none; width: 150px; font-family: inherit;
-}
-#bubble-text-input::placeholder { color: rgba(255,255,255,0.35); }
-#bubble-name-input {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: #fff; padding: 6px 10px; border-radius: 20px;
-  font-size: 12px; outline: none; width: 90px; font-family: inherit;
-}
-#bubble-name-input::placeholder { color: rgba(255,255,255,0.3); }
-.bubble-ctrl-btn {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: #fff; padding: 6px 12px; border-radius: 20px;
-  font-size: 12px; cursor: pointer; white-space: nowrap; font-family: inherit;
-}
-.bubble-ctrl-btn:hover { background: rgba(255,255,255,0.22); }
-.bubble-ctrl-btn.on { background: rgba(93,173,226,0.35); border-color: #5DADE2; color: #5DADE2; }
-select.bubble-ctrl-btn { padding: 5px 8px; }
-
-/* ── 자막 바 ── */
-#subtitle-bar {
-  position: absolute; bottom: 56px; left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,0.78);
-  color: #fff; padding: 10px 28px; border-radius: 8px;
-  font-size: clamp(14px, 2.2vw, 20px); font-weight: 600;
-  text-align: center; max-width: 80%; z-index: 30;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-  display: none; letter-spacing: 0.5px;
-  border: 1px solid rgba(255,255,255,0.12);
-  cursor: pointer;
-}
-
-@keyframes bubblePop {
-  0%   { transform: scale(0.5); opacity:0; }
-  70%  { transform: scale(1.08); }
-  100% { transform: scale(1); opacity:1; }
-}
+/* 🚦 신호등 인디케이터 */
+#signal-indicator{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:600;padding:7px 18px;border-radius:24px;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);border:1px solid rgba(105,240,174,.5);color:#69f0ae;font-size:11px;letter-spacing:2px;display:none;align-items:center;gap:8px;animation:signalPop .4s ease}
+@keyframes signalPop{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes bubblePop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes twinkle{from{opacity:.2}to{opacity:.8}}
 </style>
 </head>
 <body>
 
-<!-- API 키 모달 -->
 <div id="api-modal">
   <div class="api-box">
-    <div style="font-size:32px;margin-bottom:12px">🔑</div>
-    <div class="api-title">Gemini API 키 입력</div>
-    <div class="api-sub">
-      배경 이미지를 Gemini AI로 생성합니다.<br>
-      키가 없으면 건너뛰기 → Pollinations AI로 대체됩니다.
-    </div>
-    <input class="api-input" id="api-key-input" type="password"
-      placeholder="AIza..." autocomplete="off" spellcheck="false">
+    <div style="font-size:32px;margin-bottom:12px">&#128273;</div>
+    <div class="api-title">Gemini API &#53948; &#51077;&#47141;</div>
+    <div class="api-sub">&#48176;&#44221; &#51060;&#48120;&#51648;&#47484; Gemini AI&#47196; &#49373;&#49457;&#54633;&#45768;&#45796;.<br>&#53944;&#50752; &#50630;&#51004;&#47732; &#44148;&#45320;&#46263;&#44592; &#8594; Pollinations AI&#47196; &#45824;&#52404;&#46429;&#45768;&#45796;.</div>
+    <input class="api-input" id="api-key-input" type="password" placeholder="AIza..." autocomplete="off">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
       <input type="checkbox" id="save-key" checked style="accentColor:#5DADE2">
-      <label for="save-key" style="font-size:12px;color:rgba(255,255,255,0.5);cursor:pointer">
-        이 브라우저에 저장 (다음에 자동 입력)
-      </label>
+      <label for="save-key" style="font-size:12px;color:rgba(255,255,255,.5);cursor:pointer">&#51060; &#lambda;&#54981;&#46972;&#50864;&#51200;&#50640; &#51ú;&#51109;</label>
     </div>
     <div class="api-row">
-      <button class="api-btn-ok" onclick="confirmApiKey()">✓ 확인 후 시작</button>
-      <button class="api-btn-skip" onclick="skipApiKey()">건너뛰기</button>
+      <button class="api-btn-ok" onclick="confirmApiKey()">&#10003; &#54869;&#51064; &#54980; &#49884;&#51089;</button>
+      <button class="api-btn-skip" onclick="skipApiKey()">&#44148;&#45320;&#46263;&#44592;</button>
     </div>
-    <div class="api-notice">
-      키 발급: <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a>
-      → Get API key → Create API key<br>
-      키는 이 브라우저에만 저장되며 외부로 전송되지 않습니다.
-    </div>
+    <div class="api-notice">&#53944; &#bc1c;&#44553;: <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a></div>
   </div>
 </div>
 
-<!-- API 상태 뱃지 -->
-<div class="api-status" id="api-status" onclick="resetApiKey()" title="클릭하여 키 변경"></div>
+<div class="api-status" id="api-status" onclick="resetApiKey()"></div>
 
-<!-- 암전 오버레이 -->
+<!-- 🚦 신호등 발신 인디케이터 -->
+<div id="signal-indicator">🚦 <span id="signal-text">음향 신호 발신 중</span></div>
+
 <div id="blackout"><div id="blackout-text"></div></div>
 
-<!-- 말풍선 컨트롤 패널 -->
 <div id="bubble-panel">
-  <input id="bubble-name-input" placeholder="이름" maxlength="10">
-  <input id="bubble-text-input" placeholder="대사 입력..." maxlength="40">
+  <input id="bubble-name-input" placeholder="&#51060;&#47492;" maxlength="10">
+  <input id="bubble-text-input" placeholder="&#45824;&#49324; &#51077;&#47141;..." maxlength="40">
   <select class="bubble-ctrl-btn" id="bubble-tail">
-    <option value="tail-left">꼬리 ↙</option>
-    <option value="tail-right">꼬리 ↘</option>
-    <option value="tail-top">꼬리 ↑</option>
+    <option value="tail-left">&#44ผ;&#47532; &#8601;</option>
+    <option value="tail-right">&#44교;&#47532; &#8600;</option>
+    <option value="tail-top">&#44교;&#47532; &#8593;</option>
   </select>
-  <button class="bubble-ctrl-btn" onclick="addBubble()">💬 추가</button>
-  <button class="bubble-ctrl-btn" onclick="clearBubbles()">🗑 전체삭제</button>
-  <button class="bubble-ctrl-btn" id="subtitle-toggle" onclick="toggleSubtitleEdit()">📝 자막</button>
-  <button class="bubble-ctrl-btn" onclick="toggleBubblePanel()" style="color:rgba(255,255,255,0.4)">✕</button>
+  <button class="bubble-ctrl-btn" onclick="addBubble()">&#128172; &#52628;&#44032;</button>
+  <button class="bubble-ctrl-btn" onclick="clearBubbles()">&#128465; &#51204;&#52404;&#49325;&#51228;</button>
+  <button class="bubble-ctrl-btn" id="subtitle-toggle" onclick="toggleSubtitleEdit()">&#128221; &#51088;&#47561;</button>
+  <button class="bubble-ctrl-btn" onclick="toggleBubblePanel()" style="color:rgba(255,255,255,.4)">&#10005;</button>
 </div>
 
-<!-- 자막 바 -->
-<div id="subtitle-bar" onclick="editSubtitle()">자막을 클릭하여 편집</div>
+<div id="subtitle-bar" onclick="editSubtitle()">&#51088;&#47561;&#51012; &#53364;&#47548;&#54616;&#50668; &#54�;&#51665;</div>
 
 <div id="stage"></div>
 <div id="controls" style="display:none">
-  <button class="ctrl-btn" id="btn-exit" title="나가기">✕</button>
-  <button class="ctrl-btn" id="btn-prev">◀</button>
+  <button class="ctrl-btn" id="btn-exit">&#10005;</button>
+  <button class="ctrl-btn" id="btn-prev">&#9664;</button>
   <div class="dot-nav" id="dot-nav"></div>
-  <button class="ctrl-btn" id="btn-next">▶</button>
-  <button class="ctrl-btn" id="btn-auto" title="자동재생">⏵</button>
-  <button class="ctrl-btn" id="btn-bubble" onclick="toggleBubblePanel()" title="말풍선/자막">💬</button>
+  <button class="ctrl-btn" id="btn-next">&#9654;</button>
+  <button class="ctrl-btn" id="btn-auto">&#9205;</button>
+  <button class="ctrl-btn" id="btn-bubble" onclick="toggleBubblePanel()">&#128172;</button>
 </div>
-<div id="key-hint">← → 키보드 | ESC 종료</div>
-<button id="back-btn" onclick="goBack()">↩ 처음으로</button>
+<div id="key-hint">&#8592; &#8594; &#53412;&#48372;&#46300; | ESC &#51333;&#47308;</div>
+<button id="back-btn" onclick="goBack()">&#8617; &#52376;&#51020;&#51004;&#47196;</button>
 
 <script>
-// ──────────────────────────────────────────────────────────────────────────────
-// 데이터 로드
-// ──────────────────────────────────────────────────────────────────────────────
+'use strict';
 const raw = localStorage.getItem('eaim_musical_data');
 let DATA = null;
-
-if (raw) {
-  try { DATA = JSON.parse(raw); } catch(e) {}
-}
-
-// 데이터 없으면 데모 데이터
+if (raw) { try { DATA = JSON.parse(raw); } catch(e) {} }
 if (!DATA) {
   DATA = {
-    title: '봄날의 이야기 (데모)',
-    school: '자인중학교',
-    curtainSongTitle: '우리가 써온 이야기 (Reprise)',
-    curtainLyrics: '끝나지 않는 이야기가 있어\n우리가 함께 써 내려간 그 페이지\n웃고 울며 걸어온 이 길 위에서\n우린 서로에게 빛이 되었어',
-    credits: [
-      {role:'감독', name:'박성애'},
-      {role:'작곡', name:'김하늘'},
-      {role:'출연', name:'민준 역 — 김도현 / 서아 역 — 이나연'},
-      {role:'제작', name:'EAIM 뮤지컬 제작단'},
-    ],
-    scenes: [
-      { title:'봄날의 학교 교정', imagePrompt:'A bright spring schoolyard with cherry blossoms, watercolor style, soft pastel colors', characters:'민준(주인공), 서아(친구)', songTitle:'오늘이 시작이야', lyrics:'바람이 불어오는 이 교정 위에\n우리의 꿈이 피어나고 있어', emotion:'설렘', musicMood:'밝고 경쾌한 피아노' },
-      { title:'방과 후 도서관', imagePrompt:'A cozy after-school library, warm lamplight, Studio Ghibli art style', characters:'민준(혼자)', songTitle:'혼자만의 시간', lyrics:'아무도 없는 이 공간에서\n나는 나를 찾아가고 있어', emotion:'고요함', musicMood:'잔잔한 현악 앙상블' },
-      { title:'졸업식 운동장', imagePrompt:'An outdoor graduation ceremony, students tossing caps, confetti, vibrant colors', characters:'민준, 서아, 전교생', songTitle:'우리가 써온 이야기', lyrics:'이제 우리 날아오를 시간\n함께 써온 이야기 끝나지 않아', emotion:'성취', musicMood:'장엄하고 웅장한 피날레' },
+    title:'봄날의 이야기 (데모)',school:'',curtainSongTitle:'우리가 써온 이야기 (Reprise)',
+    curtainLyrics:'끝나지 않는 이야기가 있어
+우리가 함께 써 내려간 그 페이지
+웃고 울며 걸어온 이 길 위에서
+우린 서로에게 빛이 되었어',
+    credits:[{role:'감독',name:'박성애'},{role:'출연',name:'전체 학생'}],
+    scenes:[
+      {title:'봄날의 학교 교정',imagePrompt:'A bright spring schoolyard with cherry blossoms, watercolor style',characters:'민준, 서아',songTitle:'오늘이 시작이야',lyrics:'바람이 불어오는 이 교정 위에
+우리의 꿈이 피어나고 있어',emotion:'설렘',musicMood:'밝고 경쾌한'},
+      {title:'방과 후 도서관',imagePrompt:'A cozy library with warm lamplight, Studio Ghibli style',characters:'민준',songTitle:'혼자만의 시간',lyrics:'아무도 없는 이 공간에서
+나는 나를 찾아가고 있어',emotion:'고요함',musicMood:'잔잔한 현악'},
+      {title:'졸업식 운동장',imagePrompt:'An outdoor graduation ceremony, students tossing caps, confetti',characters:'전교생',songTitle:'우리가 써온 이야기',lyrics:'이제 우리 날아오를 시간
+함께 써온 이야기 끝나지 않아',emotion:'성취',musicMood:'장엄한 피날레'},
     ]
   };
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// 감정 색상
-// ──────────────────────────────────────────────────────────────────────────────
 const EMOTION_COLORS = {
-  default: { from:'#0D1B2A', to:'#16213e', accent:'#5DADE2', lyric:'#AED6F1' },
-  설렘:   { from:'#0f2a4a', to:'#16213e', accent:'#FFD700',  lyric:'#FFF0A0' },
-  희망:   { from:'#0a2a1a', to:'#0d1f14', accent:'#52C27A',  lyric:'#B2F0C8' },
-  고요함: { from:'#0a1628', to:'#0d2137', accent:'#AED6F1',  lyric:'#D0E8FF' },
-  집중:   { from:'#1a0a2e', to:'#0d1b2a', accent:'#C778DD',  lyric:'#EAB8FF' },
-  긴장:   { from:'#2e0a0a', to:'#1a0d0d', accent:'#FF6B47',  lyric:'#FFB8A8' },
-  용기:   { from:'#2e1a0a', to:'#1a0f0a', accent:'#FF9500',  lyric:'#FFD09E' },
-  성취:   { from:'#1a2a0a', to:'#0f1f08', accent:'#FFD700',  lyric:'#FFF0A0' },
-  감동:   { from:'#2a0a2a', to:'#1a0a1a', accent:'#FF69B4',  lyric:'#FFB8DC' },
-  슬픔:   { from:'#0a1a2e', to:'#0d1b2a', accent:'#7EC8E3',  lyric:'#BEE3F0' },
-  분노:   { from:'#2e0000', to:'#1a0000', accent:'#FF3333',  lyric:'#FFAAAA' },
-  기쁨:   { from:'#2a2a0a', to:'#1a1a00', accent:'#FFE500',  lyric:'#FFF5A0' },
+  default:{from:'#0D1B2A',to:'#16213e',accent:'#5DADE2',lyric:'#AED6F1'},
+  설렘:{from:'#0f2a4a',to:'#16213e',accent:'#FFD700',lyric:'#FFF0A0'},
+  희망:{from:'#0a2a1a',to:'#0d1f14',accent:'#52C27A',lyric:'#B2F0C8'},
+  고요함:{from:'#0a1628',to:'#0d2137',accent:'#AED6F1',lyric:'#D0E8FF'},
+  집중:{from:'#1a0a2e',to:'#0d1b2a',accent:'#C778DD',lyric:'#EAB8FF'},
+  긴장:{from:'#2e0a0a',to:'#1a0d0d',accent:'#FF6B47',lyric:'#FFB8A8'},
+  용기:{from:'#2e1a0a',to:'#1a0f0a',accent:'#FF9500',lyric:'#FFD09E'},
+  성취:{from:'#1a2a0a',to:'#0f1f08',accent:'#FFD700',lyric:'#FFF0A0'},
+  감동:{from:'#2a0a2a',to:'#1a0a1a',accent:'#FF69B4',lyric:'#FFB8DC'},
+  슬픔:{from:'#0a1a2e',to:'#0d1b2a',accent:'#7EC8E3',lyric:'#BEE3F0'},
 };
 function getColor(emotion) {
   if (!emotion) return EMOTION_COLORS.default;
-  for (const [k, v] of Object.entries(EMOTION_COLORS)) {
-    if (k !== 'default' && emotion.includes(k)) return v;
+  for (const [k,v] of Object.entries(EMOTION_COLORS)) {
+    if (k!=='default' && emotion.includes(k)) return v;
   }
   return EMOTION_COLORS.default;
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// 슬라이드 빌드
-// ──────────────────────────────────────────────────────────────────────────────
 const stage = document.getElementById('stage');
 const SCENES = DATA.scenes || [];
-const TOTAL  = SCENES.length;
+const TOTAL = SCENES.length;
+let current = 0, autoPlay = false, autoTimer = null;
 
-// 0 = cover, 1..N = scenes, N+1 = ending
-let current = 0;
-let autoPlay = false;
-let autoTimer = null;
-
-// ──────────────────────────────────────────────────────────────────────────────
-// API 키 관리
-// ──────────────────────────────────────────────────────────────────────────────
+// API 키
 let GEMINI_KEY = localStorage.getItem('eaim_gemini_key') || '';
-const imgCache = {}; // prompt → base64 DataURL 캐시
+const imgCache = {};
 
 function showApiModal() {
-  const modal = document.getElementById('api-modal');
-  modal.classList.remove('hidden');
+  document.getElementById('api-modal').classList.remove('hidden');
   if (GEMINI_KEY) document.getElementById('api-key-input').value = GEMINI_KEY;
 }
-
 function confirmApiKey() {
   const key = document.getElementById('api-key-input').value.trim();
-  if (!key) { alert('API 키를 입력하거나 건너뛰기를 눌러주세요.'); return; }
+  if (!key) return;
   GEMINI_KEY = key;
-  if (document.getElementById('save-key').checked) {
-    localStorage.setItem('eaim_gemini_key', key);
-  }
+  if (document.getElementById('save-key').checked) localStorage.setItem('eaim_gemini_key', key);
   document.getElementById('api-modal').classList.add('hidden');
-  updateStatusBadge('gemini');
-  initSlideshow();
+  updateStatusBadge('gemini'); initSlideshow();
 }
-
 function skipApiKey() {
   GEMINI_KEY = '';
   document.getElementById('api-modal').classList.add('hidden');
-  updateStatusBadge('pollinations');
-  initSlideshow();
+  updateStatusBadge('pollinations'); initSlideshow();
 }
-
-function resetApiKey() {
-  GEMINI_KEY = '';
-  localStorage.removeItem('eaim_gemini_key');
-  location.reload();
-}
-
+function resetApiKey() { GEMINI_KEY=''; localStorage.removeItem('eaim_gemini_key'); location.reload(); }
 function updateStatusBadge(mode) {
   const el = document.getElementById('api-status');
-  if (mode === 'gemini') {
-    el.className = 'api-status gemini';
-    el.innerHTML = '🔵 Gemini AI 배경 · 클릭하여 변경';
-  } else {
-    el.className = 'api-status pollinations';
-    el.innerHTML = '🟢 Pollinations 배경 · 클릭하여 키 입력';
-  }
+  el.className = 'api-status ' + mode;
+  el.innerHTML = mode==='gemini' ? '&#128309; Gemini AI &#48176;&#44221;' : '&#128994; Pollinations &#48176;&#44221;';
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// 이미지 생성 — Gemini 우선, 폴백 Pollinations
-// ──────────────────────────────────────────────────────────────────────────────
 async function fetchGeminiImage(prompt) {
-  if (imgCache[prompt]) return imgCache[prompt]; // 캐시 히트
+  if (imgCache[prompt]) return imgCache[prompt];
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${GEMINI_KEY}`;
-  const body = {
-    contents: [{ parts: [{ text: prompt + ', cinematic, theatrical, dramatic lighting, high quality, 16:9 aspect ratio' }] }],
-    generationConfig: { responseModalities: ['TEXT', 'IMAGE'] }
-  };
-  const res  = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  if (!res.ok) throw new Error(`Gemini API ${res.status}`);
+  const res = await fetch(url, {method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:prompt+', cinematic, theatrical, dramatic lighting, 16:9'}]}],generationConfig:{responseModalities:['TEXT','IMAGE']}})});
+  if (!res.ok) throw new Error('Gemini '+res.status);
   const data = await res.json();
-  const parts = data?.candidates?.[0]?.content?.parts || [];
-  const imgPart = parts.find(p => p.inlineData);
-  if (!imgPart) throw new Error('이미지 없음');
+  const imgPart = (data?.candidates?.[0]?.content?.parts||[]).find(p=>p.inlineData);
+  if (!imgPart) throw new Error('no image');
   const dataUrl = `data:${imgPart.inlineData.mimeType};base64,${imgPart.inlineData.data}`;
-  imgCache[prompt] = dataUrl; // 캐시 저장
-  return dataUrl;
+  imgCache[prompt] = dataUrl; return dataUrl;
 }
-
 function getPollinationsUrl(prompt) {
-  const enc = encodeURIComponent(prompt + ', cinematic, theatrical, dramatic lighting, high quality');
-  return `https://image.pollinations.ai/prompt/${enc}?width=1280&height=720&nologo=true`;
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt+', cinematic, theatrical')}?width=1280&height=720&nologo=true`;
 }
-
-// 슬라이드 el에 배경 이미지 세팅 (Gemini base64 또는 Pollinations URL)
 async function loadBgImage(scene, idx) {
-  const el = document.getElementById(`scene-slide-${idx}`);
-  if (!el) return;
-
-  // 직접 URL 우선
-  if (scene.imageUrl && scene.imageUrl.startsWith('http')) {
-    setImgSrc(idx, scene.imageUrl, '📎 직접 URL'); return;
-  }
+  const el = document.getElementById(`scene-slide-${idx}`); if (!el) return;
+  if (scene.imageUrl && scene.imageUrl.startsWith('http')) { setImgSrc(idx, scene.imageUrl, '&#128204; URL'); return; }
   if (!scene.imagePrompt) return;
-
   if (GEMINI_KEY) {
-    // Gemini로 생성
-    const spinner = document.getElementById(`bg-spinner-${idx}`);
-    if (spinner) spinner.style.display = 'flex';
-    try {
-      const dataUrl = await fetchGeminiImage(scene.imagePrompt);
-      if (spinner) spinner.style.display = 'none';
-      setImgSrc(idx, dataUrl, '🔵 Gemini AI');
-    } catch (e) {
-      console.warn('Gemini 실패, Pollinations 폴백:', e.message);
-      if (spinner) spinner.style.display = 'none';
-      setImgSrc(idx, getPollinationsUrl(scene.imagePrompt), '🟢 Pollinations');
-    }
-  } else {
-    // Pollinations URL 방식
-    setImgSrc(idx, getPollinationsUrl(scene.imagePrompt), '🟢 Pollinations');
-  }
+    const sp = document.getElementById(`bg-spinner-${idx}`); if (sp) sp.style.display='flex';
+    try { const d=await fetchGeminiImage(scene.imagePrompt); if(sp)sp.style.display='none'; setImgSrc(idx,d,'&#128309; Gemini'); }
+    catch(e) { if(sp)sp.style.display='none'; setImgSrc(idx,getPollinationsUrl(scene.imagePrompt),'&#128994; Pollinations'); }
+  } else { setImgSrc(idx,getPollinationsUrl(scene.imagePrompt),'&#128994; Pollinations'); }
+}
+function setImgSrc(idx,src,label) {
+  const img=document.getElementById(`bgimg-${idx}`); if(!img) return;
+  img.onload=()=>{ img.style.opacity='.45'; const b=document.getElementById(`src-badge-${idx}`); if(b){b.style.display='block';b.textContent=label;} };
+  img.onerror=()=>{ img.style.display='none'; };
+  img.src=src;
 }
 
-function setImgSrc(idx, src, label) {
-  const img = document.getElementById(`bgimg-${idx}`);
-  if (!img) return;
-  img.onload = () => {
-    img.style.opacity = '0.45';
-    const badge = document.getElementById(`src-badge-${idx}`);
-    if (badge) { badge.style.display = 'block'; badge.textContent = label; }
-  };
-  img.onerror = () => { img.style.display = 'none'; };
-  img.src = src;
-}
-
-// ── 커버 슬라이드 ──
+// 커버
 function buildCover() {
-  const div = document.createElement('div');
-  div.id = 'cover-slide';
-  div.className = 'slide hidden';
-  div.innerHTML = `
+  const div=document.createElement('div'); div.id='cover-slide'; div.className='slide hidden';
+  div.innerHTML=`
     <div class="cover-orb" style="width:380px;height:380px;left:-100px;top:-100px;background:radial-gradient(circle,#5DADE220,transparent 70%)"></div>
     <div class="cover-orb" style="width:260px;height:260px;right:-70px;top:80px;background:radial-gradient(circle,#C778DD20,transparent 70%)"></div>
-    <div class="cover-orb" style="width:200px;height:200px;left:160px;bottom:-50px;background:radial-gradient(circle,#52C27A20,transparent 70%)"></div>
     <div class="cover-inner">
-      <div class="cover-emoji">🎭</div>
+      <div class="cover-emoji">&#127917;</div>
       <div class="cover-eyebrow">Musical Maker · EAIM</div>
-      <div class="cover-title">${DATA.title || '뮤지컬 스토리보드'}</div>
-      <div class="cover-sub">${DATA.school || ''}</div>
-      <div class="cover-count">총 ${TOTAL}개 장면</div>
-      <div class="cover-hint">▶ → 키 또는 버튼으로 시작</div>
-    </div>
-  `;
+      <div class="cover-title">${DATA.title||'&#48260;&#51648;&#52284; &#49828;&#53664;&#47532;&#48372;&#46300;'}</div>
+      <div class="cover-sub">${DATA.school||''}</div>
+      <div class="cover-count">&#51452; ${TOTAL}&#44060; &#51109;&#47732;</div>
+      <div class="cover-hint">&#9654; &#8594; &#53412;&#48372;&#46300;&#47196; &#49884;&#51089;</div>
+    </div>`;
   stage.appendChild(div);
 }
 
-// ── 장면 슬라이드 ──
+// 장면
 function buildScene(scene, idx) {
-  const C = getColor(scene.emotion);
-  const lyricLines = (scene.lyrics || '').split('\n').filter(Boolean);
-  const chars = (scene.characters || '').split(/[,，、]/).filter(Boolean);
-
-  const div = document.createElement('div');
-  div.id = `scene-slide-${idx}`;
-  div.className = 'slide hidden';
-  div.style.background = `linear-gradient(135deg, ${C.from}, ${C.to})`;
-
-  div.innerHTML = `
-    <!-- 배경 이미지 (나중에 src 설정) -->
+  const C=getColor(scene.emotion);
+  const lyricLines=(scene.lyrics||'').split('
+').filter(Boolean);
+  const chars=(scene.characters||'').split(/[,，、]/).filter(Boolean);
+  const div=document.createElement('div');
+  div.id=`scene-slide-${idx}`; div.className='slide hidden';
+  div.style.background=`linear-gradient(135deg,${C.from},${C.to})`;
+  div.innerHTML=`
     <img class="bg-img" id="bgimg-${idx}" alt="${scene.title}" style="opacity:0">
-
-    <!-- 로딩 스피너 -->
-    <div id="bg-spinner-${idx}" style="
-      position:absolute;inset:0;display:flex;flex-direction:column;
-      align-items:center;justify-content:center;gap:10px;
-    ">
+    <div id="bg-spinner-${idx}" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
       <div style="width:32px;height:32px;border:3px solid ${C.accent}33;border-top:3px solid ${C.accent};border-radius:50%;animation:spin 1s linear infinite"></div>
-      <div style="font-size:11px;color:${C.accent};opacity:0.6">${GEMINI_KEY ? 'Gemini AI 생성 중...' : 'AI 배경 생성 중...'}</div>
+      <div style="font-size:11px;color:${C.accent};opacity:.6">AI &#48176;&#44221; &#49373;&#49457; &#51473;...</div>
     </div>
-
     <div class="bg-overlay"></div>
-
-    <!-- 상단 -->
     <div class="top-bar">
-      <div class="scene-badge" style="background:${C.accent}25;border:1.5px solid ${C.accent}90;color:${C.accent}">
-        SCENE ${String(idx+1).padStart(2,'0')} / ${String(TOTAL).padStart(2,'0')}
-      </div>
-      <div class="eaim-label">EAIM 🎵</div>
+      <div class="scene-badge" style="background:${C.accent}25;border:1.5px solid ${C.accent}90;color:${C.accent}">SCENE ${String(idx+1).padStart(2,'0')} / ${String(TOTAL).padStart(2,'0')}</div>
+      <div class="eaim-label">EAIM &#127925;</div>
     </div>
-
-    <!-- 이미지 소스 뱃지 -->
-    <div id="src-badge-${idx}" style="display:none;position:absolute;top:56px;right:24px;font-size:9px;color:rgba(255,255,255,0.3);background:rgba(0,0,0,0.35);border-radius:8px;padding:2px 8px;letter-spacing:1px;z-index:11"></div>
-
-    <!-- 좌측 콘텐츠 -->
+    <div id="src-badge-${idx}" style="display:none;position:absolute;top:56px;right:24px;font-size:9px;color:rgba(255,255,255,.3);background:rgba(0,0,0,.35);border-radius:8px;padding:2px 8px;z-index:11"></div>
     <div class="main-content hidden" id="mc-${idx}">
       <div class="scene-title">${scene.title}</div>
-      ${scene.songTitle ? `
-        <div class="song-badge" style="background:${C.accent}20;border:1px solid ${C.accent}60;margin-bottom:14px">
-          <span style="font-size:14px">🎼</span>
-          <span class="song-title-text" style="color:${C.accent}">♪ ${scene.songTitle}</span>
-        </div>` : ''}
-      ${chars.length ? `
-        <div class="chars-label">등장인물</div>
-        <div class="chars-list">${chars.map(c=>`<span class="char-chip">👤 ${c.trim()}</span>`).join('')}</div>` : ''}
+      ${scene.songTitle?`<div class="song-badge" style="background:${C.accent}20;border:1px solid ${C.accent}60;margin-bottom:14px"><span style="font-size:14px">&#127932;</span><span class="song-title-text" style="color:${C.accent}">&#9834; ${scene.songTitle}</span></div>`:''}
+      ${chars.length?`<div class="chars-label">&#46356;&#51109;&#51064;&#47932;</div><div class="chars-list">${chars.map(c=>`<span class="char-chip">&#128100; ${c.trim()}</span>`).join('')}</div>`:''}
       <div class="tags">
-        ${scene.emotion ? `<div class="tag-emotion" style="background:${C.accent}18;border:1px solid ${C.accent}70;color:${C.accent}">💭 ${scene.emotion}</div>` : ''}
-        ${scene.musicMood ? `<div class="tag-mood">🎵 ${scene.musicMood}</div>` : ''}
+        ${scene.emotion?`<div class="tag-emotion" style="background:${C.accent}18;border:1px solid ${C.accent}70;color:${C.accent}">&#128173; ${scene.emotion}</div>`:''}
+        ${scene.musicMood?`<div class="tag-mood">&#127925; ${scene.musicMood}</div>`:''}
       </div>
     </div>
-
-    <!-- 우측 가사 (이탤릭 패널) -->
-    ${lyricLines.length ? `
+    ${lyricLines.length?`
       <div class="lyrics-panel hidden" id="lp-${idx}">
-        <div class="lyrics-label" style="color:${C.lyric}">✦ LYRICS ✦</div>
+        <div class="lyrics-label" style="color:${C.lyric}">&#10022; LYRICS &#10022;</div>
         <div class="lyrics-body">
-          <div class="lyrics-bar" style="background:linear-gradient(to bottom, ${C.accent}, transparent)"></div>
-          ${lyricLines.map((l,i)=>`<div class="lyric-line" id="ll-${idx}-${i}" style="color:${C.lyric};opacity:0;transition:opacity 0.5s ease ${0.5+i*0.25}s">${l}</div>`).join('')}
+          <div class="lyrics-bar" style="background:linear-gradient(to bottom,${C.accent},transparent)"></div>
+          ${lyricLines.map((l,i)=>`<div class="lyric-line" id="ll-${idx}-${i}" style="color:${C.lyric};opacity:0;transition:opacity .5s ease ${.5+i*.25}s">${l}</div>`).join('')}
         </div>
-      </div>` : ''}
-
-    <!-- 하단 넘버 가사 자막 -->
-    ${lyricLines.length ? `
+      </div>
       <div class="number-lyrics-bar" id="nlb-${idx}">
-        ${scene.songTitle ? `<div class="number-lyrics-title">♪ ${scene.songTitle}</div>` : ''}
+        ${scene.songTitle?`<div class="number-lyrics-title">&#9834; ${scene.songTitle}</div>`:''}
         <div class="number-lyrics-line" id="nlb-line-${idx}">
-          <div class="current-line" id="nlb-cur-${idx}">${lyricLines[0] || ''}</div>
-          ${lyricLines[1] ? `<div class="next-line" id="nlb-next-${idx}">${lyricLines[1]}</div>` : `<div class="next-line" id="nlb-next-${idx}"></div>`}
+          <div class="current-line" id="nlb-cur-${idx}">${lyricLines[0]||''}</div>
+          <div class="next-line" id="nlb-next-${idx}">${lyricLines[1]||''}</div>
         </div>
       </div>
-      <button class="lyrics-toggle-btn" id="lyr-toggle-${idx}"
-        onclick="toggleLyricsBar(${idx})">가사 숨기기</button>
-    ` : ''}
-
-    <!-- 진행 바 -->
-    <div class="progress-bar">
-      <div class="progress-fill" style="width:${((idx+1)/TOTAL)*100}%;background:linear-gradient(to right,${C.accent},${C.lyric})"></div>
-    </div>
-  `;
-
+      <button class="lyrics-toggle-btn" id="lyr-toggle-${idx}" onclick="toggleLyricsBar(${idx})">&#44032;&#49324; &#49232;&#44592;&#44592;</button>
+    `:''}
+    <div class="progress-bar"><div class="progress-fill" style="width:${((idx+1)/TOTAL)*100}%;background:linear-gradient(to right,${C.accent},${C.lyric})"></div></div>`;
   stage.appendChild(div);
+}
 
-// ── 엔딩 슬라이드 ──
+// 엔딩
 function buildEnding() {
-  const div = document.createElement('div');
-  div.id = 'end-slide';
-  div.className = 'slide hidden';
-
-  // 별빛
-  const stars = Array.from({length:28},(_,i)=>`
-    <div class="star" style="
-      left:${(i*37+5)%100}%;top:${(i*23+10)%100}%;
-      width:${i%5===0?3:2}px;height:${i%5===0?3:2}px;
-      background:${i%3===0?'#FFD700':i%3===1?'#C778DD':'#5DADE2'};
-      opacity:${0.3+(i%4)*0.15};
-      animation-duration:${2+(i%3)}s;animation-delay:${(i*0.3)%2}s;
-    "></div>`).join('');
-
-  const lyricLines = (DATA.curtainLyrics || '').split('\n').filter(Boolean);
-
-  div.innerHTML = `
+  const div=document.createElement('div'); div.id='end-slide'; div.className='slide hidden';
+  const stars=Array.from({length:28},(_,i)=>`<div class="star" style="left:${(i*37+5)%100}%;top:${(i*23+10)%100}%;width:${i%5===0?3:2}px;height:${i%5===0?3:2}px;background:${i%3===0?'#FFD700':i%3===1?'#C778DD':'#5DADE2'};opacity:${.3+(i%4)*.15};animation-duration:${2+(i%3)}s"></div>`).join('');
+  const lyricLines=(DATA.curtainLyrics||'').split('
+').filter(Boolean);
+  div.innerHTML=`
     ${stars}
-    <!-- 커튼콜 -->
     <div id="curtain-phase">
-      <div style="font-size:36px;margin-bottom:18px">🎭</div>
-      <div class="curtain-label">✦ 커튼콜 ✦</div>
-      ${DATA.curtainSongTitle ? `<div class="curtain-song">♪ ${DATA.curtainSongTitle}</div>` : ''}
+      <div style="font-size:36px;margin-bottom:18px">&#127917;</div>
+      <div class="curtain-label">&#10022; &#52964;&#53004;&#47532;&#53076;&#47400; &#10022;</div>
+      ${DATA.curtainSongTitle?`<div class="curtain-song">&#9834; ${DATA.curtainSongTitle}</div>`:''}
       <div class="curtain-lyrics-wrap" id="curtain-lyrics-wrap">
-        ${lyricLines.map((l,i)=>`<div class="curtain-lyric-line" id="cl-${i}" style="color:rgba(255,255,255,0.9);opacity:0;transition:opacity 0.6s ease ${i*0.5}s">${l}</div>`).join('')}
+        ${lyricLines.map((l,i)=>`<div class="curtain-lyric-line" id="cl-${i}" style="color:rgba(255,255,255,.9);opacity:0;transition:opacity .6s ease ${i*.5}s">${l}</div>`).join('')}
       </div>
     </div>
-    <!-- 크레딧 -->
     <div id="credits-phase" style="opacity:0;pointer-events:none">
-      <div class="credits-mask-top"></div>
-      <div class="credits-mask-bot"></div>
+      <div class="credits-mask-top"></div><div class="credits-mask-bot"></div>
       <div id="credits-scroll">
-        ${DATA.curtainSongTitle ? `<div style="text-align:center;margin-bottom:40px;padding-top:20px">
-          <div style="font-size:12px;color:#FFD700;letter-spacing:4px;margin-bottom:8px">✦ CURTAIN CALL ✦</div>
-          <div style="font-size:18px;color:#C778DD;font-style:italic;font-weight:600">♪ ${DATA.curtainSongTitle}</div>
-        </div>` : ''}
         <div class="credits-title">
-          <div style="font-size:clamp(24px,4vw,38px);font-weight:900;color:#fff;letter-spacing:3px;text-shadow:0 0 30px rgba(93,173,226,0.5)">— 막 내림 —</div>
+          <div style="font-size:clamp(24px,4vw,38px);font-weight:900;color:#fff;letter-spacing:3px;text-shadow:0 0 30px rgba(93,173,226,.5)">&#8212; &#47561; &#45236;&#47548; &#8212;</div>
           <div class="credits-divider"></div>
         </div>
-        ${(DATA.credits||[]).map(c=>`
-          <div class="credit-row">
-            <div class="credit-role">${c.role}</div>
-            <div class="credit-sep"></div>
-            <div class="credit-name">${c.name}</div>
-          </div>`).join('')}
+        ${(DATA.credits||[]).map(c=>`<div class="credit-row"><div class="credit-role">${c.role}</div><div class="credit-sep"></div><div class="credit-name">${c.name}</div></div>`).join('')}
         <div class="credits-footer">
-          <div style="font-size:40px;margin-bottom:10px">🎵</div>
+          <div style="font-size:40px;margin-bottom:10px">&#127925;</div>
           <div style="font-size:13px;color:#5DADE2;letter-spacing:5px;margin-bottom:6px">EAIM</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.3);letter-spacing:2px">Emotion · Artscape · Interactive · Musicalization</div>
-          ${DATA.school ? `<div style="font-size:12px;color:rgba(255,255,255,0.25);margin-top:8px">${DATA.school}</div>` : ''}
+          <div style="font-size:11px;color:rgba(255,255,255,.3);letter-spacing:2px">Emotion · Artscape · Interactive · Musicalization</div>
+          ${DATA.school?`<div style="font-size:12px;color:rgba(255,255,255,.25);margin-top:8px">${DATA.school}</div>`:''}
         </div>
       </div>
-    </div>
-  `;
+    </div>`;
   stage.appendChild(div);
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// 암전 (막 전환)
-// ──────────────────────────────────────────────────────────────────────────────
 let isTransitioning = false;
-
-function blackout(text, callback) {
-  const bl = document.getElementById('blackout');
-  const bt = document.getElementById('blackout-text');
-  bt.textContent = text || '';
-  bl.classList.add('fade-in');
-  bl.classList.remove('fade-out');
-  setTimeout(() => {
-    callback();
-    setTimeout(() => {
-      bl.classList.remove('fade-in');
-      bl.classList.add('fade-out');
-      setTimeout(() => { isTransitioning = false; }, 500);
-    }, 300);
-  }, 500);
+function blackout(text, cb) {
+  const bl=document.getElementById('blackout'),bt=document.getElementById('blackout-text');
+  bt.textContent=text||''; bl.classList.add('fade-in'); bl.classList.remove('fade-out');
+  setTimeout(()=>{ cb(); setTimeout(()=>{ bl.classList.remove('fade-in'); bl.classList.add('fade-out'); setTimeout(()=>isTransitioning=false,500); },300); },500);
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// 슬라이드 전환
-// ──────────────────────────────────────────────────────────────────────────────
 function getSlideEl(idx) {
-  if (idx === 0) return document.getElementById('cover-slide');
-  if (idx === TOTAL + 1) return document.getElementById('end-slide');
+  if (idx===0) return document.getElementById('cover-slide');
+  if (idx===TOTAL+1) return document.getElementById('end-slide');
   return document.getElementById(`scene-slide-${idx-1}`);
 }
 
 function showSlide(idx) {
   if (isTransitioning) return;
-
-  // 장면 → 장면 전환만 암전 (커버→장면1, 장면→엔딩도 포함)
-  const needsBlackout = (current !== idx) && !(current === 0 && idx === 0);
-
+  const needsBlackout=(current!==idx)&&!(current===0&&idx===0);
   if (needsBlackout) {
-    isTransitioning = true;
-    // 암전 텍스트: 장면 번호 표시
-    const label = idx === TOTAL + 1 ? '막 내림' :
-                  idx === 0 ? '' :
-                  `Scene ${String(idx).padStart(2,'0')}`;
-    blackout(label, () => doShowSlide(idx));
-  } else {
-    doShowSlide(idx);
-  }
+    isTransitioning=true;
+    const label=idx===TOTAL+1?'&#47561; &#45236;&#47548;':idx===0?'':`Scene ${String(idx).padStart(2,'0')}`;
+    blackout(label,()=>doShowSlide(idx));
+  } else { doShowSlide(idx); }
 }
 
 function doShowSlide(idx) {
-  // 현재 숨기기
-  const old = getSlideEl(current);
-  if (old) old.className = old.className.replace('visible','hidden');
+  const old=getSlideEl(current);
+  if (old) old.className=old.className.replace('visible','hidden');
+  current=idx;
+  const el=getSlideEl(idx); if (!el) return;
+  el.className=el.className.replace('hidden','visible');
 
-  current = idx;
-  const el = getSlideEl(idx);
-  if (!el) return;
-  el.className = el.className.replace('hidden','visible');
-
-  // 장면 콘텐츠 애니메이션
-  if (idx >= 1 && idx <= TOTAL) {
-    const sceneIdx = idx - 1;
-    // 가사 줄 초기화
-    initLyricBar(sceneIdx);
-    setTimeout(() => {
-      const mc = document.getElementById(`mc-${sceneIdx}`);
-      const lp = document.getElementById(`lp-${sceneIdx}`);
-      if (mc) { mc.classList.remove('hidden'); mc.classList.add('visible'); }
-      if (lp) { lp.classList.remove('hidden'); lp.classList.add('visible'); }
-      const scene = SCENES[sceneIdx];
-      const lines = (scene.lyrics || '').split('\n').filter(Boolean);
-      lines.forEach((_,i) => {
-        const ll = document.getElementById(`ll-${sceneIdx}-${i}`);
-        if (ll) ll.style.opacity = '1';
-      });
-    }, 350);
+  if (idx>=1&&idx<=TOTAL) {
+    const si=idx-1;
+    initLyricBar(si);
+    setTimeout(()=>{
+      const mc=document.getElementById(`mc-${si}`),lp=document.getElementById(`lp-${si}`);
+      if(mc){mc.classList.remove('hidden');mc.classList.add('visible');}
+      if(lp){lp.classList.remove('hidden');lp.classList.add('visible');}
+      const lines=(SCENES[si].lyrics||'').split('
+').filter(Boolean);
+      lines.forEach((_,i)=>{ const ll=document.getElementById(`ll-${si}-${i}`);if(ll)ll.style.opacity='1'; });
+    },350);
   }
 
-  // 엔딩 애니메이션
-  if (idx === TOTAL + 1) {
-    document.getElementById('controls').style.display = 'none';
-    document.getElementById('back-btn').style.display = 'block';
-    document.getElementById('key-hint').style.display = 'none';
+  if (idx===TOTAL+1) {
+    document.getElementById('controls').style.display='none';
+    document.getElementById('back-btn').style.display='block';
+    document.getElementById('key-hint').style.display='none';
     startEnding();
   } else {
-    document.getElementById('controls').style.display = 'flex';
-    document.getElementById('back-btn').style.display = 'none';
-    document.getElementById('key-hint').style.display = 'block';
+    document.getElementById('controls').style.display='flex';
+    document.getElementById('back-btn').style.display='none';
+    document.getElementById('key-hint').style.display='block';
   }
 
   updateControls();
+
+  // 🚦 신호등: 장면 전환 시 오디오 믹서에 신호 발신
+  emitSlideSignal(idx);
 }
 
-// ── 엔딩 시퀀스 ──
-function startEnding() {
-  const lyricLines = (DATA.curtainLyrics || '').split('\n').filter(Boolean);
-
-  // 커튼콜 가사 페이드인
-  setTimeout(() => {
-    lyricLines.forEach((_,i) => {
-      setTimeout(() => {
-        const el = document.getElementById(`cl-${i}`);
-        if (el) el.style.opacity = i === lyricLines.length-1 ? '1' : '0.9';
-      }, i * 600);
-    });
-  }, 300);
-
-  // 크레딧로 전환
-  const delay = Math.max(3000, lyricLines.length * 700 + 1800);
-  setTimeout(() => {
-    const cp = document.getElementById('curtain-phase');
-    const cr = document.getElementById('credits-phase');
-    if (cp) cp.style.opacity = '0';
-    setTimeout(() => {
-      if (cp) cp.style.pointerEvents = 'none';
-      if (cr) { cr.style.opacity = '1'; cr.style.pointerEvents = 'auto'; }
-      startCreditsScroll();
-    }, 1000);
-  }, delay);
-}
-
-function startCreditsScroll() {
-  const scroll = document.getElementById('credits-scroll');
-  if (!scroll) return;
-  const duration = Math.max(12, (DATA.credits||[]).length * 2.2 + 10);
-  scroll.style.transition = `top ${duration}s linear`;
-  scroll.style.top = '-220%';
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// 컨트롤
-// ──────────────────────────────────────────────────────────────────────────────
-function updateControls() {
-  const dotNav = document.getElementById('dot-nav');
-  dotNav.innerHTML = '';
-  const totalSlides = TOTAL + 1; // cover + scenes (엔딩 제외)
-  for (let i = 0; i <= totalSlides - 1; i++) {
-    const dot = document.createElement('div');
-    dot.className = 'dot' + (i === current ? ' active' : '');
-    const C = i === 0 ? {accent:'#5DADE2'} : getColor(SCENES[i-1]?.emotion || '');
-    if (i === current) dot.style.background = C.accent;
-    dot.title = i === 0 ? '커버' : (SCENES[i-1]?.title || '');
-    dot.onclick = () => showSlide(i);
-    dotNav.appendChild(dot);
-  }
-  document.getElementById('btn-prev').disabled = current === 0;
-  document.getElementById('btn-next').disabled = current === TOTAL + 1;
-}
-
-function goBack() {
-  if (document.referrer && document.referrer.includes('musical-maker')) {
-    history.back();
-  } else {
-    window.location.href = 'musical-maker.html';
-  }
-}
-
-// 자동재생 (7초)
-function toggleAuto() {
-  autoPlay = !autoPlay;
-  document.getElementById('btn-auto').textContent = autoPlay ? '⏸' : '⏵';
-  document.getElementById('btn-auto').style.color = autoPlay ? '#5DADE2' : 'rgba(255,255,255,0.8)';
-  clearInterval(autoTimer);
-  if (autoPlay) {
-    autoTimer = setInterval(() => {
-      if (current >= TOTAL) { autoPlay = false; clearInterval(autoTimer); return; }
-      showSlide(current + 1);
-    }, 7000);
-  }
-}
-
-// 키보드
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === ' ') {
-    if (current < TOTAL + 1) showSlide(current + 1);
-  } else if (e.key === 'ArrowLeft') {
-    if (current > 0) showSlide(current - 1);
-  } else if (e.key === 'Escape') {
-    goBack();
-  }
-});
-
-document.getElementById('btn-prev').onclick = () => { if (current > 0) showSlide(current - 1); };
-document.getElementById('btn-next').onclick = () => { if (current < TOTAL + 1) showSlide(current + 1); };
-document.getElementById('btn-auto').onclick  = toggleAuto;
-document.getElementById('btn-exit').onclick  = goBack;
-
-// ──────────────────────────────────────────────────────────────────────────────
-// 넘버 가사 자막 — 줄 넘기기
-// ──────────────────────────────────────────────────────────────────────────────
-const lyricLineState = {}; // sceneIdx → 현재 줄 번호
-
-function initLyricBar(sceneIdx) {
-  lyricLineState[sceneIdx] = 0;
-  updateLyricBar(sceneIdx);
-}
-
-function nextLyricLine(sceneIdx) {
-  const scene = SCENES[sceneIdx];
-  if (!scene) return;
-  const lines = (scene.lyrics || '').split('\n').filter(Boolean);
-  if (!lines.length) return;
-  const cur = (lyricLineState[sceneIdx] || 0);
-  if (cur < lines.length - 1) {
-    lyricLineState[sceneIdx] = cur + 1;
-    updateLyricBar(sceneIdx);
-  }
-}
-
-function prevLyricLine(sceneIdx) {
-  const cur = (lyricLineState[sceneIdx] || 0);
-  if (cur > 0) {
-    lyricLineState[sceneIdx] = cur - 1;
-    updateLyricBar(sceneIdx);
-  }
-}
-
-function updateLyricBar(sceneIdx) {
-  const scene = SCENES[sceneIdx];
-  if (!scene) return;
-  const lines = (scene.lyrics || '').split('\n').filter(Boolean);
-  const cur   = lyricLineState[sceneIdx] || 0;
-  const curEl  = document.getElementById(`nlb-cur-${sceneIdx}`);
-  const nextEl = document.getElementById(`nlb-next-${sceneIdx}`);
-  if (curEl)  curEl.textContent  = lines[cur]  || '';
-  if (nextEl) nextEl.textContent = lines[cur + 1] || '';
-}
-
-function toggleLyricsBar(sceneIdx) {
-  const bar = document.getElementById(`nlb-${sceneIdx}`);
-  const btn = document.getElementById(`lyr-toggle-${sceneIdx}`);
-  if (!bar) return;
-  const hidden = bar.style.display === 'none';
-  bar.style.display  = hidden ? 'block' : 'none';
-  btn.textContent    = hidden ? '가사 숨기기' : '가사 보기';
-}
-
-// 키보드로 가사 줄 넘기기 — W/S 또는 위/아래 방향키
-document.addEventListener('keydown', e => {
-  if (e.target.id === 'bubble-text-input') return;
-  const sceneIdx = current - 1;
-  if (sceneIdx < 0 || sceneIdx >= TOTAL) return;
-  if (e.key === 'ArrowUp'   || e.key === 'w' || e.key === 'W') {
-    e.preventDefault(); prevLyricLine(sceneIdx);
-  }
-  if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
-    e.preventDefault(); nextLyricLine(sceneIdx);
-  }
-});
-
-// ──────────────────────────────────────────────────────────────────────────────
-// 말풍선 & 자막 기능
-// ──────────────────────────────────────────────────────────────────────────────
-let bubblePanelOpen = false;
-
-function toggleBubblePanel() {
-  bubblePanelOpen = !bubblePanelOpen;
-  const panel = document.getElementById('bubble-panel');
-  const btn   = document.getElementById('btn-bubble');
-  panel.classList.toggle('show', bubblePanelOpen);
-  btn.style.color = bubblePanelOpen ? '#5DADE2' : 'rgba(255,255,255,0.8)';
-}
-
-// 현재 슬라이드 el 가져오기
-function getCurrentSlideEl() {
-  if (current === 0) return document.getElementById('cover-slide');
-  if (current === TOTAL + 1) return document.getElementById('end-slide');
-  return document.getElementById(`scene-slide-${current - 1}`);
-}
-
-// 말풍선 추가
-function addBubble() {
-  const text = document.getElementById('bubble-text-input').value.trim();
-  if (!text) { document.getElementById('bubble-text-input').focus(); return; }
-  const name     = document.getElementById('bubble-name-input').value.trim();
-  const tailType = document.getElementById('bubble-tail').value;
-  const slide    = getCurrentSlideEl();
-  if (!slide) return;
-
-  const bubble = document.createElement('div');
-  bubble.className = `speech-bubble ${tailType}`;
-  // 기본 위치 — 중앙 하단부
-  bubble.style.left = '30%';
-  bubble.style.top  = '55%';
-
-  bubble.innerHTML = `
-    ${name ? `<div class="bubble-name">${name}</div>` : ''}
-    <span class="bubble-text">${text}</span>
-    <button class="bubble-del" onclick="this.parentElement.remove()">✕</button>
-  `;
-
-  // 드래그 이동
-  makeDraggable(bubble);
-  slide.appendChild(bubble);
-
-  // 입력 초기화
-  document.getElementById('bubble-text-input').value = '';
-  document.getElementById('bubble-text-input').focus();
-}
-
-// 드래그 기능
-function makeDraggable(el) {
-  let startX, startY, startL, startT;
-  el.addEventListener('mousedown', e => {
-    if (e.target.classList.contains('bubble-del')) return;
-    e.preventDefault();
-    const rect = el.getBoundingClientRect();
-    const pRect = el.parentElement.getBoundingClientRect();
-    startX = e.clientX;
-    startY = e.clientY;
-    startL = rect.left - pRect.left;
-    startT = rect.top  - pRect.top;
-    const onMove = mv => {
-      const dx = mv.clientX - startX;
-      const dy = mv.clientY - startY;
-      el.style.left = (startL + dx) + 'px';
-      el.style.top  = (startT + dy) + 'px';
-    };
-    const onUp = () => {
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-    };
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  });
-  // 터치 지원
-  el.addEventListener('touchstart', e => {
-    if (e.target.classList.contains('bubble-del')) return;
-    const t = e.touches[0];
-    const rect = el.getBoundingClientRect();
-    const pRect = el.parentElement.getBoundingClientRect();
-    startX = t.clientX; startY = t.clientY;
-    startL = rect.left - pRect.left;
-    startT = rect.top  - pRect.top;
-    const onMove = mv => {
-      const tc = mv.touches[0];
-      el.style.left = (startL + tc.clientX - startX) + 'px';
-      el.style.top  = (startT + tc.clientY - startY) + 'px';
-    };
-    const onEnd = () => {
-      el.removeEventListener('touchmove', onMove);
-      el.removeEventListener('touchend', onEnd);
-    };
-    el.addEventListener('touchmove', onMove);
-    el.addEventListener('touchend', onEnd);
-  }, {passive:true});
-}
-
-// 현재 장면 말풍선 전체 삭제
-function clearBubbles() {
-  const slide = getCurrentSlideEl();
-  if (!slide) return;
-  slide.querySelectorAll('.speech-bubble').forEach(b => b.remove());
-}
-
-// ── 자막 ──
-let subtitleVisible = false;
-
-function toggleSubtitleEdit() {
-  const bar = document.getElementById('subtitle-bar');
-  subtitleVisible = !subtitleVisible;
-  if (subtitleVisible) {
-    bar.style.display = 'block';
-    const slide = getCurrentSlideEl();
-    if (slide) slide.appendChild(bar);
-    editSubtitle();
-  } else {
-    bar.style.display = 'none';
-  }
-  document.getElementById('subtitle-toggle').classList.toggle('on', subtitleVisible);
-}
-
-function editSubtitle() {
-  const bar = document.getElementById('subtitle-bar');
-  const cur = bar.dataset.text || '';
-  const text = prompt('자막 입력 (빈칸이면 숨김):', cur);
-  if (text === null) return;
-  if (!text.trim()) {
-    bar.style.display = 'none';
-    subtitleVisible = false;
-    document.getElementById('subtitle-toggle').classList.remove('on');
+// 🚦 신호등 신호 발신 함수
+function emitSlideSignal(idx) {
+  if (idx < 1 || idx > TOTAL) {
+    // 커버나 엔딩은 신호 클리어
+    localStorage.removeItem('eaim_slide_signal');
+    hideSignalIndicator();
     return;
   }
-  bar.dataset.text = text.trim();
-  bar.textContent  = text.trim();
-  bar.style.display = 'block';
-  subtitleVisible = true;
-  // 현재 슬라이드에 붙이기
-  const slide = getCurrentSlideEl();
-  if (slide && !slide.contains(bar)) slide.appendChild(bar);
+  const sceneIdx = idx - 1;
+  const scene = SCENES[sceneIdx];
+  if (!scene) return;
+  const signal = {
+    sceneIdx,
+    title: scene.title || '',
+    songTitle: scene.songTitle || '',
+    emotion: scene.emotion || '',
+    musicMood: scene.musicMood || '',
+    type: scene.type || 'scene',
+    sceneNum: idx,
+    timestamp: Date.now(),
+  };
+  localStorage.setItem('eaim_slide_signal', JSON.stringify(signal));
+  showSignalIndicator(scene, idx);
 }
 
-// 슬라이드 전환 시 말풍선/자막 패널 위치 이동
-function moveBubblePanel() {
-  const bar = document.getElementById('subtitle-bar');
-  if (subtitleVisible) {
-    const slide = getCurrentSlideEl();
-    if (slide && !slide.contains(bar)) slide.appendChild(bar);
+function showSignalIndicator(scene, idx) {
+  const el = document.getElementById('signal-indicator');
+  const txt = document.getElementById('signal-text');
+  if (!el || !txt) return;
+  txt.textContent = 'Scene ' + String(idx).padStart(2,'0') + ': ' + scene.title + ' — 음향 신호 발신';
+  el.style.display = 'flex';
+  clearTimeout(el._timer);
+  el._timer = setTimeout(hideSignalIndicator, 3000);
+}
+
+function hideSignalIndicator() {
+  const el = document.getElementById('signal-indicator');
+  if (el) el.style.display = 'none';
+}
+
+function startEnding() {
+  const lyricLines=(DATA.curtainLyrics||'').split('
+').filter(Boolean);
+  setTimeout(()=>{ lyricLines.forEach((_,i)=>setTimeout(()=>{ const el=document.getElementById(`cl-${i}`);if(el)el.style.opacity='1'; },i*600)); },300);
+  const delay=Math.max(3000,lyricLines.length*700+1800);
+  setTimeout(()=>{
+    const cp=document.getElementById('curtain-phase'),cr=document.getElementById('credits-phase');
+    if(cp)cp.style.opacity='0';
+    setTimeout(()=>{ if(cp)cp.style.pointerEvents='none'; if(cr){cr.style.opacity='1';cr.style.pointerEvents='auto';} startCreditsScroll(); },1000);
+  },delay);
+}
+function startCreditsScroll() {
+  const s=document.getElementById('credits-scroll');if(!s)return;
+  const dur=Math.max(12,(DATA.credits||[]).length*2.2+10);
+  s.style.transition=`top ${dur}s linear`; s.style.top='-220%';
+}
+
+function updateControls() {
+  const dotNav=document.getElementById('dot-nav'); dotNav.innerHTML='';
+  for (let i=0;i<=TOTAL;i++) {
+    const dot=document.createElement('div');
+    dot.className='dot'+(i===current?' active':'');
+    const C=i===0?{accent:'#5DADE2'}:getColor(SCENES[i-1]?.emotion||'');
+    if(i===current)dot.style.background=C.accent;
+    dot.title=i===0?'&#52264;&#48260;':(SCENES[i-1]?.title||'');
+    dot.onclick=()=>showSlide(i); dotNav.appendChild(dot);
   }
+  document.getElementById('btn-prev').disabled=current===0;
+  document.getElementById('btn-next').disabled=current===TOTAL+1;
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// 초기화 — API 키 확인 후 호출
-// ──────────────────────────────────────────────────────────────────────────────
-function initSlideshow() {
-  buildCover();
-  SCENES.forEach((s, i) => buildScene(s, i));
-  buildEnding();
-  document.getElementById('controls').style.display = 'flex';
-  showSlide(0);
-  // 모든 장면 이미지 백그라운드 프리로드 (순차적으로)
-  (async () => {
-    for (let i = 0; i < SCENES.length; i++) {
-      await loadBgImage(SCENES[i], i).catch(() => {});
-    }
-  })();
+function goBack() { window.location.href='musical-maker.html'; }
+
+function toggleAuto() {
+  autoPlay=!autoPlay;
+  document.getElementById('btn-auto').textContent=autoPlay?'&#9208;':'&#9205;';
+  document.getElementById('btn-auto').style.color=autoPlay?'#5DADE2':'rgba(255,255,255,.8)';
+  clearInterval(autoTimer);
+  if(autoPlay){ autoTimer=setInterval(()=>{ if(current>=TOTAL){autoPlay=false;clearInterval(autoTimer);return;} showSlide(current+1); },7000); }
 }
 
-// 키보드 Enter로 말풍선 빠르게 추가
-document.addEventListener('keydown', e => {
-  if (e.target.id === 'bubble-text-input' && e.key === 'Enter') {
-    addBubble();
-  }
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){ if(current<TOTAL+1)showSlide(current+1); }
+  else if(e.key==='ArrowLeft'){ if(current>0)showSlide(current-1); }
+  else if(e.key==='Escape'){ goBack(); }
+});
+document.getElementById('btn-prev').onclick=()=>{ if(current>0)showSlide(current-1); };
+document.getElementById('btn-next').onclick=()=>{ if(current<TOTAL+1)showSlide(current+1); };
+document.getElementById('btn-auto').onclick=toggleAuto;
+document.getElementById('btn-exit').onclick=goBack;
+
+const lyricLineState={};
+function initLyricBar(si){ lyricLineState[si]=0; updateLyricBar(si); }
+function nextLyricLine(si){
+  const lines=(SCENES[si].lyrics||'').split('
+').filter(Boolean);
+  const cur=lyricLineState[si]||0;
+  if(cur<lines.length-1){lyricLineState[si]=cur+1;updateLyricBar(si);}
+}
+function prevLyricLine(si){
+  const cur=lyricLineState[si]||0;
+  if(cur>0){lyricLineState[si]=cur-1;updateLyricBar(si);}
+}
+function updateLyricBar(si){
+  const lines=(SCENES[si].lyrics||'').split('
+').filter(Boolean);
+  const cur=lyricLineState[si]||0;
+  const ce=document.getElementById(`nlb-cur-${si}`),ne=document.getElementById(`nlb-next-${si}`);
+  if(ce)ce.textContent=lines[cur]||'';
+  if(ne)ne.textContent=lines[cur+1]||'';
+}
+function toggleLyricsBar(si){
+  const bar=document.getElementById(`nlb-${si}`),btn=document.getElementById(`lyr-toggle-${si}`);
+  if(!bar)return;
+  const hidden=bar.style.display==='none';
+  bar.style.display=hidden?'block':'none';
+  btn.textContent=hidden?'&#44032;&#49324; &#49232;&#44592;&#44592;':'&#44032;&#49324; &#48372;&#44592;';
+}
+document.addEventListener('keydown',e=>{
+  if(e.target.id==='bubble-text-input')return;
+  const si=current-1; if(si<0||si>=TOTAL)return;
+  if(e.key==='ArrowUp'||e.key==='w'||e.key==='W'){e.preventDefault();prevLyricLine(si);}
+  if(e.key==='ArrowDown'||e.key==='s'||e.key==='S'){e.preventDefault();nextLyricLine(si);}
 });
 
-// ── 페이지 로드 — 저장된 키 확인 ──
-window.addEventListener('load', () => {
-  if (GEMINI_KEY) {
-    document.getElementById('api-modal').classList.add('hidden');
-    updateStatusBadge('gemini');
-    initSlideshow();
-  } else {
-    showApiModal();
-  }
+let bubblePanelOpen=false;
+function toggleBubblePanel(){
+  bubblePanelOpen=!bubblePanelOpen;
+  document.getElementById('bubble-panel').classList.toggle('show',bubblePanelOpen);
+  document.getElementById('btn-bubble').style.color=bubblePanelOpen?'#5DADE2':'rgba(255,255,255,.8)';
+}
+function getCurrentSlideEl(){
+  if(current===0)return document.getElementById('cover-slide');
+  if(current===TOTAL+1)return document.getElementById('end-slide');
+  return document.getElementById(`scene-slide-${current-1}`);
+}
+function addBubble(){
+  const text=document.getElementById('bubble-text-input').value.trim();
+  if(!text){document.getElementById('bubble-text-input').focus();return;}
+  const name=document.getElementById('bubble-name-input').value.trim();
+  const tailType=document.getElementById('bubble-tail').value;
+  const slide=getCurrentSlideEl();if(!slide)return;
+  const bubble=document.createElement('div');
+  bubble.className=`speech-bubble ${tailType}`;
+  bubble.style.left='30%';bubble.style.top='55%';
+  bubble.innerHTML=`${name?`<div class="bubble-name">${name}</div>`:''}<span>${text}</span><button class="bubble-del" onclick="this.parentElement.remove()">&#10005;</button>`;
+  makeDraggable(bubble);slide.appendChild(bubble);
+  document.getElementById('bubble-text-input').value='';
+  document.getElementById('bubble-text-input').focus();
+}
+function makeDraggable(el){
+  let sx,sy,sl,st;
+  el.addEventListener('mousedown',e=>{
+    if(e.target.classList.contains('bubble-del'))return;
+    e.preventDefault();
+    const r=el.getBoundingClientRect(),pr=el.parentElement.getBoundingClientRect();
+    sx=e.clientX;sy=e.clientY;sl=r.left-pr.left;st=r.top-pr.top;
+    const mv=mv=>{el.style.left=(sl+mv.clientX-sx)+'px';el.style.top=(st+mv.clientY-sy)+'px';};
+    const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);};
+    document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);
+  });
+}
+function clearBubbles(){const s=getCurrentSlideEl();if(s)s.querySelectorAll('.speech-bubble').forEach(b=>b.remove());}
+
+let subtitleVisible=false;
+function toggleSubtitleEdit(){
+  const bar=document.getElementById('subtitle-bar');
+  subtitleVisible=!subtitleVisible;
+  if(subtitleVisible){bar.style.display='block';const s=getCurrentSlideEl();if(s)s.appendChild(bar);editSubtitle();}
+  else bar.style.display='none';
+  document.getElementById('subtitle-toggle').classList.toggle('on',subtitleVisible);
+}
+function editSubtitle(){
+  const bar=document.getElementById('subtitle-bar');
+  const text=prompt('&#51088;&#47561; &#51077;&#47141;:',bar.dataset.text||'');
+  if(text===null)return;
+  if(!text.trim()){bar.style.display='none';subtitleVisible=false;document.getElementById('subtitle-toggle').classList.remove('on');return;}
+  bar.dataset.text=text.trim();bar.textContent=text.trim();bar.style.display='block';
+  const s=getCurrentSlideEl();if(s&&!s.contains(bar))s.appendChild(bar);
+}
+
+document.addEventListener('keydown',e=>{ if(e.target.id==='bubble-text-input'&&e.key==='Enter')addBubble(); });
+
+function initSlideshow() {
+  buildCover();
+  SCENES.forEach((s,i)=>buildScene(s,i));
+  buildEnding();
+  document.getElementById('controls').style.display='flex';
+  showSlide(0);
+  (async()=>{ for(let i=0;i<SCENES.length;i++) await loadBgImage(SCENES[i],i).catch(()=>{}); })();
+}
+
+window.addEventListener('load',()=>{
+  if(GEMINI_KEY){document.getElementById('api-modal').classList.add('hidden');updateStatusBadge('gemini');initSlideshow();}
+  else showApiModal();
 });
 </script>
 </body>
