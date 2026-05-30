@@ -124,7 +124,7 @@ select.bubble-ctrl-btn{padding:5px 8px}
 </head>
 <body>
 
-<div id="api-modal">
+<div id="api-modal" class="hidden">
   <div class="api-box">
     <div style="font-size:32px;margin-bottom:12px">&#128273;</div>
     <div class="api-title">Gemini API &#53948; &#51077;&#47141;</div>
@@ -132,13 +132,13 @@ select.bubble-ctrl-btn{padding:5px 8px}
     <input class="api-input" id="api-key-input" type="password" placeholder="AIza..." autocomplete="off">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
       <input type="checkbox" id="save-key" checked style="accentColor:#5DADE2">
-      <label for="save-key" style="font-size:12px;color:rgba(255,255,255,.5);cursor:pointer">&#51060; &#lambda;&#54981;&#46972;&#50864;&#51200;&#50640; &#51ú;&#51109;</label>
+      <label for="save-key" style="font-size:12px;color:rgba(255,255,255,.5);cursor:pointer">이 브라우저에 저장</label>
     </div>
     <div class="api-row">
       <button class="api-btn-ok" onclick="confirmApiKey()">&#10003; &#54869;&#51064; &#54980; &#49884;&#51089;</button>
       <button class="api-btn-skip" onclick="skipApiKey()">&#44148;&#45320;&#46263;&#44592;</button>
     </div>
-    <div class="api-notice">&#53944; &#bc1c;&#44553;: <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a></div>
+    <div class="api-notice">키 발급: <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a></div>
   </div>
 </div>
 
@@ -227,7 +227,7 @@ const TOTAL = SCENES.length;
 let current = 0, autoPlay = false, autoTimer = null;
 
 // API 키
-let GEMINI_KEY = localStorage.getItem('eaim_gemini_key') || '';
+let GEMINI_KEY = localStorage.getItem('mm_teacher_api') || localStorage.getItem('eaim_gemini_key') || '';
 const imgCache = {};
 
 function showApiModal() {
@@ -238,7 +238,10 @@ function confirmApiKey() {
   const key = document.getElementById('api-key-input').value.trim();
   if (!key) return;
   GEMINI_KEY = key;
-  if (document.getElementById('save-key').checked) localStorage.setItem('eaim_gemini_key', key);
+  if (document.getElementById('save-key').checked) {
+    localStorage.setItem('eaim_gemini_key', key);
+    localStorage.setItem('mm_teacher_api', key);
+  }
   document.getElementById('api-modal').classList.add('hidden');
   updateStatusBadge('gemini'); initSlideshow();
 }
@@ -520,7 +523,7 @@ function updateControls() {
   document.getElementById('btn-next').disabled=current===TOTAL+1;
 }
 
-function goBack() { window.location.href='musical-maker.html'; }
+function goBack() { window.location.href='index.html'; }
 
 function toggleAuto() {
   autoPlay=!autoPlay;
@@ -642,8 +645,16 @@ function initSlideshow() {
 }
 
 window.addEventListener('load',()=>{
-  if(GEMINI_KEY){document.getElementById('api-modal').classList.add('hidden');updateStatusBadge('gemini');initSlideshow();}
-  else showApiModal();
+  const makerKey = localStorage.getItem('mm_teacher_api') || localStorage.getItem('eaim_gemini_key') || '';
+  if (makerKey) {
+    GEMINI_KEY = makerKey;
+    document.getElementById('api-modal').classList.add('hidden');
+    updateStatusBadge('gemini');
+    initSlideshow();
+  } else {
+    // 키 없을 때만 모달 표시
+    document.getElementById('api-modal').classList.remove('hidden');
+  }
 });
 </script>
 </body>
