@@ -372,14 +372,14 @@ JSON만 응답:
     setStep(2,'오프닝 코러스 작성 중...');
     const s2=await callGemini(`뮤지컬 "${struct.title}" 오프닝 코러스.
 줄거리:${struct.synopsis} | 인물:${charsStr} | 장르:${genre}
-JSON만:{"songTitle":"넘버제목","lyrics":"가사 4-6줄(줄바꿈)","sunoPrompt":"영문 Suno 프롬프트(50단어이내)","bgPrompt":"영문 배경이미지 프롬프트(--ar 16:9포함)","mood":"분위기 한국어"}`);
+JSON만:{"songTitle":"넘버제목","lyrics":"가사 4-6줄(줄바꿈)","sunoPrompt":"영문 Suno 프롬프트(50단어이내)","bgPrompt":"영문 배경이미지 프롬프트, 2.5D parallax composition with distinct far background layer(sky/distant scenery), mid layer(buildings/trees/environment), near foreground layer(props/ground details), theatrical stage lighting, --ar 16:9","mood":"분위기 한국어"}`);
     const opening=parseJSON(s2);
-    setStep(3,'장면 작성 중...');
-    const scenes=[];
-    for(const act of struct.acts){
-      setStep(3,`${act.actNum}막 "${act.title}" 작성 중...`);
+    setStep(3,'장면 작성 중...');      setStep(3,`${act.actNum}막 "${act.title}" 작성 중...`);
       const sn=await callGemini(`뮤지컬 "${struct.title}" ${act.actNum}막.
 내용:${act.summary} | 감정:${act.emotion} | 인물:${charsStr}
+
+    const scenes=[];
+    for(const act of struct.acts){
 JSON만:{"sceneTitle":"${act.title}","songTitle":"넘버제목","lyrics":"가사 4-6줄","characters":"등장인물","sunoPrompt":"영문 Suno(50단어이내)","bgPrompt":"영문 배경이미지(--ar 16:9)","emotion":"${act.emotion}","mood":"분위기 한국어"}`);
       scenes.push(parseJSON(sn));
     }
