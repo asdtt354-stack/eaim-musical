@@ -12,6 +12,7 @@
   --purple:#7c3aed;--pink:#c778dd;--blue:#5DADE2;
   --green:#52c27a;--text:#f0e8ff;--sub:#9a8aaa;
   --border:rgba(212,168,67,0.15);
+  --media:#ff6b9d;
 }
 body{
   font-family:'Noto Sans KR',sans-serif;
@@ -88,6 +89,10 @@ main{max-width:960px;margin:0 auto;padding:48px 24px 80px;}
 .card-guide::before{background:radial-gradient(ellipse at 0% 0%,rgba(199,120,221,0.08) 0%,transparent 70%);}
 .card-guide:hover{border-color:rgba(199,120,221,0.5);box-shadow:0 8px 40px rgba(199,120,221,0.12);}
 
+.card-media{border-color:rgba(255,107,157,0.2);}
+.card-media::before{background:radial-gradient(ellipse at 0% 0%,rgba(255,107,157,0.08) 0%,transparent 70%);}
+.card-media:hover{border-color:rgba(255,107,157,0.5);box-shadow:0 8px 40px rgba(255,107,157,0.12);}
+
 .card-icon{
   width:56px;height:56px;border-radius:16px;
   display:flex;align-items:center;justify-content:center;
@@ -97,6 +102,7 @@ main{max-width:960px;margin:0 auto;padding:48px 24px 80px;}
 .icon-slide{background:rgba(93,173,226,0.12);border:1px solid rgba(93,173,226,0.25);}
 .icon-audio{background:rgba(105,240,174,0.1);border:1px solid rgba(105,240,174,0.2);}
 .icon-guide{background:rgba(199,120,221,0.1);border:1px solid rgba(199,120,221,0.2);}
+.icon-media{background:rgba(255,107,157,0.1);border:1px solid rgba(255,107,157,0.2);}
 
 .card-name{
   font-family:'Cormorant Garamond',serif;
@@ -106,6 +112,7 @@ main{max-width:960px;margin:0 auto;padding:48px 24px 80px;}
 .name-slide{color:var(--blue);}
 .name-audio{color:#69f0ae;}
 .name-guide{color:var(--pink);}
+.name-media{color:var(--media);}
 
 .card-name-ko{font-size:.68rem;color:var(--sub);letter-spacing:.15em;text-transform:uppercase;margin-bottom:12px;}
 .card-desc{font-size:.82rem;color:rgba(255,255,255,.5);line-height:1.7;}
@@ -117,6 +124,14 @@ main{max-width:960px;margin:0 auto;padding:48px 24px 80px;}
 }
 .app-card:hover .card-arrow{color:rgba(255,255,255,.6);transform:translateX(3px);}
 
+/* NEW 뱃지 */
+.card-new{
+  position:absolute;top:16px;right:16px;
+  background:linear-gradient(135deg,var(--media),#c778dd);
+  color:#fff;font-size:.6rem;font-weight:700;
+  padding:3px 8px;border-radius:10px;letter-spacing:1px;
+}
+
 /* ── 플로우 안내 ── */
 .flow-wrap{
   background:rgba(255,255,255,0.03);
@@ -126,7 +141,7 @@ main{max-width:960px;margin:0 auto;padding:48px 24px 80px;}
 }
 .flow-title{font-size:.68rem;color:var(--sub);letter-spacing:.2em;text-transform:uppercase;margin-bottom:16px;text-align:center;}
 .flow-steps{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;}
-.flow-step{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 16px;}
+.flow-step{display:flex;flex-direction:column;align-items:center;gap:6px;padding:0 12px;}
 .flow-icon{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;}
 .flow-label{font-size:.7rem;color:var(--sub);text-align:center;}
 .flow-arrow{color:rgba(255,255,255,.15);font-size:1rem;padding:0 4px;}
@@ -138,21 +153,21 @@ main{max-width:960px;margin:0 auto;padding:48px 24px 80px;}
 .fade-in{animation:fadeIn .5s ease-out;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-  .enter-btn {
-    flex:1; padding:10px 8px; border-radius:10px; text-align:center;
-    font-size:.82rem; font-weight:700; text-decoration:none;
-    transition:all .2s; cursor:pointer;
-  }
-  .btn-teacher {
-    background:rgba(212,168,67,0.15); color:var(--gold);
-    border:1px solid rgba(212,168,67,0.35);
-  }
-  .btn-teacher:hover { background:rgba(212,168,67,0.28); transform:translateY(-1px); }
-  .btn-student {
-    background:rgba(82,194,122,0.12); color:#86efac;
-    border:1px solid rgba(82,194,122,0.3);
-  }
-  .btn-student:hover { background:rgba(82,194,122,0.22); transform:translateY(-1px); }
+.enter-btn{
+  flex:1;padding:10px 8px;border-radius:10px;text-align:center;
+  font-size:.82rem;font-weight:700;text-decoration:none;
+  transition:all .2s;cursor:pointer;
+}
+.btn-teacher{
+  background:rgba(212,168,67,0.15);color:var(--gold);
+  border:1px solid rgba(212,168,67,0.35);
+}
+.btn-teacher:hover{background:rgba(212,168,67,0.28);transform:translateY(-1px);}
+.btn-student{
+  background:rgba(82,194,122,0.12);color:#86efac;
+  border:1px solid rgba(82,194,122,0.3);
+}
+.btn-student:hover{background:rgba(82,194,122,0.22);transform:translateY(-1px);}
 </style>
 </head>
 <body>
@@ -186,6 +201,11 @@ main{max-width:960px;margin:0 auto;padding:48px 24px 80px;}
       <div class="flow-step">
         <div class="flow-icon" style="background:rgba(105,240,174,0.1);border:1px solid rgba(105,240,174,0.2)">🎵</div>
         <div class="flow-label" style="color:#69f0ae">오디오 믹싱</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon" style="background:rgba(255,107,157,0.1);border:1px solid rgba(255,107,157,0.2)">🎨</div>
+        <div class="flow-label" style="color:var(--media)">미디어픽쳐</div>
       </div>
       <div class="flow-arrow">→</div>
       <div class="flow-step">
@@ -228,8 +248,18 @@ main{max-width:960px;margin:0 auto;padding:48px 24px 80px;}
       <div class="card-arrow">→</div>
     </a>
 
+    <!-- 미디어픽쳐 NEW! -->
+    <a href="media-picture.html" class="app-card card-media">
+      <div class="card-new">NEW</div>
+      <div class="card-icon icon-media">🎨</div>
+      <div class="card-name name-media">미디어픽쳐</div>
+      <div class="card-name-ko">Media Picture · 음악감상 창작</div>
+      <div class="card-desc">음악을 듣고 느낌을 한글로 표현하면 AI가 그림으로 만들어줘요. 웹툰·수채화·지브리 등 스타일 선택 가능!</div>
+      <div class="card-arrow">→</div>
+    </a>
+
     <!-- Guide -->
-    <a href="guide.html" class="app-card card-guide">
+    <a href="guide.html" class="app-card card-guide" style="grid-column:1/-1;">
       <div class="card-icon icon-guide">📖</div>
       <div class="card-name name-guide">Guide</div>
       <div class="card-name-ko">사용 가이드</div>
@@ -242,7 +272,6 @@ main{max-width:960px;margin:0 auto;padding:48px 24px 80px;}
   <div class="footer">EAIM Musical Platform · Emotion · Artscape · Interactive · Musicalization</div>
 
 </main>
-
 
 <script>
 function setRole(role) {

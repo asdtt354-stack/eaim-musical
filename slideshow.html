@@ -135,6 +135,42 @@ select.bubble-ctrl-btn{padding:5px 8px}
 .char-panel-btn{width:100%;padding:7px;border-radius:8px;background:rgba(93,173,226,.2);border:1px solid rgba(93,173,226,.4);color:#5DADE2;font-size:12px;cursor:pointer;font-family:inherit;margin-bottom:4px}
 .char-panel-btn.remove{background:rgba(255,82,82,.15);border-color:rgba(255,82,82,.4);color:#ff5252}
 
+/* ===== 캐릭터 애니메이션 ===== */
+@keyframes charSlideLeft{from{transform:translateX(-120%) opacity(0)}to{transform:translateX(0) opacity(1)}}
+@keyframes charSlideRight{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes charSlideUp{from{transform:translateY(120%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes charFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes charFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes charBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+@keyframes charShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes charJump{0%,100%{transform:translateY(0)}40%{transform:translateY(-20px)}70%{transform:translateY(-8px)}}
+@keyframes charSlideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(120%);opacity:0}}
+@keyframes charFadeOut{from{opacity:1}to{opacity:0}}
+@keyframes charSway{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
+
+.char-anim-slide-left{animation:charSlideLeft .6s cubic-bezier(.22,1,.36,1) forwards}
+.char-anim-slide-right{animation:charSlideRight .6s cubic-bezier(.22,1,.36,1) forwards}
+.char-anim-slide-up{animation:charSlideUp .6s cubic-bezier(.22,1,.36,1) forwards}
+.char-anim-fade-in{animation:charFadeIn .8s ease forwards}
+.char-anim-float{animation:charFloat 3s ease-in-out infinite}
+.char-anim-breathe{animation:charBreathe 3s ease-in-out infinite}
+.char-anim-shake{animation:charShake .5s ease}
+.char-anim-jump{animation:charJump .5s ease}
+.char-anim-exit-right{animation:charSlideOutRight .5s ease forwards}
+.char-anim-fade-out{animation:charFadeOut .5s ease forwards}
+.char-anim-sway{animation:charSway 2s ease-in-out infinite}
+
+/* 애니메이션 컨트롤 패널 확장 */
+#char-anim-panel{position:fixed;bottom:80px;right:16px;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:14px;display:none;z-index:200;width:240px}
+#char-anim-panel.show{display:block}
+#char-anim-panel h4{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:2px;margin-bottom:10px;text-transform:uppercase}
+.anim-section{margin-bottom:12px}
+.anim-section-title{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
+.anim-btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.anim-btn{padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);font-size:11px;cursor:pointer;font-family:inherit;text-align:center;transition:all .2s}
+.anim-btn:hover{background:rgba(255,255,255,.18);color:#fff}
+.anim-btn.active{background:rgba(93,173,226,.3);border-color:#5DADE2;color:#5DADE2}
+
 @keyframes signalPop{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes bubblePop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
@@ -176,7 +212,51 @@ select.bubble-ctrl-btn{padding:5px 8px}
   </select>
   <button class="char-panel-btn" onclick="applyCharLayer()">✓ 적용</button>
   <button class="char-panel-btn remove" onclick="removeCharLayer()">✕ 캐릭터 제거</button>
+  <button class="char-panel-btn" onclick="toggleAnimPanel()" style="background:rgba(255,213,79,.1);border-color:rgba(255,213,79,.3);color:#ffd54f">🎬 애니메이션</button>
   <button class="char-panel-btn" onclick="toggleCharPanel()" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.3)">닫기</button>
+</div>
+
+<!-- 캐릭터 애니메이션 패널 -->
+<div id="char-anim-panel">
+  <h4>🎬 캐릭터 애니메이션</h4>
+
+  <div class="anim-section">
+    <div class="anim-section-title">✨ 등장 효과</div>
+    <div class="anim-btn-grid">
+      <button class="anim-btn" onclick="playCharAnim('slide-left')">← 왼쪽 등장</button>
+      <button class="anim-btn" onclick="playCharAnim('slide-right')">→ 오른쪽 등장</button>
+      <button class="anim-btn" onclick="playCharAnim('slide-up')">↑ 아래서 등장</button>
+      <button class="anim-btn" onclick="playCharAnim('fade-in')">✦ 페이드인</button>
+    </div>
+  </div>
+
+  <div class="anim-section">
+    <div class="anim-section-title">🔄 상시 효과</div>
+    <div class="anim-btn-grid">
+      <button class="anim-btn" id="anim-float" onclick="toggleLoopAnim('float')">🌊 둥둥 떠있기</button>
+      <button class="anim-btn" id="anim-breathe" onclick="toggleLoopAnim('breathe')">💨 숨쉬기</button>
+      <button class="anim-btn" id="anim-sway" onclick="toggleLoopAnim('sway')">🍃 좌우흔들림</button>
+      <button class="anim-btn" onclick="stopLoopAnim()">⏹ 상시 중지</button>
+    </div>
+  </div>
+
+  <div class="anim-section">
+    <div class="anim-section-title">💬 말할 때</div>
+    <div class="anim-btn-grid">
+      <button class="anim-btn" onclick="playCharAnim('jump')">⬆ 점프</button>
+      <button class="anim-btn" onclick="playCharAnim('shake')">〰 흔들림</button>
+    </div>
+  </div>
+
+  <div class="anim-section">
+    <div class="anim-section-title">🚪 퇴장 효과</div>
+    <div class="anim-btn-grid">
+      <button class="anim-btn" onclick="playCharAnim('exit-right')">→ 오른쪽 퇴장</button>
+      <button class="anim-btn" onclick="playCharAnim('fade-out')">✦ 페이드아웃</button>
+    </div>
+  </div>
+
+  <button class="anim-btn" onclick="toggleAnimPanel()" style="width:100%;margin-top:4px;color:rgba(255,255,255,.3)">닫기</button>
 </div>
 
 <div id="bubble-panel">
@@ -379,6 +459,86 @@ function applyCharLayer() {
 function removeCharLayer() {
   const slide = getCurrentSlideEl(); if (!slide) return;
   slide.querySelectorAll('.char-layer').forEach(c => c.remove());
+}
+
+// ===== 캐릭터 애니메이션 =====
+function getCharEl() {
+  const slide = getCurrentSlideEl(); if (!slide) return null;
+  return slide.querySelector('.char-layer');
+}
+
+function playCharAnim(type) {
+  const ch = getCharEl();
+  if (!ch) { showToast('⚠️ 먼저 캐릭터를 추가해주세요'); return; }
+  // 기존 등장/퇴장 애니 클래스 제거
+  const animClasses = ['char-anim-slide-left','char-anim-slide-right','char-anim-slide-up',
+    'char-anim-fade-in','char-anim-shake','char-anim-jump','char-anim-exit-right','char-anim-fade-out'];
+  animClasses.forEach(c => ch.classList.remove(c));
+  // 재트리거를 위해 reflow
+  void ch.offsetWidth;
+  ch.classList.add('char-anim-' + type);
+  // 일회성 애니는 끝나면 클래스 제거
+  const oneShot = ['shake','jump','exit-right','fade-out'];
+  if (oneShot.some(o => type.includes(o))) {
+    ch.addEventListener('animationend', () => ch.classList.remove('char-anim-' + type), {once:true});
+  }
+  showToast('🎬 ' + type + ' 애니메이션!');
+}
+
+let currentLoopAnim = null;
+function toggleLoopAnim(type) {
+  const ch = getCharEl();
+  if (!ch) { showToast('⚠️ 먼저 캐릭터를 추가해주세요'); return; }
+  const loopClasses = ['char-anim-float','char-anim-breathe','char-anim-sway'];
+  const btnIds = ['anim-float','anim-breathe','anim-sway'];
+
+  if (currentLoopAnim === type) {
+    // 토글 off
+    loopClasses.forEach(c => ch.classList.remove(c));
+    btnIds.forEach(id => { const b=document.getElementById(id); if(b) b.classList.remove('active'); });
+    currentLoopAnim = null;
+    showToast('⏹ 상시 효과 중지');
+  } else {
+    // 기존 루프 제거 후 새로 적용
+    loopClasses.forEach(c => ch.classList.remove(c));
+    btnIds.forEach(id => { const b=document.getElementById(id); if(b) b.classList.remove('active'); });
+    void ch.offsetWidth;
+    ch.classList.add('char-anim-' + type);
+    currentLoopAnim = type;
+    const btn = document.getElementById('anim-' + type);
+    if (btn) btn.classList.add('active');
+    showToast('✨ ' + type + ' 효과 적용!');
+  }
+}
+
+function stopLoopAnim() {
+  const ch = getCharEl(); if (!ch) return;
+  ['char-anim-float','char-anim-breathe','char-anim-sway'].forEach(c => ch.classList.remove(c));
+  ['anim-float','anim-breathe','anim-sway'].forEach(id => {
+    const b = document.getElementById(id); if(b) b.classList.remove('active');
+  });
+  currentLoopAnim = null;
+  showToast('⏹ 상시 효과 중지');
+}
+
+function toggleAnimPanel() {
+  const panel = document.getElementById('char-anim-panel');
+  panel.classList.toggle('show');
+}
+
+function showToast(msg) {
+  // 기존 토스트가 없으면 만들기
+  let t = document.getElementById('toast-msg');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast-msg';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;border:1px solid rgba(255,255,255,.1)';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.style.opacity = '0', 2000);
 }
 
 // 커버
