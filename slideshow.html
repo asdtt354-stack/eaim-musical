@@ -11,19 +11,13 @@ body{font-family:'Segoe UI','Apple SD Gothic Neo',sans-serif;background:#0D1B2A;
 .slide{position:absolute;inset:0;transition:opacity .8s ease}
 .slide.hidden{opacity:0;pointer-events:none}
 .slide.visible{opacity:1}
-
-/* ===== 2.5D 패럴랙스 레이어 ===== */
 .parallax-container{position:absolute;inset:0;overflow:hidden}
 .bg-layer{position:absolute;inset:-4%;width:108%;height:108%;object-fit:cover;transition:opacity 1.4s ease, transform .1s ease-out;will-change:transform}
 .char-layer{position:absolute;bottom:0;right:8%;height:90%;max-width:45%;object-fit:contain;transition:opacity 1s ease, transform .08s ease-out;will-change:transform;z-index:5;filter:drop-shadow(0 8px 32px rgba(0,0,0,.7))}
 .char-layer.center{right:auto;left:50%;transform:translateX(-50%);max-width:35%}
 .char-layer.left{right:auto;left:5%;max-width:35%}
-
 .bg-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.88) 0%,rgba(0,0,0,.35) 55%,rgba(0,0,0,.1) 100%),linear-gradient(to top,rgba(0,0,0,.8) 0%,transparent 45%);z-index:3}
-
-/* 스피너 */
 .bg-spinner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;z-index:2}
-
 .top-bar{position:absolute;top:0;left:0;right:0;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(0,0,0,.5),transparent);z-index:10}
 .scene-badge{border-radius:20px;padding:4px 16px;font-size:11px;font-weight:700;letter-spacing:2px}
 .eaim-label{font-size:11px;color:rgba(255,255,255,.35);letter-spacing:3px}
@@ -126,27 +120,39 @@ select.bubble-ctrl-btn{padding:5px 8px}
 #subtitle-bar{position:absolute;bottom:56px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;padding:10px 28px;border-radius:8px;font-size:clamp(14px,2.2vw,20px);font-weight:600;text-align:center;max-width:80%;z-index:30;text-shadow:0 2px 8px rgba(0,0,0,.8);display:none;letter-spacing:.5px;border:1px solid rgba(255,255,255,.12);cursor:pointer}
 #signal-indicator{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:600;padding:7px 18px;border-radius:24px;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);border:1px solid rgba(105,240,174,.5);color:#69f0ae;font-size:11px;letter-spacing:2px;display:none;align-items:center;gap:8px;animation:signalPop .4s ease}
 
-/* 캐릭터 레이어 추가 버튼 */
-#char-panel{position:fixed;bottom:80px;right:16px;background:rgba(0,0,0,.78);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:12px;display:none;z-index:200;width:220px}
+/* ===== 캐릭터 패널 ===== */
+#char-panel{position:fixed;bottom:80px;right:16px;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:12px;display:none;z-index:200;width:230px}
 #char-panel.show{display:block}
 #char-panel h4{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:2px;margin-bottom:8px;text-transform:uppercase}
 #char-url-input{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 10px;border-radius:8px;font-size:12px;outline:none;margin-bottom:6px;font-family:inherit}
 #char-position-select{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 8px;border-radius:8px;font-size:12px;outline:none;margin-bottom:8px;font-family:inherit}
 .char-panel-btn{width:100%;padding:7px;border-radius:8px;background:rgba(93,173,226,.2);border:1px solid rgba(93,173,226,.4);color:#5DADE2;font-size:12px;cursor:pointer;font-family:inherit;margin-bottom:4px}
 .char-panel-btn.remove{background:rgba(255,82,82,.15);border-color:rgba(255,82,82,.4);color:#ff5252}
+.char-panel-btn.anim{background:rgba(255,213,79,.1);border-color:rgba(255,213,79,.3);color:#ffd54f}
 
-/* ===== 캐릭터 애니메이션 ===== */
-@keyframes charSlideLeft{from{transform:translateX(-120%) opacity(0)}to{transform:translateX(0) opacity(1)}}
+/* ===== 캐릭터 애니메이션 패널 ===== */
+#char-anim-panel{position:fixed;bottom:80px;right:260px;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:14px;display:none;z-index:200;width:220px}
+#char-anim-panel.show{display:block}
+#char-anim-panel h4{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:2px;margin-bottom:10px;text-transform:uppercase}
+.anim-section{margin-bottom:10px}
+.anim-section-title{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
+.anim-btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.anim-btn{padding:6px 4px;border-radius:7px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.65);font-size:11px;cursor:pointer;font-family:inherit;text-align:center;transition:all .2s}
+.anim-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+.anim-btn.active{background:rgba(93,173,226,.25);border-color:#5DADE2;color:#5DADE2}
+
+/* ===== 캐릭터 애니메이션 키프레임 ===== */
+@keyframes charSlideLeft{from{transform:translateX(-120%);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes charSlideRight{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
 @keyframes charSlideUp{from{transform:translateY(120%);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes charFadeIn{from{opacity:0}to{opacity:1}}
 @keyframes charFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 @keyframes charBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
-@keyframes charShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
-@keyframes charJump{0%,100%{transform:translateY(0)}40%{transform:translateY(-20px)}70%{transform:translateY(-8px)}}
-@keyframes charSlideOutRight{from{transform:translateX(0);opacity:1}to{transform:translateX(120%);opacity:0}}
-@keyframes charFadeOut{from{opacity:1}to{opacity:0}}
 @keyframes charSway{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-2deg)}75%{transform:rotate(2deg)}}
+@keyframes charShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+@keyframes charJump{0%,100%{transform:translateY(0)}40%{transform:translateY(-22px)}70%{transform:translateY(-8px)}}
+@keyframes charExitRight{from{transform:translateX(0);opacity:1}to{transform:translateX(120%);opacity:0}}
+@keyframes charFadeOut{from{opacity:1}to{opacity:0}}
 
 .char-anim-slide-left{animation:charSlideLeft .6s cubic-bezier(.22,1,.36,1) forwards}
 .char-anim-slide-right{animation:charSlideRight .6s cubic-bezier(.22,1,.36,1) forwards}
@@ -154,22 +160,17 @@ select.bubble-ctrl-btn{padding:5px 8px}
 .char-anim-fade-in{animation:charFadeIn .8s ease forwards}
 .char-anim-float{animation:charFloat 3s ease-in-out infinite}
 .char-anim-breathe{animation:charBreathe 3s ease-in-out infinite}
+.char-anim-sway{animation:charSway 2s ease-in-out infinite}
 .char-anim-shake{animation:charShake .5s ease}
 .char-anim-jump{animation:charJump .5s ease}
-.char-anim-exit-right{animation:charSlideOutRight .5s ease forwards}
+.char-anim-exit-right{animation:charExitRight .5s ease forwards}
 .char-anim-fade-out{animation:charFadeOut .5s ease forwards}
-.char-anim-sway{animation:charSway 2s ease-in-out infinite}
 
-/* 애니메이션 컨트롤 패널 확장 */
-#char-anim-panel{position:fixed;bottom:80px;right:16px;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:14px;display:none;z-index:200;width:240px}
-#char-anim-panel.show{display:block}
-#char-anim-panel h4{font-size:11px;color:rgba(255,255,255,.5);letter-spacing:2px;margin-bottom:10px;text-transform:uppercase}
-.anim-section{margin-bottom:12px}
-.anim-section-title{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
-.anim-btn-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-.anim-btn{padding:6px 8px;border-radius:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.7);font-size:11px;cursor:pointer;font-family:inherit;text-align:center;transition:all .2s}
-.anim-btn:hover{background:rgba(255,255,255,.18);color:#fff}
-.anim-btn.active{background:rgba(93,173,226,.3);border-color:#5DADE2;color:#5DADE2}
+/* ===== 화면 녹화 ===== */
+#rec-indicator{position:fixed;top:16px;left:16px;z-index:600;display:none;align-items:center;gap:8px;background:rgba(0,0,0,.8);padding:6px 14px;border-radius:20px;border:1px solid rgba(255,82,82,.5);color:#ff5252;font-size:11px;letter-spacing:1px}
+#rec-indicator.show{display:flex}
+.rec-dot{width:8px;height:8px;border-radius:50%;background:#ff5252;animation:recBlink 1s ease-in-out infinite}
+@keyframes recBlink{0%,100%{opacity:1}50%{opacity:.2}}
 
 @keyframes signalPop{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -199,6 +200,7 @@ select.bubble-ctrl-btn{padding:5px 8px}
 
 <div class="api-status" id="api-status" onclick="resetApiKey()"></div>
 <div id="signal-indicator">🚦 <span id="signal-text">음향 신호 발신 중</span></div>
+<div id="rec-indicator"><div class="rec-dot"></div><span id="rec-text">녹화 중... 0:00</span></div>
 <div id="blackout"><div id="blackout-text"></div></div>
 
 <!-- 캐릭터 레이어 패널 -->
@@ -212,34 +214,31 @@ select.bubble-ctrl-btn{padding:5px 8px}
   </select>
   <button class="char-panel-btn" onclick="applyCharLayer()">✓ 적용</button>
   <button class="char-panel-btn remove" onclick="removeCharLayer()">✕ 캐릭터 제거</button>
-  <button class="char-panel-btn" onclick="toggleAnimPanel()" style="background:rgba(255,213,79,.1);border-color:rgba(255,213,79,.3);color:#ffd54f">🎬 애니메이션</button>
+  <button class="char-panel-btn anim" onclick="toggleAnimPanel()">🎬 애니메이션</button>
   <button class="char-panel-btn" onclick="toggleCharPanel()" style="background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.3)">닫기</button>
 </div>
 
 <!-- 캐릭터 애니메이션 패널 -->
 <div id="char-anim-panel">
   <h4>🎬 캐릭터 애니메이션</h4>
-
   <div class="anim-section">
-    <div class="anim-section-title">✨ 등장 효과</div>
+    <div class="anim-section-title">✨ 등장</div>
     <div class="anim-btn-grid">
-      <button class="anim-btn" onclick="playCharAnim('slide-left')">← 왼쪽 등장</button>
-      <button class="anim-btn" onclick="playCharAnim('slide-right')">→ 오른쪽 등장</button>
-      <button class="anim-btn" onclick="playCharAnim('slide-up')">↑ 아래서 등장</button>
+      <button class="anim-btn" onclick="playCharAnim('slide-left')">← 왼쪽</button>
+      <button class="anim-btn" onclick="playCharAnim('slide-right')">→ 오른쪽</button>
+      <button class="anim-btn" onclick="playCharAnim('slide-up')">↑ 아래서</button>
       <button class="anim-btn" onclick="playCharAnim('fade-in')">✦ 페이드인</button>
     </div>
   </div>
-
   <div class="anim-section">
-    <div class="anim-section-title">🔄 상시 효과</div>
+    <div class="anim-section-title">🔄 상시효과</div>
     <div class="anim-btn-grid">
-      <button class="anim-btn" id="anim-float" onclick="toggleLoopAnim('float')">🌊 둥둥 떠있기</button>
+      <button class="anim-btn" id="anim-float" onclick="toggleLoopAnim('float')">🌊 둥둥</button>
       <button class="anim-btn" id="anim-breathe" onclick="toggleLoopAnim('breathe')">💨 숨쉬기</button>
-      <button class="anim-btn" id="anim-sway" onclick="toggleLoopAnim('sway')">🍃 좌우흔들림</button>
-      <button class="anim-btn" onclick="stopLoopAnim()">⏹ 상시 중지</button>
+      <button class="anim-btn" id="anim-sway" onclick="toggleLoopAnim('sway')">🍃 흔들림</button>
+      <button class="anim-btn" onclick="stopLoopAnim()">⏹ 중지</button>
     </div>
   </div>
-
   <div class="anim-section">
     <div class="anim-section-title">💬 말할 때</div>
     <div class="anim-btn-grid">
@@ -247,15 +246,13 @@ select.bubble-ctrl-btn{padding:5px 8px}
       <button class="anim-btn" onclick="playCharAnim('shake')">〰 흔들림</button>
     </div>
   </div>
-
   <div class="anim-section">
-    <div class="anim-section-title">🚪 퇴장 효과</div>
+    <div class="anim-section-title">🚪 퇴장</div>
     <div class="anim-btn-grid">
-      <button class="anim-btn" onclick="playCharAnim('exit-right')">→ 오른쪽 퇴장</button>
+      <button class="anim-btn" onclick="playCharAnim('exit-right')">→ 퇴장</button>
       <button class="anim-btn" onclick="playCharAnim('fade-out')">✦ 페이드아웃</button>
     </div>
   </div>
-
   <button class="anim-btn" onclick="toggleAnimPanel()" style="width:100%;margin-top:4px;color:rgba(255,255,255,.3)">닫기</button>
 </div>
 
@@ -284,6 +281,7 @@ select.bubble-ctrl-btn{padding:5px 8px}
   <button class="ctrl-btn" id="btn-auto">⏵</button>
   <button class="ctrl-btn" id="btn-bubble" onclick="toggleBubblePanel()">💬</button>
   <button class="ctrl-btn" id="btn-char" onclick="toggleCharPanel()">🎭</button>
+  <button class="ctrl-btn" id="btn-rec" onclick="toggleRecording()" title="화면 녹화">⏺</button>
 </div>
 <div id="key-hint">← → 키보드 | ESC 종료</div>
 <button id="back-btn" onclick="goBack()">↩ 처음으로</button>
@@ -332,45 +330,35 @@ const TOTAL = SCENES.length;
 let current = 0, autoPlay = false, autoTimer = null;
 
 // ===== 2.5D 패럴랙스 =====
-let mouseX = 0, mouseY = 0;
-let rafId = null;
-
+let mouseX = 0, mouseY = 0, rafId = null;
 document.addEventListener('mousemove', e => {
-  mouseX = (e.clientX / window.innerWidth - 0.5) * 2;   // -1 ~ 1
-  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;  // -1 ~ 1
+  mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
   if (!rafId) rafId = requestAnimationFrame(applyParallax);
 });
-
 function applyParallax() {
   rafId = null;
-  const slide = getSlideEl(current);
-  if (!slide) return;
+  const slide = getSlideEl(current); if (!slide) return;
   const bg = slide.querySelector('.bg-layer');
   const ch = slide.querySelector('.char-layer');
-  if (bg) {
-    // 배경: 느리게 (-8px ~ 8px)
-    bg.style.transform = `translate(${mouseX * -8}px, ${mouseY * -6}px) scale(1.08)`;
-  }
+  if (bg) bg.style.transform = `translate(${mouseX * -8}px, ${mouseY * -6}px) scale(1.08)`;
   if (ch) {
-    // 캐릭터: 빠르게 (-18px ~ 18px) — 반대 방향으로 더 많이 움직여서 입체감
-    const baseTransform = ch.classList.contains('center') ? 'translateX(-50%)' : '';
-    ch.style.transform = `${baseTransform} translate(${mouseX * 18}px, ${mouseY * 10}px)`;
+    const base = ch.classList.contains('center') ? 'translateX(-50%)' : '';
+    if (!ch.style.animation || ch.style.animation === 'none') {
+      ch.style.transform = `${base} translate(${mouseX * 18}px, ${mouseY * 10}px)`;
+    }
   }
 }
-
-// 자동 부유 애니메이션 (마우스 없을 때)
 let floatAngle = 0;
 setInterval(() => {
-  if (Math.abs(mouseX) > 0.01 || Math.abs(mouseY) > 0.01) return; // 마우스 움직임 있으면 skip
+  if (Math.abs(mouseX) > 0.01 || Math.abs(mouseY) > 0.01) return;
   floatAngle += 0.02;
-  const fx = Math.sin(floatAngle) * 0.3;
-  const fy = Math.cos(floatAngle * 0.7) * 0.2;
-  const slide = getSlideEl(current);
-  if (!slide) return;
+  const fx = Math.sin(floatAngle) * 0.3, fy = Math.cos(floatAngle * 0.7) * 0.2;
+  const slide = getSlideEl(current); if (!slide) return;
   const bg = slide.querySelector('.bg-layer');
   const ch = slide.querySelector('.char-layer');
   if (bg) bg.style.transform = `translate(${fx * -8}px, ${fy * -6}px) scale(1.08)`;
-  if (ch) {
+  if (ch && (!ch.style.animation || ch.style.animation==='none')) {
     const base = ch.classList.contains('center') ? 'translateX(-50%)' : '';
     ch.style.transform = `${base} translate(${fx * 18}px, ${fy * 10}px)`;
   }
@@ -379,15 +367,11 @@ setInterval(() => {
 // API 키
 let GEMINI_KEY = localStorage.getItem('mm_teacher_api') || localStorage.getItem('eaim_gemini_key') || '';
 const imgCache = {};
-
-function showApiModal() { document.getElementById('api-modal').classList.remove('hidden'); if (GEMINI_KEY) document.getElementById('api-key-input').value = GEMINI_KEY; }
 function confirmApiKey() {
-  const key = document.getElementById('api-key-input').value.trim();
-  if (!key) return;
+  const key = document.getElementById('api-key-input').value.trim(); if (!key) return;
   GEMINI_KEY = key;
   if (document.getElementById('save-key').checked) { localStorage.setItem('eaim_gemini_key', key); localStorage.setItem('mm_teacher_api', key); }
-  document.getElementById('api-modal').classList.add('hidden');
-  updateStatusBadge('gemini');
+  document.getElementById('api-modal').classList.add('hidden'); updateStatusBadge('gemini');
 }
 function skipApiKey() { GEMINI_KEY=''; document.getElementById('api-modal').classList.add('hidden'); updateStatusBadge('pollinations'); }
 function resetApiKey() { GEMINI_KEY=''; localStorage.removeItem('eaim_gemini_key'); location.reload(); }
@@ -396,7 +380,6 @@ function updateStatusBadge(mode) {
   el.className = 'api-status ' + mode;
   el.innerHTML = mode==='gemini' ? '🔴 Gemini AI 배경' : '🟢 Pollinations 배경';
 }
-
 async function fetchGeminiImage(prompt) {
   if (imgCache[prompt]) return imgCache[prompt];
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${GEMINI_KEY}`;
@@ -419,10 +402,7 @@ async function loadBgImage(scene, idx) {
     if(spinner) spinner.style.display='flex';
     try { const d=await fetchGeminiImage(scene.imagePrompt); if(spinner)spinner.style.display='none'; setImgSrc(idx,d,'🔴 Gemini'); }
     catch(e) { if(spinner)spinner.style.display='none'; setImgSrc(idx,getPollinationsUrl(scene.imagePrompt),'🟢 Pollinations'); }
-  } else {
-    if(spinner) spinner.style.display='none';
-    setImgSrc(idx,getPollinationsUrl(scene.imagePrompt),'🟢 Pollinations');
-  }
+  } else { if(spinner) spinner.style.display='none'; setImgSrc(idx,getPollinationsUrl(scene.imagePrompt),'🟢 Pollinations'); }
 }
 function setImgSrc(idx,src,label) {
   const img=document.getElementById(`bgimg-${idx}`); if(!img) return;
@@ -431,7 +411,7 @@ function setImgSrc(idx,src,label) {
   img.src=src;
 }
 
-// ===== 캐릭터 레이어 관리 =====
+// ===== 캐릭터 레이어 =====
 function toggleCharPanel() {
   const panel = document.getElementById('char-panel');
   panel.classList.toggle('show');
@@ -439,106 +419,123 @@ function toggleCharPanel() {
 }
 function applyCharLayer() {
   const url = document.getElementById('char-url-input').value.trim();
-  if (!url) { alert('캐릭터 이미지 URL을 입력해주세요'); return; }
+  if (!url) { showToast('⚠️ 캐릭터 이미지 URL을 입력해주세요'); return; }
   const pos = document.getElementById('char-position-select').value;
   const slide = getCurrentSlideEl(); if (!slide) return;
-  // 기존 캐릭터 레이어 제거
   slide.querySelectorAll('.char-layer').forEach(c => c.remove());
-  // 새 캐릭터 레이어 추가
   const img = document.createElement('img');
   img.className = `char-layer ${pos}`;
-  img.src = url;
-  img.alt = '캐릭터';
-  img.onerror = () => { img.style.display='none'; alert('이미지를 불러올 수 없어요. URL을 확인해주세요.'); };
-  // parallax-container 안에 삽입
+  img.src = url; img.alt = '캐릭터';
+  img.onerror = () => { img.style.display='none'; showToast('⚠️ 이미지를 불러올 수 없어요'); };
   const container = slide.querySelector('.parallax-container');
-  if (container) container.appendChild(img);
-  else slide.appendChild(img);
+  if (container) container.appendChild(img); else slide.appendChild(img);
   document.getElementById('char-url-input').value = '';
+  showToast('✅ 캐릭터 추가됨!');
 }
 function removeCharLayer() {
   const slide = getCurrentSlideEl(); if (!slide) return;
   slide.querySelectorAll('.char-layer').forEach(c => c.remove());
+  showToast('🗑 캐릭터 제거됨');
 }
 
 // ===== 캐릭터 애니메이션 =====
+function toggleAnimPanel() {
+  const panel = document.getElementById('char-anim-panel');
+  panel.classList.toggle('show');
+}
 function getCharEl() {
   const slide = getCurrentSlideEl(); if (!slide) return null;
   return slide.querySelector('.char-layer');
 }
-
 function playCharAnim(type) {
   const ch = getCharEl();
   if (!ch) { showToast('⚠️ 먼저 캐릭터를 추가해주세요'); return; }
-  // 기존 등장/퇴장 애니 클래스 제거
-  const animClasses = ['char-anim-slide-left','char-anim-slide-right','char-anim-slide-up',
-    'char-anim-fade-in','char-anim-shake','char-anim-jump','char-anim-exit-right','char-anim-fade-out'];
-  animClasses.forEach(c => ch.classList.remove(c));
-  // 재트리거를 위해 reflow
+  const allAnims = ['char-anim-slide-left','char-anim-slide-right','char-anim-slide-up',
+    'char-anim-fade-in','char-anim-shake','char-anim-jump','char-anim-exit-right','char-anim-fade-out',
+    'char-anim-float','char-anim-breathe','char-anim-sway'];
+  allAnims.forEach(c => ch.classList.remove(c));
   void ch.offsetWidth;
   ch.classList.add('char-anim-' + type);
-  // 일회성 애니는 끝나면 클래스 제거
-  const oneShot = ['shake','jump','exit-right','fade-out'];
-  if (oneShot.some(o => type.includes(o))) {
+  const oneShot = ['shake','jump','exit-right','fade-out','slide-left','slide-right','slide-up','fade-in'];
+  if (oneShot.some(o => type === o)) {
     ch.addEventListener('animationend', () => ch.classList.remove('char-anim-' + type), {once:true});
   }
-  showToast('🎬 ' + type + ' 애니메이션!');
+  showToast('🎬 ' + type);
 }
-
 let currentLoopAnim = null;
 function toggleLoopAnim(type) {
   const ch = getCharEl();
   if (!ch) { showToast('⚠️ 먼저 캐릭터를 추가해주세요'); return; }
   const loopClasses = ['char-anim-float','char-anim-breathe','char-anim-sway'];
   const btnIds = ['anim-float','anim-breathe','anim-sway'];
-
   if (currentLoopAnim === type) {
-    // 토글 off
     loopClasses.forEach(c => ch.classList.remove(c));
     btnIds.forEach(id => { const b=document.getElementById(id); if(b) b.classList.remove('active'); });
-    currentLoopAnim = null;
-    showToast('⏹ 상시 효과 중지');
+    currentLoopAnim = null; showToast('⏹ 상시 효과 중지');
   } else {
-    // 기존 루프 제거 후 새로 적용
     loopClasses.forEach(c => ch.classList.remove(c));
     btnIds.forEach(id => { const b=document.getElementById(id); if(b) b.classList.remove('active'); });
     void ch.offsetWidth;
     ch.classList.add('char-anim-' + type);
     currentLoopAnim = type;
-    const btn = document.getElementById('anim-' + type);
-    if (btn) btn.classList.add('active');
+    const btn = document.getElementById('anim-' + type); if(btn) btn.classList.add('active');
     showToast('✨ ' + type + ' 효과 적용!');
   }
 }
-
 function stopLoopAnim() {
   const ch = getCharEl(); if (!ch) return;
   ['char-anim-float','char-anim-breathe','char-anim-sway'].forEach(c => ch.classList.remove(c));
-  ['anim-float','anim-breathe','anim-sway'].forEach(id => {
-    const b = document.getElementById(id); if(b) b.classList.remove('active');
-  });
-  currentLoopAnim = null;
-  showToast('⏹ 상시 효과 중지');
+  ['anim-float','anim-breathe','anim-sway'].forEach(id => { const b=document.getElementById(id); if(b) b.classList.remove('active'); });
+  currentLoopAnim = null; showToast('⏹ 상시 효과 중지');
 }
 
-function toggleAnimPanel() {
-  const panel = document.getElementById('char-anim-panel');
-  panel.classList.toggle('show');
-}
-
-function showToast(msg) {
-  // 기존 토스트가 없으면 만들기
-  let t = document.getElementById('toast-msg');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'toast-msg';
-    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.8);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;border:1px solid rgba(255,255,255,.1)';
-    document.body.appendChild(t);
+// ===== 화면 녹화 =====
+let mediaRecorder = null, recChunks = [], recTimer = null, recSeconds = 0;
+async function toggleRecording() {
+  const btn = document.getElementById('btn-rec');
+  const indicator = document.getElementById('rec-indicator');
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    // 녹화 중지
+    mediaRecorder.stop();
+    clearInterval(recTimer);
+    btn.textContent = '⏺';
+    btn.style.color = 'rgba(255,255,255,.8)';
+    indicator.classList.remove('show');
+    showToast('⏹ 녹화 중지 — 저장 중...');
+  } else {
+    // 녹화 시작
+    try {
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: { mediaSource: 'screen', frameRate: 30 },
+        audio: true
+      });
+      recChunks = []; recSeconds = 0;
+      mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+      mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `EAIM_슬라이드쇼_${Date.now()}.webm`;
+        a.click();
+        stream.getTracks().forEach(t => t.stop());
+        showToast('🎬 영상 저장 완료!');
+      };
+      mediaRecorder.start(1000);
+      btn.textContent = '⏹';
+      btn.style.color = '#ff5252';
+      indicator.classList.add('show');
+      recTimer = setInterval(() => {
+        recSeconds++;
+        const m = Math.floor(recSeconds/60), s = recSeconds%60;
+        document.getElementById('rec-text').textContent = `녹화 중... ${m}:${String(s).padStart(2,'0')}`;
+      }, 1000);
+      showToast('⏺ 녹화 시작!');
+    } catch(e) {
+      showToast('⚠️ 화면 공유를 허용해주세요');
+    }
   }
-  t.textContent = msg;
-  t.style.opacity = '1';
-  clearTimeout(t._t);
-  t._t = setTimeout(() => t.style.opacity = '0', 2000);
 }
 
 // 커버
@@ -558,7 +555,6 @@ function buildCover() {
   stage.appendChild(div);
 }
 
-// 장면 (2.5D 패럴랙스 컨테이너 포함)
 function buildScene(scene, idx) {
   const C=getColor(scene.emotion);
   const lyricLines=(scene.lyrics||'').split('\n').filter(Boolean);
@@ -567,10 +563,8 @@ function buildScene(scene, idx) {
   div.id=`scene-slide-${idx}`; div.className='slide hidden';
   div.style.background=`linear-gradient(135deg,${C.from},${C.to})`;
   div.innerHTML=`
-    <!-- 2.5D 패럴랙스 컨테이너 -->
     <div class="parallax-container">
       <img class="bg-layer" id="bgimg-${idx}" alt="${scene.title}" style="opacity:0">
-      <!-- 캐릭터 레이어는 applyCharLayer()로 동적 추가 -->
     </div>
     <div class="bg-spinner" id="bg-spinner-${idx}">
       <div style="width:32px;height:32px;border:3px solid ${C.accent}33;border-top:3px solid ${C.accent};border-radius:50%;animation:spin 1s linear infinite"></div>
@@ -612,7 +606,6 @@ function buildScene(scene, idx) {
   stage.appendChild(div);
 }
 
-// 엔딩
 function buildEnding() {
   const div=document.createElement('div'); div.id='end-slide'; div.className='slide hidden';
   const stars=Array.from({length:28},(_,i)=>`<div class="star" style="left:${(i*37+5)%100}%;top:${(i*23+10)%100}%;width:${i%5===0?3:2}px;height:${i%5===0?3:2}px;background:${i%3===0?'#FFD700':i%3===1?'#C778DD':'#5DADE2'};opacity:${.3+(i%4)*.15};animation-duration:${2+(i%3)}s"></div>`).join('');
@@ -623,7 +616,7 @@ function buildEnding() {
       <div style="font-size:36px;margin-bottom:18px">🎭</div>
       <div class="curtain-label">✦ 커튼콜 ✦</div>
       ${DATA.curtainSongTitle?`<div class="curtain-song">♪ ${DATA.curtainSongTitle}</div>`:''}
-      <div class="curtain-lyrics-wrap" id="curtain-lyrics-wrap">
+      <div class="curtain-lyrics-wrap">
         ${lyricLines.map((l,i)=>`<div class="curtain-lyric-line" id="cl-${i}" style="color:rgba(255,255,255,.9);opacity:0;transition:opacity .6s ease ${i*.5}s">${l}</div>`).join('')}
       </div>
     </div>
@@ -652,13 +645,11 @@ function blackout(text, cb) {
   bt.textContent=text||''; bl.classList.add('fade-in'); bl.classList.remove('fade-out');
   setTimeout(()=>{ cb(); setTimeout(()=>{ bl.classList.remove('fade-in'); bl.classList.add('fade-out'); setTimeout(()=>isTransitioning=false,500); },300); },500);
 }
-
 function getSlideEl(idx) {
   if (idx===0) return document.getElementById('cover-slide');
   if (idx===TOTAL+1) return document.getElementById('end-slide');
   return document.getElementById(`scene-slide-${idx-1}`);
 }
-
 function showSlide(idx) {
   if (isTransitioning) return;
   const needsBlackout=(current!==idx)&&!(current===0&&idx===0);
@@ -668,17 +659,14 @@ function showSlide(idx) {
     blackout(label,()=>doShowSlide(idx));
   } else { doShowSlide(idx); }
 }
-
 function doShowSlide(idx) {
   const old=getSlideEl(current);
   if (old) old.className=old.className.replace('visible','hidden');
   current=idx;
   const el=getSlideEl(idx); if (!el) return;
   el.className=el.className.replace('hidden','visible');
-
   if (idx>=1&&idx<=TOTAL) {
-    const si=idx-1;
-    initLyricBar(si);
+    const si=idx-1; initLyricBar(si);
     setTimeout(()=>{
       const mc=document.getElementById(`mc-${si}`),lp=document.getElementById(`lp-${si}`);
       if(mc){mc.classList.remove('hidden');mc.classList.add('visible');}
@@ -687,7 +675,6 @@ function doShowSlide(idx) {
       lines.forEach((_,i)=>{ const ll=document.getElementById(`ll-${si}-${i}`);if(ll)ll.style.opacity='1'; });
     },350);
   }
-
   if (idx===TOTAL+1) {
     document.getElementById('controls').style.display='none';
     document.getElementById('back-btn').style.display='block';
@@ -698,19 +685,12 @@ function doShowSlide(idx) {
     document.getElementById('back-btn').style.display='none';
     document.getElementById('key-hint').style.display='block';
   }
-
-  updateControls();
-  emitSlideSignal(idx);
-  // 패럴랙스 리셋
-  mouseX=0; mouseY=0;
+  updateControls(); emitSlideSignal(idx); mouseX=0; mouseY=0;
 }
-
 function emitSlideSignal(idx) {
   if (idx < 1 || idx > TOTAL) { localStorage.removeItem('eaim_slide_signal'); hideSignalIndicator(); return; }
-  const sceneIdx = idx - 1;
-  const scene = SCENES[sceneIdx];
-  if (!scene) return;
-  const signal = { sceneIdx, title: scene.title||'', songTitle: scene.songTitle||'', emotion: scene.emotion||'', musicMood: scene.musicMood||'', type: scene.type||'scene', sceneNum: idx, timestamp: Date.now() };
+  const scene = SCENES[idx-1]; if (!scene) return;
+  const signal = { sceneIdx:idx-1, title:scene.title||'', songTitle:scene.songTitle||'', emotion:scene.emotion||'', musicMood:scene.musicMood||'', type:scene.type||'scene', sceneNum:idx, timestamp:Date.now() };
   localStorage.setItem('eaim_slide_signal', JSON.stringify(signal));
   showSignalIndicator(scene, idx);
 }
@@ -721,7 +701,6 @@ function showSignalIndicator(scene, idx) {
   el.style.display='flex'; clearTimeout(el._timer); el._timer=setTimeout(hideSignalIndicator,3000);
 }
 function hideSignalIndicator() { const el=document.getElementById('signal-indicator');if(el)el.style.display='none'; }
-
 function startEnding() {
   const lyricLines=(DATA.curtainLyrics||'').split('\n').filter(Boolean);
   setTimeout(()=>{ lyricLines.forEach((_,i)=>setTimeout(()=>{ const el=document.getElementById(`cl-${i}`);if(el)el.style.opacity='1'; },i*600)); },300);
@@ -737,7 +716,6 @@ function startCreditsScroll() {
   const dur=Math.max(12,(DATA.credits||[]).length*2.2+10);
   s.style.transition=`top ${dur}s linear`; s.style.top='-220%';
 }
-
 function updateControls() {
   const dotNav=document.getElementById('dot-nav'); dotNav.innerHTML='';
   for (let i=0;i<=TOTAL;i++) {
@@ -751,7 +729,6 @@ function updateControls() {
   document.getElementById('btn-prev').disabled=current===0;
   document.getElementById('btn-next').disabled=current===TOTAL+1;
 }
-
 function goBack() { window.location.href='index.html'; }
 function toggleAuto() {
   autoPlay=!autoPlay;
@@ -760,7 +737,6 @@ function toggleAuto() {
   clearInterval(autoTimer);
   if(autoPlay){ autoTimer=setInterval(()=>{ if(current>=TOTAL){autoPlay=false;clearInterval(autoTimer);return;} showSlide(current+1); },7000); }
 }
-
 document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key===' '){ if(current<TOTAL+1)showSlide(current+1); }
   else if(e.key==='ArrowLeft'){ if(current>0)showSlide(current-1); }
@@ -792,7 +768,6 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowUp'||e.key==='w'||e.key==='W'){e.preventDefault();prevLyricLine(si);}
   if(e.key==='ArrowDown'||e.key==='s'||e.key==='S'){e.preventDefault();nextLyricLine(si);}
 });
-
 let bubblePanelOpen=false;
 function toggleBubblePanel(){
   bubblePanelOpen=!bubblePanelOpen;
@@ -831,7 +806,6 @@ function makeDraggable(el){
   });
 }
 function clearBubbles(){const s=getCurrentSlideEl();if(s)s.querySelectorAll('.speech-bubble').forEach(b=>b.remove());}
-
 let subtitleVisible=false;
 function toggleSubtitleEdit(){
   const bar=document.getElementById('subtitle-bar');
@@ -850,6 +824,18 @@ function editSubtitle(){
 }
 document.addEventListener('keydown',e=>{ if(e.target.id==='bubble-text-input'&&e.key==='Enter')addBubble(); });
 
+// 토스트
+function showToast(msg) {
+  let t = document.getElementById('toast-msg');
+  if (!t) {
+    t = document.createElement('div'); t.id='toast-msg';
+    t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;padding:8px 18px;border-radius:20px;font-size:12px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;border:1px solid rgba(255,255,255,.15)';
+    document.body.appendChild(t);
+  }
+  t.textContent=msg; t.style.opacity='1';
+  clearTimeout(t._t); t._t=setTimeout(()=>t.style.opacity='0',2200);
+}
+
 function initSlideshow() {
   buildCover();
   SCENES.forEach((s,i)=>buildScene(s,i));
@@ -859,17 +845,11 @@ function initSlideshow() {
   (async()=>{ for(let i=0;i<SCENES.length;i++) await loadBgImage(SCENES[i],i).catch(()=>{}); })();
 }
 
-// ✅ 수정된 부분: 키 없어도 슬라이드쇼 시작
 window.addEventListener('load',()=>{
   const makerKey = localStorage.getItem('mm_teacher_api') || localStorage.getItem('eaim_gemini_key') || '';
-  if (makerKey) {
-    GEMINI_KEY = makerKey;
-    updateStatusBadge('gemini');
-  } else {
-    updateStatusBadge('pollinations');
-    // 키 없어도 모달 없이 Pollinations로 바로 시작
-  }
-  initSlideshow(); // ✅ 항상 실행!
+  if (makerKey) { GEMINI_KEY = makerKey; updateStatusBadge('gemini'); }
+  else { updateStatusBadge('pollinations'); }
+  initSlideshow();
 });
 </script>
 </body>
