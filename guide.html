@@ -7,304 +7,106 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,400&family=Noto+Serif+KR:wght@300;400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --gold:    #d4a843;
-  --gold2:   #f0c96a;
-  --blue:    #5DADE2;
-  --green:   #69f0ae;
-  --purple:  #ce93d8;
-  --pink:    #f48fb1;
-  --orange:  #ffb74d;
-  --dark:    #08070f;
-  --dark2:   #0f0d1a;
-  --panel:   #13111f;
-  --border:  rgba(212,168,67,0.15);
-  --text:    #e8e0f0;
-  --sub:     #8a7a9a;
+  --gold:#d4a843;--gold2:#f0c96a;--blue:#5DADE2;--green:#69f0ae;
+  --purple:#ce93d8;--pink:#f48fb1;--orange:#ffb74d;--media:#ff6b9d;
+  --dark:#08070f;--dark2:#0f0d1a;--panel:#13111f;
+  --border:rgba(212,168,67,0.15);--text:#e8e0f0;--sub:#8a7a9a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{
-  font-family:'Noto Serif KR',serif;
-  background:var(--dark);
-  color:var(--text);
-  overflow-x:hidden;
-}
-
-/* 배경 */
-body::before{
-  content:'';position:fixed;inset:0;z-index:0;
-  background:
-    radial-gradient(ellipse 60% 40% at 20% 10%, rgba(93,173,226,0.06) 0%,transparent 60%),
-    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(212,168,67,0.05) 0%,transparent 60%),
-    radial-gradient(ellipse 40% 60% at 60% 30%, rgba(206,147,216,0.04) 0%,transparent 60%);
-  pointer-events:none;
-}
-
-/* 별 */
+body{font-family:'Noto Serif KR',serif;background:var(--dark);color:var(--text);overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse 60% 40% at 20% 10%,rgba(93,173,226,0.06) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 50% at 80% 80%,rgba(212,168,67,0.05) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 60% at 60% 30%,rgba(206,147,216,0.04) 0%,transparent 60%);
+  pointer-events:none;}
 .stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .star{position:absolute;border-radius:50%;animation:twinkle var(--d,3s) ease-in-out var(--dl,0s) infinite alternate}
 @keyframes twinkle{from{opacity:var(--min,.05)}to{opacity:var(--max,.5)}}
-
-/* 헤더 */
-.hero{
-  position:relative;z-index:10;
-  text-align:center;
-  padding:80px 24px 60px;
-  border-bottom:1px solid var(--border);
-}
-.hero-eyebrow{
-  font-size:11px;letter-spacing:8px;color:var(--gold);
-  text-transform:uppercase;margin-bottom:20px;
-  display:flex;align-items:center;justify-content:center;gap:14px;
-}
+.hero{position:relative;z-index:10;text-align:center;padding:80px 24px 60px;border-bottom:1px solid var(--border);}
+.hero-eyebrow{font-size:11px;letter-spacing:8px;color:var(--gold);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:14px;}
 .hero-eyebrow::before,.hero-eyebrow::after{content:'';width:40px;height:1px;background:var(--gold);opacity:.4}
-.hero-title{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(36px,7vw,80px);
-  font-weight:600;line-height:1;
-  color:#fff;
-  text-shadow:0 0 60px rgba(212,168,67,.25);
-  margin-bottom:8px;
-}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,7vw,80px);font-weight:600;line-height:1;color:#fff;text-shadow:0 0 60px rgba(212,168,67,.25);margin-bottom:8px;}
 .hero-title em{font-style:italic;color:var(--gold2)}
-.hero-sub{
-  font-size:14px;color:var(--sub);
-  letter-spacing:3px;margin-top:16px;
-}
-.hero-flow{
-  display:flex;align-items:center;justify-content:center;
-  gap:0;margin-top:36px;flex-wrap:wrap;
-}
-.flow-item{
-  display:flex;align-items:center;gap:10px;
-  padding:10px 20px;border-radius:10px;
-  border:1px solid;font-size:13px;font-weight:700;
-  letter-spacing:1px;
-}
+.hero-sub{font-size:14px;color:var(--sub);letter-spacing:3px;margin-top:16px;}
+.hero-flow{display:flex;align-items:center;justify-content:center;gap:0;margin-top:36px;flex-wrap:wrap;}
+.flow-item{display:flex;align-items:center;gap:10px;padding:10px 20px;border-radius:10px;border:1px solid;font-size:13px;font-weight:700;letter-spacing:1px;}
 .flow-arrow{font-size:18px;color:rgba(255,255,255,.2);margin:0 4px}
-
-/* 목차 */
-.toc{
-  position:sticky;top:0;z-index:100;
-  background:rgba(8,7,15,.9);backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--border);
-  padding:12px 24px;
-  display:flex;align-items:center;justify-content:center;
-  gap:8px;flex-wrap:wrap;
-}
-.toc-btn{
-  padding:6px 16px;border-radius:20px;cursor:pointer;
-  font-size:11px;font-family:inherit;letter-spacing:1px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(255,255,255,.04);color:var(--sub);
-  transition:all .2s;text-decoration:none;display:inline-block;
-}
-.toc-btn:hover,.toc-btn.active{
-  border-color:var(--gold);color:var(--gold);
-  background:rgba(212,168,67,.08);
-}
-
-/* 메인 */
+.toc{position:sticky;top:0;z-index:100;background:rgba(8,7,15,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;}
+.toc-btn{padding:6px 16px;border-radius:20px;cursor:pointer;font-size:11px;font-family:inherit;letter-spacing:1px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--sub);transition:all .2s;text-decoration:none;display:inline-block;}
+.toc-btn:hover,.toc-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(212,168,67,.08);}
 main{position:relative;z-index:10;max-width:900px;margin:0 auto;padding:0 24px 80px}
-
-/* 앱 섹션 */
 .app-section{padding:60px 0 0}
-.app-header{
-  display:flex;align-items:center;gap:18px;
-  margin-bottom:32px;padding-bottom:20px;
-  border-bottom:1px solid var(--border);
-}
-.app-icon{
-  width:56px;height:56px;border-radius:16px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:26px;flex-shrink:0;
-}
-.app-name{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(24px,4vw,36px);font-weight:700;
-  color:#fff;line-height:1;margin-bottom:4px;
-}
+.app-header{display:flex;align-items:center;gap:18px;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.app-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
+.app-name{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,4vw,36px);font-weight:700;color:#fff;line-height:1;margin-bottom:4px;}
 .app-name-ko{font-size:12px;color:var(--sub);letter-spacing:2px;margin-top:4px}
 .app-desc{font-size:13px;color:var(--sub);line-height:1.8;margin-top:6px}
-
-/* 단계 카드 */
 .steps-grid{display:flex;flex-direction:column;gap:12px}
-.step-card{
-  background:var(--panel);
-  border:1px solid rgba(255,255,255,.07);
-  border-radius:14px;padding:22px 24px;
-  display:flex;gap:18px;align-items:flex-start;
-  transition:border-color .25s;
-  position:relative;overflow:hidden;
-}
-.step-card::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;
-  width:3px;border-radius:3px 0 0 3px;
-}
+.step-card{background:var(--panel);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:22px 24px;display:flex;gap:18px;align-items:flex-start;transition:border-color .25s;position:relative;overflow:hidden;}
+.step-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px;}
 .step-card:hover{border-color:rgba(255,255,255,.14)}
-.step-num{
-  width:36px;height:36px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'JetBrains Mono',monospace;
-  font-size:14px;font-weight:700;flex-shrink:0;
-}
+.step-num{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;flex-shrink:0;}
 .step-body{flex:1}
-.step-title{
-  font-size:15px;font-weight:700;color:#fff;
-  margin-bottom:6px;display:flex;align-items:center;gap:8px;
-}
-.step-title .badge{
-  font-size:9px;padding:2px 8px;border-radius:10px;
-  letter-spacing:1px;font-weight:700;
-}
+.step-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.step-title .badge{font-size:9px;padding:2px 8px;border-radius:10px;letter-spacing:1px;font-weight:700;}
 .step-desc{font-size:13px;color:#a090b0;line-height:1.8}
-.step-tip{
-  margin-top:10px;padding:10px 14px;border-radius:8px;
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  font-size:12px;color:var(--sub);line-height:1.7;
-}
+.step-tip{margin-top:10px;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:12px;color:var(--sub);line-height:1.7;}
 .step-tip strong{color:var(--gold);font-weight:700}
-
-/* 키 힌트 */
 .key-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-.key-item{
-  display:flex;align-items:center;gap:7px;
-  padding:6px 12px;border-radius:8px;
-  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);
-  font-size:12px;color:var(--sub);
-}
-.key{
-  font-family:'JetBrains Mono',monospace;
-  font-size:11px;padding:2px 8px;border-radius:5px;
-  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
-  color:#fff;white-space:nowrap;
-}
-
-/* 흐름도 */
-.flow-diagram{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:16px;padding:28px;margin:24px 0;
-}
-.flow-diagram-title{
-  font-size:10px;color:var(--gold);letter-spacing:4px;
-  text-transform:uppercase;margin-bottom:20px;text-align:center;
-}
+.key-item{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);font-size:12px;color:var(--sub);}
+.key{font-family:'JetBrains Mono',monospace;font-size:11px;padding:2px 8px;border-radius:5px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;white-space:nowrap;}
+.flow-diagram{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:28px;margin:24px 0;}
+.flow-diagram-title{font-size:10px;color:var(--gold);letter-spacing:4px;text-transform:uppercase;margin-bottom:20px;text-align:center;}
 .flow-row{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}
-.flow-node{
-  text-align:center;padding:14px 20px;border-radius:12px;
-  border:1px solid;min-width:110px;
-}
+.flow-node{text-align:center;padding:14px 20px;border-radius:12px;border:1px solid;min-width:100px;}
 .flow-node-icon{font-size:22px;margin-bottom:6px}
 .flow-node-name{font-size:12px;font-weight:700;letter-spacing:1px}
 .flow-node-desc{font-size:10px;margin-top:3px;opacity:.7}
 .flow-conn{font-size:20px;color:rgba(255,255,255,.15)}
-.flow-plus{
-  font-size:18px;color:rgba(255,255,255,.2);
-  padding:0 4px;
-}
-
-/* 신호등 설명 */
-.signal-box{
-  background:linear-gradient(135deg,rgba(105,240,174,.06),rgba(93,173,226,.04));
-  border:1px solid rgba(105,240,174,.2);
-  border-radius:14px;padding:22px 24px;margin-top:16px;
-}
-.signal-title{
-  display:flex;align-items:center;gap:10px;
-  font-size:14px;font-weight:700;color:var(--green);
-  margin-bottom:12px;
-}
-.signal-row{
-  display:flex;align-items:flex-start;gap:12px;
-  margin-bottom:10px;font-size:13px;color:#a090b0;line-height:1.7;
-}
-.signal-dot{
-  width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px;
-}
-
-/* 팁 박스 */
-.tip-box{
-  background:rgba(212,168,67,.06);
-  border:1px solid rgba(212,168,67,.2);
-  border-radius:12px;padding:18px 22px;margin-top:20px;
-}
-.tip-box-title{
-  font-size:11px;color:var(--gold);letter-spacing:2px;
-  text-transform:uppercase;margin-bottom:10px;
-  display:flex;align-items:center;gap:8px;
-}
+.flow-plus{font-size:18px;color:rgba(255,255,255,.2);padding:0 4px;}
+.signal-box{background:linear-gradient(135deg,rgba(105,240,174,.06),rgba(93,173,226,.04));border:1px solid rgba(105,240,174,.2);border-radius:14px;padding:22px 24px;margin-top:16px;}
+.signal-title{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:var(--green);margin-bottom:12px;}
+.signal-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;font-size:13px;color:#a090b0;line-height:1.7;}
+.signal-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+.tip-box{background:rgba(212,168,67,.06);border:1px solid rgba(212,168,67,.2);border-radius:12px;padding:18px 22px;margin-top:20px;}
+.tip-box-title{font-size:11px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:8px;}
 .tip-box-list{font-size:13px;color:#a090b0;line-height:2}
-
-/* 분리선 */
-.divider{
-  display:flex;align-items:center;gap:12px;
-  margin:60px 0 0;
-}
+.divider{display:flex;align-items:center;gap:12px;margin:60px 0 0;}
 .divider-line{flex:1;height:1px;background:linear-gradient(to right,transparent,var(--border),transparent)}
-.divider-diamond{
-  width:7px;height:7px;background:var(--gold);
-  transform:rotate(45deg);box-shadow:0 0 8px var(--gold);
-}
-
-/* 푸터 */
-footer{
-  position:relative;z-index:10;
-  text-align:center;padding:40px 24px 60px;
-  border-top:1px solid var(--border);
-}
-.footer-eaim{
-  font-family:'Cormorant Garamond',serif;
-  font-size:clamp(20px,4vw,32px);font-weight:300;
-  color:var(--gold);letter-spacing:12px;margin-bottom:12px;
-}
+.divider-diamond{width:7px;height:7px;background:var(--gold);transform:rotate(45deg);box-shadow:0 0 8px var(--gold);}
+footer{position:relative;z-index:10;text-align:center;padding:40px 24px 60px;border-top:1px solid var(--border);}
+.footer-eaim{font-family:'Cormorant Garamond',serif;font-size:clamp(20px,4vw,32px);font-weight:300;color:var(--gold);letter-spacing:12px;margin-bottom:12px;}
 .footer-sub{font-size:11px;color:var(--sub);letter-spacing:3px}
-
-/* 반응형 */
-@media(max-width:600px){
-  .flow-row{flex-direction:column}
-  .step-card{flex-direction:column}
-  .step-num{width:28px;height:28px;font-size:12px}
-  .hero-flow{flex-direction:column;gap:8px}
-}
-
-/* 스크롤바 */
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-track{background:var(--dark)}
-::-webkit-scrollbar-thumb{background:#2a1a3a;border-radius:2px}
+@media(max-width:600px){.flow-row{flex-direction:column}.step-card{flex-direction:column}.step-num{width:28px;height:28px;font-size:12px}.hero-flow{flex-direction:column;gap:8px}}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:#2a1a3a;border-radius:2px}
 </style>
 </head>
 <body>
-
 <div class="stars" id="stars"></div>
 
-<!-- 히어로 -->
 <div class="hero">
   <div class="hero-eyebrow">EAIM Musical Platform</div>
   <h1 class="hero-title">사용<em>가이드</em></h1>
   <p class="hero-sub">Emotion · Artscape · Interactive · Musicalization</p>
-
   <div class="hero-flow">
-    <div class="flow-item" style="background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.4);color:var(--gold)">
-      🎭 뮤지컬 메이커
-    </div>
+    <div class="flow-item" style="background:rgba(212,168,67,.1);border-color:rgba(212,168,67,.4);color:var(--gold)">🎭 뮤지컬 메이커</div>
     <div class="flow-arrow">→</div>
-    <div class="flow-item" style="background:rgba(93,173,226,.1);border-color:rgba(93,173,226,.4);color:var(--blue)">
-      🎬 슬라이드쇼
-    </div>
+    <div class="flow-item" style="background:rgba(93,173,226,.1);border-color:rgba(93,173,226,.4);color:var(--blue)">🎬 슬라이드쇼</div>
     <div class="flow-arrow">+</div>
-    <div class="flow-item" style="background:rgba(105,240,174,.1);border-color:rgba(105,240,174,.4);color:var(--green)">
-      🎚 오디오 믹서
-    </div>
+    <div class="flow-item" style="background:rgba(105,240,174,.1);border-color:rgba(105,240,174,.4);color:var(--green)">🎚 오디오 믹서</div>
+    <div class="flow-arrow">+</div>
+    <div class="flow-item" style="background:rgba(255,107,157,.1);border-color:rgba(255,107,157,.4);color:var(--media)">🎨 미디어픽쳐</div>
   </div>
 </div>
 
-<!-- 목차 -->
 <nav class="toc">
   <a class="toc-btn" href="index.html" style="border-color:rgba(212,168,67,0.4);color:var(--gold2)">🏠 허브</a>
-    <a class="toc-btn" href="#overview">전체 흐름</a>
+  <a class="toc-btn" href="#overview">전체 흐름</a>
   <a class="toc-btn" href="#maker">뮤지컬 메이커</a>
   <a class="toc-btn" href="#slideshow">슬라이드쇼</a>
   <a class="toc-btn" href="#mixer">오디오 믹서</a>
+  <a class="toc-btn" href="#mediapicture">미디어픽쳐</a>
   <a class="toc-btn" href="#signal">신호등 연동</a>
   <a class="toc-btn" href="#tips">공연 팁</a>
 </nav>
@@ -317,42 +119,43 @@ footer{
       <div class="app-icon" style="background:rgba(212,168,67,.15);border:1px solid rgba(212,168,67,.3)">✦</div>
       <div>
         <div class="app-name">전체 작업 흐름</div>
-        <div class="app-desc">세 앱이 하나로 연결되어 뮤지컬 수업의 기획부터 공연까지 완성합니다.</div>
-        <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
-          <a href="index.html" target="_blank" class="launch-btn launch-btn-gold" style="font-size:.78rem;">🏠 허브로 이동 →</a>
-        </div>
+        <div class="app-desc">네 앱이 하나로 연결되어 뮤지컬 수업의 기획부터 공연, 음악감상 수업까지 완성합니다.</div>
       </div>
     </div>
-
     <div class="flow-diagram">
       <div class="flow-diagram-title">수업 → 공연 워크플로우</div>
       <div class="flow-row">
         <div class="flow-node" style="background:rgba(212,168,67,.08);border-color:rgba(212,168,67,.3);color:var(--gold)">
-          <div class="flow-node-icon">🎭</div>
-          <div class="flow-node-name">MAKER</div>
-          <div class="flow-node-desc">수업 중 제작</div>
+          <div class="flow-node-icon">🎭</div><div class="flow-node-name">MAKER</div><div class="flow-node-desc">수업 중 제작</div>
         </div>
         <div class="flow-conn">→</div>
         <div class="flow-node" style="background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:#888">
-          <div class="flow-node-icon">💾</div>
-          <div class="flow-node-name">자동 연결</div>
-          <div class="flow-node-desc">localStorage</div>
+          <div class="flow-node-icon">💾</div><div class="flow-node-name">자동 연결</div><div class="flow-node-desc">localStorage</div>
         </div>
         <div class="flow-conn">→</div>
         <div class="flow-node" style="background:rgba(93,173,226,.08);border-color:rgba(93,173,226,.3);color:var(--blue)">
-          <div class="flow-node-icon">🎬</div>
-          <div class="flow-node-name">SLIDESHOW</div>
-          <div class="flow-node-desc">공연 영상</div>
+          <div class="flow-node-icon">🎬</div><div class="flow-node-name">SLIDESHOW</div><div class="flow-node-desc">공연 영상</div>
         </div>
         <div class="flow-plus">+</div>
         <div class="flow-node" style="background:rgba(105,240,174,.08);border-color:rgba(105,240,174,.3);color:var(--green)">
-          <div class="flow-node-icon">🎚</div>
-          <div class="flow-node-name">MIXER</div>
-          <div class="flow-node-desc">실시간 음향</div>
+          <div class="flow-node-icon">🎚</div><div class="flow-node-name">MIXER</div><div class="flow-node-desc">실시간 음향</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;text-align:center;color:rgba(255,255,255,.2);font-size:18px">+</div>
+      <div class="flow-row" style="margin-top:12px">
+        <div class="flow-node" style="background:rgba(255,107,157,.08);border-color:rgba(255,107,157,.3);color:var(--media)">
+          <div class="flow-node-icon">🎨</div><div class="flow-node-name">미디어픽쳐</div><div class="flow-node-desc">음악감상 수업</div>
+        </div>
+        <div class="flow-conn">→</div>
+        <div class="flow-node" style="background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:#888">
+          <div class="flow-node-icon">🖼</div><div class="flow-node-name">AI 이미지</div><div class="flow-node-desc">한글 프롬프트</div>
+        </div>
+        <div class="flow-conn">→</div>
+        <div class="flow-node" style="background:rgba(255,107,157,.08);border-color:rgba(255,107,157,.3);color:var(--media)">
+          <div class="flow-node-icon">🎬</div><div class="flow-node-name">CapCut</div><div class="flow-node-desc">영상 완성</div>
         </div>
       </div>
     </div>
-
     <div class="signal-box">
       <div class="signal-title">🚦 신호등 시스템으로 연결</div>
       <div class="signal-row"><div class="signal-dot" style="background:var(--blue)"></div>슬라이드쇼에서 장면이 넘어가면 오디오 믹서에 신호가 자동으로 전달됩니다.</div>
@@ -373,21 +176,15 @@ footer{
         <div class="app-desc">주제와 등장인물만 입력하면 Gemini AI가 대본·가사·Suno 프롬프트·배경 프롬프트를 자동으로 생성합니다.</div>
       </div>
     </div>
-
     <div class="steps-grid">
-
-      <div class="step-card" style="border-left-color:rgba(212,168,67,.5)">
-        <div class="step-card" style="display:none"></div>
+      <div class="step-card">
         <div class="step-num" style="background:rgba(212,168,67,.15);color:var(--gold)">01</div>
         <div class="step-body">
-          <div class="step-title">Gemini API 키 입력
-            <span class="badge" style="background:rgba(212,168,67,.15);color:var(--gold)">필수</span>
-          </div>
+          <div class="step-title">Gemini API 키 입력 <span class="badge" style="background:rgba(212,168,67,.15);color:var(--gold)">필수</span></div>
           <div class="step-desc">선생님으로 입장 → 설정 탭에서 Gemini API 키를 입력하세요. 학생들은 API 키 없이 바로 사용할 수 있어요.</div>
-          <div class="step-tip">&#128273; 키 발급: <strong>aistudio.google.com</strong> → Get API key → Create API key (무료)</div>
+          <div class="step-tip">🔑 키 발급: <strong>aistudio.google.com</strong> → Get API key → Create API key (무료)</div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(212,168,67,.12);color:var(--gold)">02</div>
         <div class="step-body">
@@ -396,12 +193,10 @@ footer{
           <div class="step-tip">
             <strong>주제 예시:</strong><br>
             · 짧게: "우정" "환경" "성장"<br>
-            · 길게: "전학 온 아이가 음악을 통해 친구들과 하나가 되는 이야기"<br>
-            <strong>등장인물:</strong> 민준(주인공), 서아(반장), 음악선생님 — 역할을 괄호로 표시하면 더 풍부하게 생성됩니다.
+            · 길게: "전학 온 아이가 음악을 통해 친구들과 하나가 되는 이야기"
           </div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(212,168,67,.12);color:var(--gold)">03</div>
         <div class="step-body">
@@ -409,7 +204,6 @@ footer{
           <div class="step-desc">AI가 5단계로 자동 생성합니다. 제목 → 오프닝 코러스 → 각 막 → 커튼콜 → Suno 프롬프트 순서로 30초~1분 정도 소요됩니다.</div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(212,168,67,.12);color:var(--gold)">04</div>
         <div class="step-body">
@@ -421,19 +215,14 @@ footer{
           </div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(212,168,67,.12);color:var(--gold)">05</div>
         <div class="step-body">
-          <div class="step-title">🎬 슬라이드쇼 열기
-            <span class="badge" style="background:rgba(93,173,226,.15);color:var(--blue)">연동</span>
-          </div>
-          <div class="step-desc">하단의 "슬라이드쇼 열기" 버튼을 누르면 모든 장면 데이터가 슬라이드쇼와 오디오 믹서에 자동으로 전달됩니다.</div>
+          <div class="step-title">🎬 슬라이드쇼 열기 <span class="badge" style="background:rgba(93,173,226,.15);color:var(--blue)">연동</span></div>
+          <div class="step-desc">하단의 "슬라이드쇼 열기" 버튼을 누르면 모든 장면 데이터(오프닝·각막·커튼콜 배경 프롬프트 포함)가 슬라이드쇼와 오디오 믹서에 자동으로 전달됩니다.</div>
         </div>
       </div>
-
     </div>
-
     <div class="tip-box">
       <div class="tip-box-title">💡 수업 활용 팁</div>
       <div class="tip-box-list">
@@ -454,26 +243,22 @@ footer{
       <div>
         <div class="app-name" style="color:var(--blue)">슬라이드쇼</div>
         <div class="app-name-ko">Slideshow Player</div>
-        <div class="app-desc">AI 배경 이미지 위에 가사가 표시되고, 커튼콜·크레딧 롤까지 자동 재생되는 공연 영상 플레이어입니다.</div>
+        <div class="app-desc">AI 배경 이미지 + 2.5D 패럴랙스 + 캐릭터 애니메이션으로 공연 영상을 만들고 화면 녹화까지 할 수 있는 공연 스튜디오입니다.</div>
       </div>
     </div>
-
     <div class="steps-grid">
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(93,173,226,.12);color:var(--blue)">01</div>
         <div class="step-body">
           <div class="step-title">API 키 설정 (첫 실행 시)</div>
-          <div class="step-desc">처음 열면 API 키 모달이 나타납니다. Gemini 키를 입력하면 AI가 각 장면의 배경 이미지를 생성하고, 건너뛰면 Pollinations AI로 대체됩니다.</div>
-          <div class="step-tip">한 번 저장해두면 다음부터는 자동으로 적용됩니다. 우측 상단 뱃지를 클릭하면 키를 변경할 수 있어요.</div>
+          <div class="step-desc">처음 열면 API 키 모달이 나타납니다. Gemini 키를 입력하면 AI가 각 장면의 배경 이미지를 생성하고, 건너뛰면 Pollinations AI로 대체됩니다. 뮤지컬 메이커에서 이미 입력했다면 자동으로 적용됩니다.</div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(93,173,226,.12);color:var(--blue)">02</div>
         <div class="step-body">
           <div class="step-title">장면 탐색 — 키보드 / 버튼</div>
-          <div class="step-desc">하단 컨트롤 바 또는 키보드로 장면을 이동합니다. 점(dot) 네비게이터를 클릭해도 바로 이동할 수 있어요.</div>
+          <div class="step-desc">하단 컨트롤 바 또는 키보드로 장면을 이동합니다.</div>
           <div class="key-grid">
             <div class="key-item"><span class="key">→</span> 다음 장면</div>
             <div class="key-item"><span class="key">←</span> 이전 장면</div>
@@ -484,21 +269,43 @@ footer{
           </div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(93,173,226,.12);color:var(--blue)">03</div>
         <div class="step-body">
-          <div class="step-title">가사 자막 제어</div>
-          <div class="step-desc">화면 하단에 현재 줄·다음 줄 가사가 노란색으로 표시됩니다. ↑↓ 키로 가사 줄을 수동으로 넘길 수 있어요.</div>
-          <div class="step-tip"><strong>가사 숨기기:</strong> 우측 하단 "가사 숨기기" 버튼으로 자막을 끄고 켤 수 있습니다</div>
+          <div class="step-title">🎭 캐릭터 레이어 추가 <span class="badge" style="background:rgba(255,213,79,.15);color:#ffd54f">NEW</span></div>
+          <div class="step-desc">하단 🎭 버튼 → 캐릭터 이미지 URL 입력 → 위치(왼쪽/오른쪽/가운데) 선택 → 적용. 마우스를 움직이면 배경과 캐릭터가 다른 속도로 움직여서 2.5D 입체감이 생깁니다.</div>
+          <div class="step-tip">
+            <strong>패럴랙스 효과:</strong> 배경은 느리게, 캐릭터는 빠르게 움직여서 입체감 구현<br>
+            <strong>마우스 없을 때:</strong> 자동으로 살살 부유하는 효과 적용
+          </div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(93,173,226,.12);color:var(--blue)">04</div>
         <div class="step-body">
+          <div class="step-title">🎬 캐릭터 애니메이션 <span class="badge" style="background:rgba(255,213,79,.15);color:#ffd54f">NEW</span></div>
+          <div class="step-desc">캐릭터 추가 후 🎭 버튼 → 🎬 애니메이션 버튼을 누르면 애니메이션 패널이 열립니다.</div>
+          <div class="key-grid">
+            <div class="key-item">← 왼쪽 등장</div>
+            <div class="key-item">→ 오른쪽 등장</div>
+            <div class="key-item">↑ 아래서 등장</div>
+            <div class="key-item">✦ 페이드인</div>
+            <div class="key-item">🌊 둥둥 (상시)</div>
+            <div class="key-item">💨 숨쉬기 (상시)</div>
+            <div class="key-item">🍃 좌우흔들림 (상시)</div>
+            <div class="key-item">⬆ 점프 (말할 때)</div>
+            <div class="key-item">〰 흔들림 (말할 때)</div>
+            <div class="key-item">→ 오른쪽 퇴장</div>
+            <div class="key-item">✦ 페이드아웃</div>
+          </div>
+          <div class="step-tip"><strong>상시 효과:</strong> 버튼을 다시 누르면 토글로 ON/OFF 전환 가능</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:rgba(93,173,226,.12);color:var(--blue)">05</div>
+        <div class="step-body">
           <div class="step-title">💬 말풍선 & 자막 기능</div>
-          <div class="step-desc">하단 컨트롤의 💬 버튼을 누르면 말풍선 패널이 열립니다. 배우 이름과 대사를 입력하면 화면에 드래그 이동 가능한 말풍선이 생성됩니다.</div>
+          <div class="step-desc">하단 💬 버튼을 누르면 말풍선 패널이 열립니다. 배우 이름과 대사를 입력하면 화면에 드래그 이동 가능한 말풍선이 생성됩니다.</div>
           <div class="step-tip">
             <strong>말풍선:</strong> 꼬리 방향 선택 (↙ ↘ ↑), 드래그로 위치 이동, ✕ 버튼으로 삭제<br>
             <strong>자막:</strong> 📝 버튼 → 자막 텍스트 입력 → 화면 하단에 고정 표시<br>
@@ -506,33 +313,33 @@ footer{
           </div>
         </div>
       </div>
-
-      <div class="step-card">
-        <div class="step-num" style="background:rgba(93,173,226,.12);color:var(--blue)">05</div>
-        <div class="step-body">
-          <div class="step-title">⏵ 자동재생 모드</div>
-          <div class="step-desc">⏵ 버튼을 누르면 7초마다 자동으로 다음 장면으로 넘어갑니다. 다시 누르면 멈춥니다.</div>
-          <div class="step-tip">공연 연습 시에는 자동재생, 실제 공연 시에는 수동 제어를 추천합니다</div>
-        </div>
-      </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(93,173,226,.12);color:var(--blue)">06</div>
+        <div class="step-body">
+          <div class="step-title">⏺ 화면 녹화 → 영상 출력 <span class="badge" style="background:rgba(255,213,79,.15);color:#ffd54f">NEW</span></div>
+          <div class="step-desc">하단 ⏺ 버튼을 누르면 화면 공유 창이 뜹니다. 화면을 선택하면 녹화가 시작되고, 좌측 상단에 빨간 녹화 인디케이터와 경과 시간이 표시됩니다. 다시 ⏹ 버튼을 누르면 .webm 영상 파일로 자동 저장됩니다.</div>
+          <div class="step-tip">
+            <strong>활용법:</strong> 캐릭터 애니메이션 + 패럴랙스 + 말풍선이 모두 담긴 영상 제작 가능<br>
+            <strong>저장 형식:</strong> .webm → CapCut에서 불러와 음악·효과음 추가 후 최종 완성<br>
+            <strong>화면 공유:</strong> "전체 화면" 선택 권장
+          </div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:rgba(93,173,226,.12);color:var(--blue)">07</div>
         <div class="step-body">
           <div class="step-title">🌟 커튼콜 & 크레딧 롤</div>
           <div class="step-desc">마지막 ▶ 버튼을 누르면 커튼콜 가사가 페이드인되고, 자동으로 크레딧 롤 (막 내림 자막)이 올라갑니다.</div>
         </div>
       </div>
-
     </div>
-
     <div class="tip-box">
       <div class="tip-box-title">🎬 공연 화면 설정 팁</div>
       <div class="tip-box-list">
         · 빔프로젝터/TV 연결 후 F11로 전체화면 → ESC로 나가기<br>
         · 배경 이미지 생성이 느리면 미리 한 번 전체 슬라이드를 돌려두세요 (캐시됨)<br>
-        · 인터넷이 불안정한 환경에서는 Pollinations(건너뛰기)를 추천합니다<br>
-        · 장면 전환 시 자동으로 암전 효과가 적용됩니다
+        · 캐릭터 이미지는 배경 제거(누끼) 된 PNG 파일을 사용하면 더 자연스러워요<br>
+        · 화면 녹화 후 CapCut에서 MR/AR 음악을 얹어 최종 영상 완성
       </div>
     </div>
   </section>
@@ -549,15 +356,11 @@ footer{
         <div class="app-desc">BGM·MR·앰비언스 3채널 실시간 믹싱과 AI 자동 음향 프리셋으로 공연 현장의 음향을 완성합니다.</div>
       </div>
     </div>
-
     <div class="steps-grid">
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(105,240,174,.12);color:var(--green)">01</div>
         <div class="step-body">
-          <div class="step-title">공연 전 — 큐리스트 준비
-            <span class="badge" style="background:rgba(105,240,174,.15);color:var(--green)">중요</span>
-          </div>
+          <div class="step-title">공연 전 — 큐리스트 준비 <span class="badge" style="background:rgba(105,240,174,.15);color:var(--green)">중요</span></div>
           <div class="step-desc">뮤지컬 메이커에서 "슬라이드쇼 열기"를 누른 후 오디오 믹서를 열면 장면별 큐리스트가 자동 생성되어 있습니다.</div>
           <div class="step-tip">
             <strong>큐리스트 확인:</strong> 오프닝→1막→2막→커튼콜 순서로 자동 생성<br>
@@ -565,80 +368,56 @@ footer{
           </div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(105,240,174,.12);color:var(--green)">02</div>
         <div class="step-body">
-          <div class="step-title">각 큐에 오디오 파일 연결 (방식 A)</div>
-          <div class="step-desc">큐리스트에서 큐를 선택 → BGM 채널에 그 막의 배경음악 업로드 → MR 채널에 반주 업로드 → "💾 현재 큐 저장" 클릭. 모든 막 반복 후 JSON 내보내기로 백업.</div>
+          <div class="step-title">각 큐에 오디오 파일 연결</div>
+          <div class="step-desc">큐리스트에서 큐를 선택 → BGM 채널에 배경음악 업로드 → MR 채널에 반주 업로드 → "💾 현재 큐 저장" 클릭. 모든 막 반복 후 JSON 내보내기로 백업.</div>
           <div class="step-tip">
             <strong>파일 형식:</strong> MP3, WAV 지원. 또는 URL 직접 입력도 가능<br>
-            <strong>큐 로드 시:</strong> 파일이 자동으로 교체됨 — 막마다 다른 음악 자동 전환<br>
             <strong>채널 구성:</strong> CH1 BGM(배경음악) / CH2 MR(반주) / CH3 앰비언스·나레이션
           </div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(105,240,174,.12);color:var(--green)">03</div>
         <div class="step-body">
           <div class="step-title">✦ AI 음향 프리셋 이해하기</div>
-          <div class="step-desc">상단 팔레트에서 9가지 분위기 프리셋 중 하나를 클릭하면 EQ·리버브·딜레이가 자동으로 최적화됩니다. 볼륨은 직접 제어합니다.</div>
+          <div class="step-desc">상단 팔레트에서 9가지 분위기 프리셋 중 하나를 클릭하면 EQ·리버브·딜레이가 자동으로 최적화됩니다.</div>
           <div class="key-grid">
-            <div class="key-item">☀️ <span style="margin-left:4px">밝고 신남 — 고음 부스트, 잔향 없음</span></div>
-            <div class="key-item">🌧 <span style="margin-left:4px">슬프고 감동 — 저음↑, 리버브 강</span></div>
-            <div class="key-item">⚡ <span style="margin-left:4px">긴장·위기 — 저음↑↑, 빠른 딜레이</span></div>
-            <div class="key-item">🌙 <span style="margin-left:4px">신비·환상 — 고음↑, 딜레이 깊음</span></div>
-            <div class="key-item">🎭 <span style="margin-left:4px">공연장·극장 — 홀 리버브</span></div>
-            <div class="key-item">🌟 <span style="margin-left:4px">커튼콜·피날레 — 웅장·여운</span></div>
+            <div class="key-item">☀️ 밝고 신남 — 고음 부스트</div>
+            <div class="key-item">🌧 슬프고 감동 — 저음↑, 리버브 강</div>
+            <div class="key-item">⚡ 긴장·위기 — 저음↑↑, 빠른 딜레이</div>
+            <div class="key-item">🌙 신비·환상 — 딜레이 깊음</div>
+            <div class="key-item">🎭 공연장·극장 — 홀 리버브</div>
+            <div class="key-item">🌟 커튼콜·피날레 — 웅장·여운</div>
           </div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(105,240,174,.12);color:var(--green)">04</div>
         <div class="step-body">
           <div class="step-title">채널 컨트롤 사용법</div>
-          <div class="step-desc">각 채널에는 볼륨(VOL)·패닝(PAN)·페이드 시간(FADE)·수직 페이더가 있습니다. EQ 커브가 실시간으로 시각화됩니다.</div>
+          <div class="step-desc">각 채널에는 볼륨(VOL)·패닝(PAN)·페이드 시간(FADE)·수직 페이더가 있습니다.</div>
           <div class="key-grid">
             <div class="key-item"><span class="key">▶</span> 재생</div>
             <div class="key-item"><span class="key">⏸</span> 일시정지</div>
             <div class="key-item"><span class="key">⏹</span> 정지·되감기</div>
             <div class="key-item"><span class="key">🔁</span> 루프 ON/OFF</div>
             <div class="key-item"><span class="key">FADE↓</span> 서서히 줄이기</div>
-            <div class="key-item"><span class="key">FADE↑</span> 서서히 키우기</div>
             <div class="key-item"><span class="key">Space</span> BGM 재생/정지</div>
             <div class="key-item"><span class="key">1~8</span> 효과음 패드</div>
           </div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(105,240,174,.12);color:var(--green)">05</div>
         <div class="step-body">
-          <div class="step-title">⚡ 효과음 패드</div>
-          <div class="step-desc">우측 패드에 박수·천둥·바람·종소리 등 기본 효과음이 사전 탑재되어 있습니다. 패드를 클릭하거나 키보드 1~8 키로 즉시 재생합니다.</div>
-          <div class="step-tip">
-            패드 위에 파일을 업로드하면 원하는 효과음으로 교체 가능<br>
-            <strong>+ 효과음 추가</strong> 버튼으로 패드를 늘릴 수 있습니다
-          </div>
-        </div>
-      </div>
-
-      <div class="step-card">
-        <div class="step-num" style="background:rgba(105,240,174,.12);color:var(--green)">06</div>
-        <div class="step-body">
           <div class="step-title">공연 당일 — 큐 실행</div>
           <div class="step-desc">큐리스트에서 장면 번호를 탭하면 파일 자동 교체 + AI 음향 프리셋이 동시에 적용됩니다. 재생 버튼만 누르면 됩니다.</div>
-          <div class="step-tip">
-            각 큐에 연결된 파일명이 🎵/🎼 배지로 표시됩니다<br>
-            <strong>자동 ON:</strong> 🤖 자동 적용 ON 상태에서 큐 로드 시 AI 프리셋 자동 전환
-          </div>
         </div>
       </div>
-
     </div>
-
     <div class="tip-box">
       <div class="tip-box-title">🎚 음향 세팅 팁</div>
       <div class="tip-box-list">
@@ -646,6 +425,109 @@ footer{
         · 장면 전환 전 FADE↓로 이전 음악을 서서히 줄이고 다음 큐 로드<br>
         · 마스터 볼륨으로 전체 출력을 85% 정도로 유지하면 안전합니다<br>
         · 공연 전 미리 전체 큐를 한 번 순서대로 테스트해 보세요
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><div class="divider-line"></div><div class="divider-diamond"></div><div class="divider-line"></div></div>
+
+  <!-- 미디어픽쳐 NEW -->
+  <section id="mediapicture" class="app-section">
+    <div class="app-header">
+      <div class="app-icon" style="background:rgba(255,107,157,.15);border:1px solid rgba(255,107,157,.3)">🎨</div>
+      <div>
+        <div class="app-name" style="color:var(--media)">미디어픽쳐</div>
+        <div class="app-name-ko">Media Picture · 음악감상 창작 도구</div>
+        <div class="app-desc">음악을 듣고 느낀 감정을 한글로 표현하면 AI가 그림으로 만들어줍니다. 웹툰·수채화·지브리 등 다양한 스타일 선택 가능! 뮤직미디어레터 수업 모델의 핵심 도구입니다.</div>
+      </div>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num" style="background:rgba(255,107,157,.12);color:var(--media)">01</div>
+        <div class="step-body">
+          <div class="step-title">음악 감상 🎵</div>
+          <div class="step-desc">유튜브 URL을 붙여넣어 영상을 임베드하거나, 음악 파일(MP3/WAV)을 직접 업로드해서 재생합니다.</div>
+          <div class="step-tip">
+            <strong>유튜브 탭:</strong> URL 입력 → ▶ 재생 → iframe으로 영상 임베드<br>
+            <strong>파일 탭:</strong> MP3, WAV 업로드 → 파일명 표시 후 재생<br>
+            Suno로 만든 음악 파일을 바로 올릴 수 있어요!
+          </div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:rgba(255,107,157,.12);color:var(--media)">02</div>
+        <div class="step-body">
+          <div class="step-title">🎨 그림 스타일 선택</div>
+          <div class="step-desc">음악의 느낌에 맞는 그림 스타일을 선택합니다. 선택한 스타일이 자동으로 이미지 생성 프롬프트에 반영됩니다.</div>
+          <div class="key-grid">
+            <div class="key-item">📱 웹툰 — 한국 만화체</div>
+            <div class="key-item">🌸 지브리 — 부드러운 애니메이션</div>
+            <div class="key-item">🎨 인상주의 — 고흐 스타일</div>
+            <div class="key-item">💧 수채화 — 따뜻한 느낌</div>
+            <div class="key-item">⭐ 애니메이션 — 일본 스타일</div>
+            <div class="key-item">📸 실사영화 — 시네마틱</div>
+            <div class="key-item">🔮 판타지 — 동화풍</div>
+            <div class="key-item">👾 픽셀아트 — 레트로</div>
+            <div class="key-item">🖋 수묵화 — 동양화풍</div>
+          </div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:rgba(255,107,157,.12);color:var(--media)">03</div>
+        <div class="step-body">
+          <div class="step-title">🌈 색감 & 💭 분위기 선택</div>
+          <div class="step-desc">음악에서 느껴지는 색깔과 감정을 여러 개 선택할 수 있습니다. 선택할수록 이미지가 더 구체적으로 생성됩니다.</div>
+          <div class="step-tip">
+            <strong>색감:</strong> 빨강/주황/노랑/초록/파랑/보라/분홍 등 12가지<br>
+            <strong>분위기:</strong> 신나는/슬픈/평온한/웅장한/설레는/어두운/그리운 등 10가지
+          </div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:rgba(255,107,157,.12);color:var(--media)">04</div>
+        <div class="step-body">
+          <div class="step-title">✏️ 한글로 자유롭게 표현</div>
+          <div class="step-desc">음악을 듣고 떠오르는 장면을 한글로 자유롭게 적습니다. 🌐 영어로 번역 버튼을 누르면 AI가 자동으로 이미지 생성용 영어 프롬프트로 변환해줍니다.</div>
+          <div class="step-tip">
+            <strong>예시:</strong> "가을 숲속에서 낙엽이 지고 있어. 혼자 걷는 느낌이야. 따뜻하면서도 조금 쓸쓸해..."<br>
+            번역된 영어 프롬프트도 화면에 표시되어 학생들이 자연스럽게 영어를 배울 수 있어요!
+          </div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:rgba(255,107,157,.12);color:var(--media)">05</div>
+        <div class="step-body">
+          <div class="step-title">✨ 이미지 생성 & 다운로드</div>
+          <div class="step-desc">✨ 이미지 생성하기 버튼을 누르면 Gemini AI가 선택한 스타일·색감·분위기·표현을 조합해 이미지를 생성합니다. 완성된 이미지는 바로 다운로드할 수 있습니다.</div>
+          <div class="step-tip">
+            <strong>다시 생성:</strong> 🔄 버튼으로 같은 프롬프트로 다른 이미지 생성 가능<br>
+            <strong>장면 추가:</strong> ➕ 버튼으로 여러 장면 이미지를 만들 수 있어요
+          </div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num" style="background:rgba(255,107,157,.12);color:var(--media)">06</div>
+        <div class="step-body">
+          <div class="step-title">🎬 CapCut으로 영상 완성</div>
+          <div class="step-desc">생성된 이미지를 다운로드하고 음악 파일도 저장한 후, CapCut에서 합쳐서 영상을 완성합니다.</div>
+          <div class="key-grid">
+            <div class="key-item">1️⃣ 이미지 다운로드</div>
+            <div class="key-item">2️⃣ 음악 파일 저장</div>
+            <div class="key-item">3️⃣ CapCut 새 프로젝트</div>
+            <div class="key-item">4️⃣ 이미지 + 음악 불러오기</div>
+            <div class="key-item">5️⃣ 효과음·전환효과 추가</div>
+            <div class="key-item">6️⃣ 완성! 🎉</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="tip-box">
+      <div class="tip-box-title">💡 뮤직미디어레터 수업 활용 팁</div>
+      <div class="tip-box-list">
+        · 같은 음악을 듣고 학생마다 다른 이미지가 나오는 것을 비교해보세요<br>
+        · 스타일 선택 없이 자유 표현만으로도 충분히 좋은 이미지가 나와요<br>
+        · 번역된 영어 프롬프트를 보여주며 영어 표현도 함께 배울 수 있어요<br>
+        · 완성된 이미지 + 음악으로 학생 개인 뮤직비디오 제작까지 연결 가능!
       </div>
     </div>
   </section>
@@ -662,9 +544,7 @@ footer{
         <div class="app-desc">슬라이드쇼와 오디오 믹서가 신호로 소통합니다. 자동 실행이 아닌 음향 담당자가 직접 판단하고 실행합니다.</div>
       </div>
     </div>
-
     <div class="steps-grid">
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(105,240,174,.12);color:var(--green)">01</div>
         <div class="step-body">
@@ -672,7 +552,6 @@ footer{
           <div class="step-desc">슬라이드쇼에서 장면이 넘어갈 때마다 상단에 초록색 인디케이터가 표시됩니다. 장면 번호·제목이 오디오 믹서로 자동 전달됩니다.</div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(105,240,174,.12);color:var(--green)">02</div>
         <div class="step-body">
@@ -686,15 +565,14 @@ footer{
           </div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(105,240,174,.12);color:var(--green)">03</div>
         <div class="step-body">
           <div class="step-title">공연 역할 분담</div>
           <div class="step-desc">두 사람이 각자 화면을 담당하면 진짜 공연처럼 운영할 수 있습니다.</div>
           <div class="key-grid">
-            <div class="key-item">🎬 <span style="margin-left:6px">슬라이드 담당 — 장면 전환, 가사 줄 넘기기</span></div>
-            <div class="key-item">🎚 <span style="margin-left:6px">음향 담당 — 신호 확인 후 큐 실행, 볼륨 조절</span></div>
+            <div class="key-item">🎬 슬라이드 담당 — 장면 전환, 가사 줄 넘기기</div>
+            <div class="key-item">🎚 음향 담당 — 신호 확인 후 큐 실행, 볼륨 조절</div>
           </div>
           <div class="step-tip">
             같은 컴퓨터에서 두 탭으로 운영하거나, 노트북 두 대를 나란히 사용하세요.<br>
@@ -702,7 +580,6 @@ footer{
           </div>
         </div>
       </div>
-
     </div>
   </section>
 
@@ -717,7 +594,6 @@ footer{
         <div class="app-desc">공연 전 이 순서대로 준비하면 실수 없이 진행할 수 있습니다.</div>
       </div>
     </div>
-
     <div class="steps-grid">
       <div class="step-card">
         <div class="step-num" style="background:rgba(212,168,67,.12);color:var(--gold)">D-1</div>
@@ -726,13 +602,13 @@ footer{
           <div class="step-tip">
             <strong>✓</strong> 뮤지컬 메이커에서 최종 버전 생성 완료<br>
             <strong>✓</strong> 슬라이드쇼 전체 한 번 돌려서 배경 이미지 캐시 완료<br>
+            <strong>✓</strong> 캐릭터 이미지(누끼 PNG) 준비 및 URL 확인<br>
             <strong>✓</strong> 오디오 믹서 — 모든 큐에 파일 연결 + JSON 저장 백업<br>
             <strong>✓</strong> 효과음 패드 테스트<br>
             <strong>✓</strong> 전체 리허설 (슬라이드 + 음향 동시 진행)
           </div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(212,168,67,.12);color:var(--gold)">D-Day</div>
         <div class="step-body">
@@ -747,7 +623,6 @@ footer{
           </div>
         </div>
       </div>
-
       <div class="step-card">
         <div class="step-num" style="background:rgba(212,168,67,.12);color:var(--gold)">⚠️</div>
         <div class="step-body">
@@ -760,7 +635,6 @@ footer{
           </div>
         </div>
       </div>
-
     </div>
   </section>
 
@@ -773,31 +647,22 @@ footer{
 </footer>
 
 <script>
-// 별 생성
-const starsEl = document.getElementById('stars');
-for (let i = 0; i < 60; i++) {
-  const s = document.createElement('div');
-  s.className = 'star';
-  const size = Math.random() < .15 ? 3 : Math.random() < .4 ? 2 : 1;
-  s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;
+const starsEl=document.getElementById('stars');
+for(let i=0;i<60;i++){
+  const s=document.createElement('div');s.className='star';
+  const size=Math.random()<.15?3:Math.random()<.4?2:1;
+  s.style.cssText=`width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;
     background:${Math.random()<.3?'#d4a843':Math.random()<.5?'#5DADE2':'#fff'};
     --d:${2+Math.random()*4}s;--dl:${Math.random()*3}s;
     --min:${.03+Math.random()*.07};--max:${.2+Math.random()*.4}`;
   starsEl.appendChild(s);
 }
-
-// 목차 활성화
-const sections = document.querySelectorAll('section[id]');
-const tocBtns = document.querySelectorAll('.toc-btn');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      const id = e.target.id;
-      tocBtns.forEach(b => b.classList.toggle('active', b.getAttribute('href') === '#' + id));
-    }
-  });
-}, { threshold: 0.3, rootMargin: '-60px 0px -60px 0px' });
-sections.forEach(s => observer.observe(s));
+const sections=document.querySelectorAll('section[id]');
+const tocBtns=document.querySelectorAll('.toc-btn');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){const id=e.target.id;tocBtns.forEach(b=>b.classList.toggle('active',b.getAttribute('href')==='#'+id));}});
+},{threshold:0.3,rootMargin:'-60px 0px -60px 0px'});
+sections.forEach(s=>observer.observe(s));
 </script>
 </body>
 </html>
